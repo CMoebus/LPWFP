@@ -1,0 +1,582 @@
+### A Pluto.jl notebook ###
+# v0.20.19
+
+using Markdown
+using InteractiveUtils
+
+# ╔═╡ 6b6c9a10-a77f-11f0-9cad-e9a4917d2318
+md"
+====================================================================================
+#### LPWFP\_Ch01\_Calculating With Julia
+##### file: LPWFP\_Ch01\_CalculatingWithJulia
+##### code: Julia/Pluto (1.12.0/0.20.18) by PCM *** 2025/10/13 ***
+
+==================================================================================
+"
+
+# ╔═╡ f5d920e9-b21e-43ab-8bd1-ac7b2761925d
+md"
+---
+##### 0. Introduction
+"
+
+# ╔═╡ 525c6db7-aab9-4bc9-9886-40cd70977ccc
+md"
+---
+##### 1. Topics
+"
+
+# ╔═╡ af999307-29be-4e9b-975a-fdb93a567428
+md"
+---
+##### 2. Libraries
+"
+
+# ╔═╡ 8314ba7c-a987-4b17-a2e1-1ecd63cb1219
+md"
+---
+##### 3. Code
+"
+
+# ╔═╡ 61cde2b7-216d-4d9e-be29-8e0060dbc5fa
+md"
+---
+###### 3.1 Position Time Equation 
+(cf. Walck, 2022, p.3f)
+
+$x(t) = \frac{1}{2}a_0t^2+v(0)t + x(0)$
+$t = \sqrt{\frac{2(2m)}{0.4m/s^2}}$
+"
+
+# ╔═╡ 2967d90d-edcd-48ee-bfc7-01e29617a03b
+sqrt(2 * 2 / 0.4)
+
+# ╔═╡ 7f1c3303-41b5-466a-89db-ef0a6f8f09b8
+sqrt((2.0 * 2.0) / 0.4)
+
+# ╔═╡ fa5f2e1e-d3d5-4d0d-90d9-013839289010
+2/3
+
+# ╔═╡ e2d0b978-e640-44d4-87c2-28e06c4ffa67
+2.0/3.0
+
+# ╔═╡ f8990a24-17fe-428c-b76b-151b9bb80ab5
+md"
+---
+###### 3.2 Numeric Functions
+(cf. Walck, 2022, p.5f)
+"
+
+# ╔═╡ 10fc8dce-c588-4ad1-85ac-64225078ddb2
+log(2)
+
+# ╔═╡ 69396787-321e-4ba6-9e4e-593768bf79b9
+md"
+###### Table 1-1: Some Common Numeric Functions (Walck, 2022, p.5)
+"
+
+# ╔═╡ 5af970d1-1dd9-41a6-b1ee-908adaa238e6
+const x = 0.2
+
+# ╔═╡ a84c334e-bf73-4706-a098-eb8007867442
+exp(x)
+
+# ╔═╡ 7f9ebd1d-a65b-4568-8cdc-7cd0940019b8
+sqrt(x)
+
+# ╔═╡ 23ddfb8e-074d-436a-8f22-407bfa5bc831
+abs(-x)
+
+# ╔═╡ 00d8b2d6-0d78-4eba-b6bb-0024ce95d6f9
+log(x)
+
+# ╔═╡ 43c45ac3-429f-4545-a5f5-e6b9523f1a9f
+sin(x)
+
+# ╔═╡ 6540fa17-050c-4d1a-a055-3e9539af22cf
+cos(x)
+
+# ╔═╡ 217128d3-732d-4da3-b31e-124786a1a620
+tan(x)
+
+# ╔═╡ 6f9dc720-b52f-46a1-bc55-e59714fdd6b1
+asin(x)
+
+# ╔═╡ 72d6f649-0487-4ae3-a499-88e300eaef9e
+acos(x)
+
+# ╔═╡ 5de4368e-a489-4e97-8a67-ef0c1590ffa0
+atan(x)
+
+# ╔═╡ 40d46a80-8fb1-430f-b21a-35b263f57b55
+sinh(x)
+
+# ╔═╡ 568c5ef8-e37d-401d-af2c-7d988ca26dfc
+cosh(x)
+
+# ╔═╡ ac8cd152-7a4a-4099-ab67-3d8a30d08373
+tanh(x)
+
+# ╔═╡ 315a4774-f6c0-42a2-8fe9-a8de73e5e1b1
+asinh(x)
+
+# ╔═╡ 7a84ad38-7ebf-4785-8e1d-d784e6787f7f
+acosh(1.0 + x)
+
+# ╔═╡ e4df8a8a-8401-41c7-bb98-d583bd6fdd2b
+atanh(x)
+
+# ╔═╡ 4d39a989-8eea-4cc1-9d40-66ebbb42d176
+md"
+###### Constant $\pi$
+"
+
+# ╔═╡ 8eaad170-5ded-43df-8019-358ddc9c7252
+pi
+
+# ╔═╡ 1f292bb2-18c3-4b6b-ae52-53866b0e9cda
+cos(pi)
+
+# ╔═╡ f2c2291c-54b3-46d7-bbf5-5e665da91777
+cos(pi)/2
+
+# ╔═╡ 97fbccf7-7487-4243-90c5-180fa9560fb4
+cos(pi/2)
+
+# ╔═╡ 53a15f67-96aa-4962-a315-e7980a0c3597
+md"
+---
+###### 3.3 Operators (Table 1-2)
+(Walck, 2022, p.7)
+"
+
+# ╔═╡ 681fc02d-efda-4516-b13f-9963408c07ff
+md"
+###### ∘  (= composition) operator
+"
+
+# ╔═╡ ecfda627-76c5-4811-9569-11bea6e15cc8
+∘ 
+
+# ╔═╡ ff09c210-8bad-4f86-b18b-e0fdbe11d748
+(sin ∘ cos)(1.0)
+
+# ╔═╡ 0666e145-e21b-4ad8-a471-dc59f6b2f2de
+(sin ∘ cos)(1.0) == sin(cos(1.0))
+
+# ╔═╡ b139fe9e-0107-4738-ba59-b4d0a382c99c
+md"
+###### ^ (= exponentiation) operator
+"
+
+# ╔═╡ d9dc1adf-1d7b-4ce4-a38b-9a0637d073e2
+^
+
+# ╔═╡ 63efad81-fb4f-49ba-b11e-e38e184d937c
+3^2              
+
+# ╔═╡ adacfa42-c08a-457f-8f24-a90360214538
+3^2.001
+
+# ╔═╡ 02847afa-b333-454b-bd06-3a33b4c0dc5c
+3.0^2.001
+
+# ╔═╡ 5aa85a88-5ac3-4635-a1a1-a0daefcaf136
+md"
+###### *, /  (= multiplication, division) operator
+"
+
+# ╔═╡ 8d92f534-4605-4326-a70c-a051d3dac553
+*
+
+# ╔═╡ 3047a276-15a1-4398-a069-6e22b152be51
+3 * 2
+
+# ╔═╡ 2a26c2e3-c3a5-4a3d-967c-4d16c06d381e
+3^2.001
+
+# ╔═╡ 18fbc829-bbfb-4dc1-96c7-795543a35ffa
+3.0^2.001
+
+# ╔═╡ 42dafd06-ccfe-4b0f-9947-9541b285ebba
+/
+
+# ╔═╡ 82db17c0-fc3b-40c1-935f-b0bd1fae75cb
+3 / 2
+
+# ╔═╡ 864bc891-3451-4979-ae4e-32e136cc34c6
+3 / 2.001
+
+# ╔═╡ a759e946-bdaf-4e88-8d21-978fa3fdef8a
+3.0 / 2.001
+
+# ╔═╡ 0cb41aaa-6e67-4980-bc63-950d8a3f8e9f
+md"
+###### list operators $[...],(...)$
+"
+
+# ╔═╡ 8beb145b-de7b-4944-a986-f279aa2fb5b8
+[]
+
+# ╔═╡ c93f996d-7abc-4528-bf4b-0b239e2ea254
+[3, 4, 5, :a, :b]
+
+# ╔═╡ 4bf54317-5f1c-49a6-85e1-5244c1e6b49e
+()
+
+# ╔═╡ c9a958b2-8400-453a-8e1b-3423906eb86b
+(3, 4, 5, :a, :b)
+
+# ╔═╡ 776c350b-3718-44d2-8404-ba51579fd67f
+typeof([3, 4, 5, :a, :b]) 
+
+# ╔═╡ 1bfbed53-f06d-434f-b1de-dfbd89c7b308
+typeof((3, 4, 5, :a, :b)) 
+
+# ╔═╡ 3986928e-ba25-4135-9fca-6ce1e5884c3b
+md"
+###### Equality, Inequality $==, !=$
+"
+
+# ╔═╡ a8174e50-e1d0-40e6-a0f0-70f439d367f5
+3.0 == 3.0
+
+# ╔═╡ 2bb435b9-59ed-4eca-a56d-bb3575f67b03
+3.0 != 3.01
+
+# ╔═╡ cf8bfab3-3806-4904-a7c8-9f07fed8c04d
+md"
+###### Comparison Operators $<, >, <=, >=$
+"
+
+# ╔═╡ 750664cf-5195-4e9b-ad9b-51163aadca1b
+< 
+
+# ╔═╡ d71cb6a5-181e-442a-a6b8-b832a9e91e14
+<=
+
+# ╔═╡ 2ab4090e-a6e0-4803-b449-272217392057
+> 
+
+# ╔═╡ df09109e-558e-4aac-afd8-8905c50f92e7
+>= 
+
+# ╔═╡ 0373867e-ee2f-44bf-b87c-3123273328c3
+3.01 <  3.02
+
+# ╔═╡ 773650d5-4cad-49e4-992f-c7dd42417388
+3.01 <= 3.02
+
+# ╔═╡ acd50dd8-4fb0-4ab1-957c-35489b7b91d6
+5 > 5.0
+
+# ╔═╡ 027d9604-5dd5-4ffb-96e9-2f0e9cd05488
+5 >= 5.0
+
+# ╔═╡ 9472c084-6882-4edb-a8a2-87a9e5e7768d
+md"
+###### Boolean Operators $\&\&$, $||$
+
+"
+
+# ╔═╡ 581c139b-8530-4c39-ba59-559f4250f3bb
+true && true
+
+# ╔═╡ 97bda803-ffb5-46f2-a495-c0d418cfac7b
+true && false
+
+# ╔═╡ 5c6b83f2-a125-4fe4-9d7d-4ec6856a4969
+false && false
+
+# ╔═╡ 36dbb457-dfda-4ff0-a0dc-2469a99a3544
+true || false
+
+# ╔═╡ 721f3cdf-eab8-4472-a779-e6519362f8b6
+false || false
+
+# ╔═╡ aa32db1f-ddbf-4e03-9594-402107b7761e
+md"
+---
+###### Precedence and Associativity
+(Walck, 2022, p.7f)
+"
+
+# ╔═╡ 794c04db-fd19-4d9d-b7f8-82d422bcffef
+1 + 2 * 3
+
+# ╔═╡ ab9ef635-b29e-4ec1-b37f-7dde80858694
+8 / 7 / 4 ^ 2 ^ 3 > sin(pi) / 4
+
+# ╔═╡ 8e556fa6-dec9-4248-bd5d-faac57bf7e89
+8 / 7 / 4 ^ (2 ^ 3) > sin(pi) / 4
+
+# ╔═╡ bbe9a089-af34-42bb-8c72-1209f7234086
+8 / 7 / (4 ^ (2 ^ 3)) > sin(pi) / 4
+
+# ╔═╡ 05733f2c-76f8-4136-b7a4-7367b8486880
+(8 / 7) / (4 ^ (2 ^ 3)) > (sin(pi) / 4)
+
+# ╔═╡ 4c013a2c-da7f-4b62-bd2b-92a9b54a97f6
+((8 / 7) / (4 ^ (2 ^ 3))) > (sin(pi) / 4)
+
+# ╔═╡ 40ab9c59-257e-4068-b69b-38f91bda2668
+md"
+---
+###### 3.4 Functions with Two Arguments (Table 1-3)
+(Walck, 2022, p9f)
+"
+
+# ╔═╡ b1205653-b8a5-40f2-8cd6-2d1ae5884fa2
+log(10, 100)
+
+# ╔═╡ 24286887-1372-408f-ae5f-5180311d5639
+atan(1, 0)
+
+# ╔═╡ 4c6e44be-e832-4ad4-a166-258b96d9d896
+pi/2
+
+# ╔═╡ 5149e010-5838-4b4c-9288-eb6136999212
+atan(1, 0) == pi/2
+
+# ╔═╡ 5dcf114d-4fb2-49ac-a8c8-f400a4f6a2db
+md"
+----
+###### 3.5 Numbers in Julia
+(Walck, 2022, p.10f)
+"
+
+# ╔═╡ b2f6352c-38e4-4bbd-b19b-f13fd6354084
+md"
+###### Negative Numbers in Julia
+"
+
+# ╔═╡ 9aa8c208-5eff-4f95-98bd-af2769d551d0
+5 * -1
+
+# ╔═╡ 3cac531a-5b36-4f70-85e6-2678d82b2610
+5 * (-1)
+
+# ╔═╡ a957f127-5243-4a65-8689-f2fc5adacce2
+md"
+###### Decimal Numbers in Haskell
+"
+
+# ╔═╡ 997bcd40-f2a5-4885-9f88-8c76ac6036f4
+0.1 == .1
+
+# ╔═╡ c7e851f5-59d1-4057-bc70-fed4d50798bd
+5.0 == 5. == 5
+
+# ╔═╡ 70747289-7276-4796-bb31-d98d4ebe6f77
+md"
+###### Exponential Notation
+"
+
+# ╔═╡ 76a02838-74b3-4f43-8a30-af25a16a6ecf
+3.00e8 == 3.00E8 == 3E8 == 300000000
+
+# ╔═╡ 59dc33ef-55aa-4061-b5e7-3c52cdcb2b3c
+6.63E-34
+
+# ╔═╡ b9ca9ba3-1b44-4ce4-96ee-1b4041323d97
+8^8
+
+# ╔═╡ 35037883-024e-46db-995d-fca560ca34d6
+8^8 == 1.6777216E7
+
+# ╔═╡ 32f7f1b3-d942-401b-a3a3-356cbb64e69d
+8^-8
+
+# ╔═╡ 6cf85b8f-5510-41a1-9629-5db46d8969a4
+8^-8 == 8^(-8) == 5.960464477539063e-8
+
+# ╔═╡ 3d83543b-81ab-4c39-ae56-88cf8ac1f676
+md"
+---
+###### 3.6 Approximate Calculation and IEEE-754-Binary Storage Representation
+(Walck, 2022, p.11f)
+"
+
+# ╔═╡ a3ee4c3b-5965-4779-9aab-a43ab3a07e2d
+sqrt(5) == 2.23606797749979
+
+# ╔═╡ cba3c130-9bf4-45a2-8172-93af3a590294
+sqrt(5)^2
+
+# ╔═╡ c43739aa-f085-4b76-b18d-ea908b54c638
+sqrt(5)^2 == 5
+
+# ╔═╡ e77c3743-0e0e-4ce3-96df-603eeb3d56f8
+sqrt(5)^2 ≈ 5
+
+# ╔═╡ c302c847-e22d-4871-9b7d-73806a4fa9df
+bitstring(1/2)
+
+# ╔═╡ 59e251af-bb78-4ac7-af7c-7492b19e5cb2
+bitstring(1/3)
+
+# ╔═╡ 344f8a38-531e-4ae6-81ca-26607d1a0633
+bitstring(1/4)
+
+# ╔═╡ 02163dde-241f-486e-a160-380318f3e918
+bitstring(1/5)
+
+# ╔═╡ 2c4d97cf-687e-4d0e-ad00-5a33e47c46ca
+md"
+---
+##### 4. Summary
+"
+
+# ╔═╡ bd777d1a-77e9-4a0a-83dd-a2548329ea48
+md"
+---
+##### 5. References
+
+- **Walck, Sc. N.**; *Learn Physics with Functional Programming*, San Francisco: No Starch Press, 2022, ISBN 978-1-7185-0166-9
+"
+
+# ╔═╡ 4474727d-02b5-4286-887e-647c3ed516ef
+md"
+====================================================================================
+
+This is a **draft** under the Attribution-NonCommercial-ShareAlike 4.0 International **(CC BY-NC-SA 4.0)** license. Comments, suggestions for improvement and bug reports are welcome: **claus.moebus(@)uol.de**
+
+==================================================================================
+"
+
+# ╔═╡ 00000000-0000-0000-0000-000000000001
+PLUTO_PROJECT_TOML_CONTENTS = """
+[deps]
+"""
+
+# ╔═╡ 00000000-0000-0000-0000-000000000002
+PLUTO_MANIFEST_TOML_CONTENTS = """
+# This file is machine-generated - editing it directly is not advised
+
+julia_version = "1.12.0"
+manifest_format = "2.0"
+project_hash = "71853c6197a6a7f222db0f1978c7cb232b87c5ee"
+
+[deps]
+"""
+
+# ╔═╡ Cell order:
+# ╟─6b6c9a10-a77f-11f0-9cad-e9a4917d2318
+# ╟─f5d920e9-b21e-43ab-8bd1-ac7b2761925d
+# ╟─525c6db7-aab9-4bc9-9886-40cd70977ccc
+# ╟─af999307-29be-4e9b-975a-fdb93a567428
+# ╟─8314ba7c-a987-4b17-a2e1-1ecd63cb1219
+# ╟─61cde2b7-216d-4d9e-be29-8e0060dbc5fa
+# ╠═2967d90d-edcd-48ee-bfc7-01e29617a03b
+# ╠═7f1c3303-41b5-466a-89db-ef0a6f8f09b8
+# ╠═fa5f2e1e-d3d5-4d0d-90d9-013839289010
+# ╠═e2d0b978-e640-44d4-87c2-28e06c4ffa67
+# ╟─f8990a24-17fe-428c-b76b-151b9bb80ab5
+# ╠═10fc8dce-c588-4ad1-85ac-64225078ddb2
+# ╟─69396787-321e-4ba6-9e4e-593768bf79b9
+# ╠═5af970d1-1dd9-41a6-b1ee-908adaa238e6
+# ╠═a84c334e-bf73-4706-a098-eb8007867442
+# ╠═7f9ebd1d-a65b-4568-8cdc-7cd0940019b8
+# ╠═23ddfb8e-074d-436a-8f22-407bfa5bc831
+# ╠═00d8b2d6-0d78-4eba-b6bb-0024ce95d6f9
+# ╠═43c45ac3-429f-4545-a5f5-e6b9523f1a9f
+# ╠═6540fa17-050c-4d1a-a055-3e9539af22cf
+# ╠═217128d3-732d-4da3-b31e-124786a1a620
+# ╠═6f9dc720-b52f-46a1-bc55-e59714fdd6b1
+# ╠═72d6f649-0487-4ae3-a499-88e300eaef9e
+# ╠═5de4368e-a489-4e97-8a67-ef0c1590ffa0
+# ╠═40d46a80-8fb1-430f-b21a-35b263f57b55
+# ╠═568c5ef8-e37d-401d-af2c-7d988ca26dfc
+# ╠═ac8cd152-7a4a-4099-ab67-3d8a30d08373
+# ╠═315a4774-f6c0-42a2-8fe9-a8de73e5e1b1
+# ╠═7a84ad38-7ebf-4785-8e1d-d784e6787f7f
+# ╠═e4df8a8a-8401-41c7-bb98-d583bd6fdd2b
+# ╟─4d39a989-8eea-4cc1-9d40-66ebbb42d176
+# ╠═8eaad170-5ded-43df-8019-358ddc9c7252
+# ╠═1f292bb2-18c3-4b6b-ae52-53866b0e9cda
+# ╠═f2c2291c-54b3-46d7-bbf5-5e665da91777
+# ╠═97fbccf7-7487-4243-90c5-180fa9560fb4
+# ╟─53a15f67-96aa-4962-a315-e7980a0c3597
+# ╟─681fc02d-efda-4516-b13f-9963408c07ff
+# ╠═ecfda627-76c5-4811-9569-11bea6e15cc8
+# ╠═ff09c210-8bad-4f86-b18b-e0fdbe11d748
+# ╠═0666e145-e21b-4ad8-a471-dc59f6b2f2de
+# ╟─b139fe9e-0107-4738-ba59-b4d0a382c99c
+# ╠═d9dc1adf-1d7b-4ce4-a38b-9a0637d073e2
+# ╠═63efad81-fb4f-49ba-b11e-e38e184d937c
+# ╠═adacfa42-c08a-457f-8f24-a90360214538
+# ╠═02847afa-b333-454b-bd06-3a33b4c0dc5c
+# ╟─5aa85a88-5ac3-4635-a1a1-a0daefcaf136
+# ╠═8d92f534-4605-4326-a70c-a051d3dac553
+# ╠═3047a276-15a1-4398-a069-6e22b152be51
+# ╠═2a26c2e3-c3a5-4a3d-967c-4d16c06d381e
+# ╠═18fbc829-bbfb-4dc1-96c7-795543a35ffa
+# ╠═42dafd06-ccfe-4b0f-9947-9541b285ebba
+# ╠═82db17c0-fc3b-40c1-935f-b0bd1fae75cb
+# ╠═864bc891-3451-4979-ae4e-32e136cc34c6
+# ╠═a759e946-bdaf-4e88-8d21-978fa3fdef8a
+# ╟─0cb41aaa-6e67-4980-bc63-950d8a3f8e9f
+# ╠═8beb145b-de7b-4944-a986-f279aa2fb5b8
+# ╠═c93f996d-7abc-4528-bf4b-0b239e2ea254
+# ╠═4bf54317-5f1c-49a6-85e1-5244c1e6b49e
+# ╠═c9a958b2-8400-453a-8e1b-3423906eb86b
+# ╠═776c350b-3718-44d2-8404-ba51579fd67f
+# ╠═1bfbed53-f06d-434f-b1de-dfbd89c7b308
+# ╟─3986928e-ba25-4135-9fca-6ce1e5884c3b
+# ╠═a8174e50-e1d0-40e6-a0f0-70f439d367f5
+# ╠═2bb435b9-59ed-4eca-a56d-bb3575f67b03
+# ╟─cf8bfab3-3806-4904-a7c8-9f07fed8c04d
+# ╠═750664cf-5195-4e9b-ad9b-51163aadca1b
+# ╠═d71cb6a5-181e-442a-a6b8-b832a9e91e14
+# ╠═2ab4090e-a6e0-4803-b449-272217392057
+# ╠═df09109e-558e-4aac-afd8-8905c50f92e7
+# ╠═0373867e-ee2f-44bf-b87c-3123273328c3
+# ╠═773650d5-4cad-49e4-992f-c7dd42417388
+# ╠═acd50dd8-4fb0-4ab1-957c-35489b7b91d6
+# ╠═027d9604-5dd5-4ffb-96e9-2f0e9cd05488
+# ╟─9472c084-6882-4edb-a8a2-87a9e5e7768d
+# ╠═581c139b-8530-4c39-ba59-559f4250f3bb
+# ╠═97bda803-ffb5-46f2-a495-c0d418cfac7b
+# ╠═5c6b83f2-a125-4fe4-9d7d-4ec6856a4969
+# ╠═36dbb457-dfda-4ff0-a0dc-2469a99a3544
+# ╠═721f3cdf-eab8-4472-a779-e6519362f8b6
+# ╟─aa32db1f-ddbf-4e03-9594-402107b7761e
+# ╠═794c04db-fd19-4d9d-b7f8-82d422bcffef
+# ╠═ab9ef635-b29e-4ec1-b37f-7dde80858694
+# ╠═8e556fa6-dec9-4248-bd5d-faac57bf7e89
+# ╠═bbe9a089-af34-42bb-8c72-1209f7234086
+# ╠═05733f2c-76f8-4136-b7a4-7367b8486880
+# ╠═4c013a2c-da7f-4b62-bd2b-92a9b54a97f6
+# ╟─40ab9c59-257e-4068-b69b-38f91bda2668
+# ╠═b1205653-b8a5-40f2-8cd6-2d1ae5884fa2
+# ╠═24286887-1372-408f-ae5f-5180311d5639
+# ╠═4c6e44be-e832-4ad4-a166-258b96d9d896
+# ╠═5149e010-5838-4b4c-9288-eb6136999212
+# ╟─5dcf114d-4fb2-49ac-a8c8-f400a4f6a2db
+# ╟─b2f6352c-38e4-4bbd-b19b-f13fd6354084
+# ╠═9aa8c208-5eff-4f95-98bd-af2769d551d0
+# ╠═3cac531a-5b36-4f70-85e6-2678d82b2610
+# ╟─a957f127-5243-4a65-8689-f2fc5adacce2
+# ╠═997bcd40-f2a5-4885-9f88-8c76ac6036f4
+# ╠═c7e851f5-59d1-4057-bc70-fed4d50798bd
+# ╟─70747289-7276-4796-bb31-d98d4ebe6f77
+# ╠═76a02838-74b3-4f43-8a30-af25a16a6ecf
+# ╠═59dc33ef-55aa-4061-b5e7-3c52cdcb2b3c
+# ╠═b9ca9ba3-1b44-4ce4-96ee-1b4041323d97
+# ╠═35037883-024e-46db-995d-fca560ca34d6
+# ╠═32f7f1b3-d942-401b-a3a3-356cbb64e69d
+# ╠═6cf85b8f-5510-41a1-9629-5db46d8969a4
+# ╟─3d83543b-81ab-4c39-ae56-88cf8ac1f676
+# ╠═a3ee4c3b-5965-4779-9aab-a43ab3a07e2d
+# ╠═cba3c130-9bf4-45a2-8172-93af3a590294
+# ╠═c43739aa-f085-4b76-b18d-ea908b54c638
+# ╠═e77c3743-0e0e-4ce3-96df-603eeb3d56f8
+# ╠═c302c847-e22d-4871-9b7d-73806a4fa9df
+# ╠═59e251af-bb78-4ac7-af7c-7492b19e5cb2
+# ╠═344f8a38-531e-4ae6-81ca-26607d1a0633
+# ╠═02163dde-241f-486e-a160-380318f3e918
+# ╟─2c4d97cf-687e-4d0e-ad00-5a33e47c46ca
+# ╟─bd777d1a-77e9-4a0a-83dd-a2548329ea48
+# ╟─4474727d-02b5-4286-887e-647c3ed516ef
+# ╟─00000000-0000-0000-0000-000000000001
+# ╟─00000000-0000-0000-0000-000000000002
