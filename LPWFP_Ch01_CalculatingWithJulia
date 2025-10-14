@@ -9,7 +9,7 @@ md"
 ====================================================================================
 #### LPWFP\_Ch01\_Calculating With Julia
 ##### file: LPWFP\_Ch01\_CalculatingWithJulia
-##### code: Julia/Pluto (1.12.0/0.20.18) by PCM *** 2025/10/13 ***
+##### code: Julia/Pluto (1.12.0/0.20.18) by PCM *** 2025/10/14 ***
 
 ==================================================================================
 "
@@ -146,12 +146,79 @@ cos(pi/2)
 # ╔═╡ 53a15f67-96aa-4962-a315-e7980a0c3597
 md"
 ---
-###### 3.3 Operators (Table 1-2)
-(Walck, 2022, p.7)
+###### 3.3 Operators
+(Walck, 2022, p.6f)
+"
+
+# ╔═╡ d3b42c20-ad78-49ab-b0ed-4628ee159dc4
+md"""
+###### Julia Operator Precedence (from highest to lowest): Table 1-2
+Walck's table 1-2 related to Haskell operators (2022, p.7) is replaced here by a Julian operator table.
+
+| **Precedence (high → low)** | **Operator(s)** | **Associativity** | **Example / Notes** |
+|:--:|:--|:--|:--|
+| **1** | `.` (broadcasting) | left | `a .+ b .* c` → `a .+ (b .* c)` |
+| **2** | `::` | right | `x::Int8::Any` → `x::(Int8::Any)` |
+| **3** | `^` | right | `2^3^2` → `2^(3^2)` = `512` |
+| **4** | unary `+`, `-`, `!`, `~` | right (prefix) | `-2^2` → `-(2^2)` |
+| **5** | `*`, `/`, `÷`, `%`, `&`, `⋅`, `×`, … | left | `a * b / c` → `(a * b) / c` |
+| **6** | `+`, `-`, `|`, `⊕`, `∨`, `⊻` | left | `a - b + c` → `(a - b) + c` |
+| **7** | `\` | left | `(A \ B) \ C` |
+| **8** | `>>>`, `>>`, `<<` | left | `x >> 2 << 1` → `(x >> 2) << 1` |
+| **9** | `∘` (function composition) | right | `f ∘ g ∘ h` → `f ∘ (g ∘ h)` |
+| **10** | `\|>`, `<\|` (pipeline) | left | `x \|> f \|> g` → `(x \|> f) \|> g` |
+| **11** | comparison ops (`<`, `>`, `==`, `∈`, …) | non-associative (chainable) | `1 < x < 5` expands to `(1 < x) && (x < 5)` |
+| **12** | `&&` | left | `(a && b) && c` |
+| **13** | `\|\|` | left | `(a \|\| b) \|\| c` |
+| **14** | `? :` | right | `a ? b : c ? d : e` → `a ? b : (c ? d : e)` |
+| **15** | assignment (`=`, `+=`, `-=`, …) | right | `a = b = c` → `a = (b = c)` |
+| **16** | `,` | left | `(a, b, c)` |
+| **17** | `;` | left | `x = 1; y = 2; z = 3` |
+| **18** | `=>` | right | `"a" => "b" => "c"` → `"a" => ("b" => "c")` |
+| **19** | control structures (`if`, `for`, `while`, etc.) | — | Statements, not operators |
+"""
+
+# ╔═╡ 7c6aa647-c001-4cc3-9a29-9dea07daa620
+md"
+###### Examples
+
+| **Expression** | **Evaluation** |
+|----------------|----------------|
+| `-2^2` | `-(2^2)` → `-4` |
+| `2 + 3 * 4` | `2 + (3 * 4)` → `14` |
+| `1 < x < 5` | `(1 < x) && (x < 5)` |
+| `a && b || c` | `(a && b) || c` |
+| `a .+ b .* c` | `a .+ (b .* c)` |
+| `f ∘ g ∘ h` | Equivalent to `x -> f(g(h(x)))` |
+| `x \|> f \|> g` | Equivalent to `g(f(x))` |
+"
+
+# ╔═╡ cce18c0c-d97a-429e-a692-2c6f3fa035e5
+md"
+###### Quick Summary
+
+| **Associativity Type** | **Operators** | **Typical Use** |
+|------------------------|---------------|----------------|
+| **Right-associative** | `^`, `::`, `∘`, `? :`, `=`, `=>` | Chains that “nest” rightwards |
+| **Left-associative** | `+`, `-`, `*`, `/`, `\`, `>>`, `<<`, `&&`, `\|\|`, pipelines | Standard arithmetic & logic |
+| **Non-associative (chainable)** | `<`, `>`, `==`, `∈`, etc. | Comparisons like `1 < x < 5` |
+| **Unary (prefix)** | `+`, `-`, `!`, `~` | Sign or logical/bitwise NOT |
+"
+
+# ╔═╡ d9ba9966-12d2-4f35-948f-9f5cf82cd52e
+md"
+###### Key Takeaways
+
+- **Exponentiation (`^`)** and **composition (`∘`)** are **right-associative** → important for nested expressions.  
+- **Pipelines (`|>`, `<|`)** are **left-associative**, following natural data flow.  
+- **Comparisons** are **chainable**, not associative in the usual sense.  
+- **Assignments** are **right-associative**, allowing chaining like `a = b = c`.  
+- **Broadcasting** (`.`) always applies first and elementwise.
 "
 
 # ╔═╡ 681fc02d-efda-4516-b13f-9963408c07ff
 md"
+---
 ###### ∘  (= composition) operator
 "
 
@@ -298,7 +365,7 @@ false || false
 md"
 ---
 ###### Precedence and Associativity
-(Walck, 2022, p.7f)
+(cf. Walck, 2022, p.7f)
 "
 
 # ╔═╡ 794c04db-fd19-4d9d-b7f8-82d422bcffef
@@ -393,7 +460,7 @@ md"
 # ╔═╡ 3d83543b-81ab-4c39-ae56-88cf8ac1f676
 md"
 ---
-###### 3.6 Approximate Calculation and IEEE-754-Binary Storage Representation
+###### 3.6 Approximate Calculation and [*IEEE Standard for Floating-Point Arithmetic*](https://en.wikipedia.org/wiki/IEEE_754)
 (Walck, 2022, p.11f)
 "
 
@@ -408,6 +475,21 @@ sqrt(5)^2 == 5
 
 # ╔═╡ e77c3743-0e0e-4ce3-96df-603eeb3d56f8
 sqrt(5)^2 ≈ 5
+
+# ╔═╡ 98e51237-aa6b-41ca-aa6b-c947542ef39b
+md"
+###### Table 1-4: Representations of Rationals in Base 10 and Base 2
+(cf. Walck, 2022, p.12)
+
+| **Rational** | **Base 10** |   **Base 2**  |
+|--------------|-------------|---------------|
+|      1/2     |   0.5       | 0.1           |
+|      1/3     |   0.333333  | 0.101010101...|
+|      1/4     |   0.25      | 0.01          |
+|      1/5     |   0.2       | 0.00110011oo..|
+|                                            |
+
+"
 
 # ╔═╡ c302c847-e22d-4871-9b7d-73806a4fa9df
 bitstring(1/2)
@@ -433,6 +515,8 @@ md"
 ##### 5. References
 
 - **Walck, Sc. N.**; *Learn Physics with Functional Programming*, San Francisco: No Starch Press, 2022, ISBN 978-1-7185-0166-9
+
+- **Wikipedia**; [*IEEE Standard for Floating-Point Arithmetic (IEEE 754)*](https://en.wikipedia.org/wiki/IEEE_754); last visit 2025/10/14
 "
 
 # ╔═╡ 4474727d-02b5-4286-887e-647c3ed516ef
@@ -497,6 +581,10 @@ project_hash = "71853c6197a6a7f222db0f1978c7cb232b87c5ee"
 # ╠═f2c2291c-54b3-46d7-bbf5-5e665da91777
 # ╠═97fbccf7-7487-4243-90c5-180fa9560fb4
 # ╟─53a15f67-96aa-4962-a315-e7980a0c3597
+# ╟─d3b42c20-ad78-49ab-b0ed-4628ee159dc4
+# ╟─7c6aa647-c001-4cc3-9a29-9dea07daa620
+# ╟─cce18c0c-d97a-429e-a692-2c6f3fa035e5
+# ╟─d9ba9966-12d2-4f35-948f-9f5cf82cd52e
 # ╟─681fc02d-efda-4516-b13f-9963408c07ff
 # ╠═ecfda627-76c5-4811-9569-11bea6e15cc8
 # ╠═ff09c210-8bad-4f86-b18b-e0fdbe11d748
@@ -571,6 +659,7 @@ project_hash = "71853c6197a6a7f222db0f1978c7cb232b87c5ee"
 # ╠═cba3c130-9bf4-45a2-8172-93af3a590294
 # ╠═c43739aa-f085-4b76-b18d-ea908b54c638
 # ╠═e77c3743-0e0e-4ce3-96df-603eeb3d56f8
+# ╟─98e51237-aa6b-41ca-aa6b-c947542ef39b
 # ╠═c302c847-e22d-4871-9b7d-73806a4fa9df
 # ╠═59e251af-bb78-4ac7-af7c-7492b19e5cb2
 # ╠═344f8a38-531e-4ae6-81ca-26607d1a0633
