@@ -9,7 +9,7 @@ md"
 ====================================================================================
 #### LPWFP\_Ch01\_Calculating With Julia
 ##### file: LPWFP\_Ch01\_CalculatingWithJulia
-##### code: Julia/Pluto (1.12.0/0.20.18) by PCM *** 2025/10/14 ***
+##### code: Julia/Pluto (1.12.0/0.20.18) by PCM *** 2025/10/15 ***
 
 ==================================================================================
 "
@@ -507,6 +507,8 @@ bitstring(1/5)
 md"
 ---
 ##### 4. Summary
+
+By comparing the original Haskell code with our Julia code, we evaluate their similarity to mathematical expressions. When we focus on precedence and associativity, we find that Julia is better suited to representing mathematical expressions.
 "
 
 # ╔═╡ bd777d1a-77e9-4a0a-83dd-a2548329ea48
