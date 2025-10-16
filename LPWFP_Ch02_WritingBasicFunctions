@@ -1,0 +1,339 @@
+### A Pluto.jl notebook ###
+# v0.20.19
+
+using Markdown
+using InteractiveUtils
+
+# ╔═╡ aa4bd5f0-a9ca-11f0-ad5f-8f0011c61bc5
+md"
+====================================================================================
+#### LPWFP\_Ch02\_Writing Basic Functions
+##### file: LPWFP\_Ch02\_WritingBasicFunctions
+##### code: Julia/Pluto (1.12.0/0.20.18) by PCM *** 2025/10/16 ***
+
+==================================================================================
+"
+
+# ╔═╡ 6a96df08-e6f6-4f41-b6d0-2a8579cb7264
+md"
+---
+##### 0. Introduction
+"
+
+# ╔═╡ c7812455-18aa-499f-bbe8-d221733407dc
+md"
+---
+##### 1. Topics
+"
+
+# ╔═╡ b0f3bc13-68bd-4808-8d14-49e87a06d548
+md"
+---
+##### 2. Libraries
+"
+
+# ╔═╡ de64af9f-4515-4353-b1fd-00a2c3019f37
+md"
+---
+##### 3. Code
+###### 3. 1 Mathematical Notation and Julia Functions
+"
+
+# ╔═╡ 0d5de066-540c-45c7-b44f-3058430d028d
+sqrt
+
+# ╔═╡ 1af8d592-9b4c-4fb5-8a22-c876127e2013
+typeof(sqrt)
+
+# ╔═╡ 77c7308c-2a83-44d3-9be3-cc8cae86f750
+md"
+---
+###### Table 2-1 Comparison of Function Definitions (Trad. Math. vs. Julia Notation)
+(cf. Walck, 2022, p.18)
+"
+
+# ╔═╡ 379ef92c-45b6-4a82-a5d5-2dfcc0807aaf
+const x = t = 0.2
+
+# ╔═╡ f6745c3d-76ac-4eb7-ae70-922c75a70fc3
+md"
+$f_1(x) = x^3$
+"
+
+# ╔═╡ 3aa51025-959e-4a24-8a7d-5845f34f165d
+begin 
+	f1(x) = x^3
+	f1(x)
+end
+
+# ╔═╡ d8fe50aa-9c54-497b-af5d-688baa41eca2
+md"
+$f_2(x) = 3x^2 - 4x + 5$
+"
+
+# ╔═╡ 933e359c-661c-4251-9a4c-bb932e2abd90
+begin
+	f2(x) = 3x^2-4x+5
+	f2(x)
+end
+
+# ╔═╡ e57e8d98-e42f-4f1e-8607-dc7a3e832861
+md"
+$g(x) = cos 2x$
+"
+
+# ╔═╡ 1ed7cebb-aa75-4066-8a26-719c4a474a05
+begin
+	g(x)  = cos(2x)
+	g(x)
+end
+
+# ╔═╡ 34486f19-e897-4f37-9419-7b89d1a95415
+md"
+$v(t) = 10t + 20$
+"
+
+# ╔═╡ 98f79700-3734-4477-9164-0b2cdd302fd5
+begin
+	v(t)  = 10t + 20
+	v(t)
+end
+
+# ╔═╡ 5408893c-421b-46be-9a94-b60cf9bb7039
+md"
+$h(x) = e^{-x}$
+"
+
+# ╔═╡ 54ea13aa-0e85-444b-ac36-bbe353df63fe
+begin 
+	h(x)  = exp(-x)
+	h(x)
+end
+
+# ╔═╡ 68f1e3ef-08e4-45da-9e1c-7186cf6a5a93
+md"
+---
+###### 3.2 Anonymous Functions
+"
+
+# ╔═╡ f60985b1-7ded-44b2-bb73-096965dadc17
+md"
+---
+###### Table 2-2 Comparison of Function Definitions (Trad. Math. vs. Julian Lambda Notation)
+(cf. Walck, 2022, p.20)
+"
+
+# ╔═╡ edc429f8-a168-4231-8bbd-670cef350e3b
+md"
+$f_1(x) = x^3$
+"
+
+# ╔═╡ 37768031-500e-4e26-8e00-ec00c6658e5c
+begin 
+	f12 = (x) -> x^3
+	f12(x)
+end
+
+# ╔═╡ f7784ac2-7a23-45f8-99e0-9bfd123aee06
+md"
+$f_2(x) = 3x^2 - 4x + 5$
+"
+
+# ╔═╡ 34f03f2a-15ee-4d4a-92ff-4debb1c746cf
+begin
+	f22 = (x) -> 3x^2-4x+5
+	f22(x)
+end
+
+# ╔═╡ f38d2fa2-46c6-4f4a-a499-8e748f98b1df
+md"
+$g(x) = cos 2x$
+"
+
+# ╔═╡ fd81d372-5590-47ff-af51-e15ec9de1825
+begin
+	g2 = (x) -> cos(2x)
+	g(x)
+end
+
+# ╔═╡ df3e8e83-e632-416d-9b74-2e93f3729a7b
+md"
+$v(t) = 10t + 20$
+"
+
+# ╔═╡ e726a4ea-a4ba-42c1-93e5-ea9ce7efd361
+begin
+	v2 = (t) -> 10t + 20
+	v2(t)
+end
+
+# ╔═╡ 53c48e9d-ee19-4922-bd79-6f51dde3d95f
+md"
+$h(x) = e^{-x}$
+"
+
+# ╔═╡ ebf25e62-fe52-41aa-af0f-46bc420b8a82
+begin 
+	h2 = (x) -> exp(-x)
+	h2(x)
+end
+
+# ╔═╡ caea4658-d26c-465b-b6c6-e8529851c7ff
+md"
+---
+###### Table 2-3: Examples of Applying Anonymous Functions to an Argument
+(cf. Walck, 2022, p.21)
+"
+
+# ╔═╡ 69f3f082-6e0a-4a46-91a6-0684aca1a598
+(x -> x^2)(3)
+
+# ╔═╡ 01f2b364-e005-4f62-bc6a-b2bd8671a991
+(y -> y^2)(3)
+
+# ╔═╡ 6e187f4b-e1c6-4641-ab17-d6473b1a0198
+(x -> x^3)(3)
+
+# ╔═╡ c7a15cf1-5dce-466a-a39b-11f3fec6438f
+(x -> 3x^2 - 4x +5)(3)
+
+# ╔═╡ 8ad9a64c-4d66-4bcf-8c14-3132e4e8b7d3
+(x -> cos(2x))(pi)
+
+# ╔═╡ 43dd0592-b199-4ab8-99e5-05a1a71c7f0c
+(t -> 10t + 20)(3)
+
+# ╔═╡ c734fb9a-ce2b-416b-b96b-b909846f80c3
+(x -> exp(-x))(log(2))
+
+# ╔═╡ 40e53b4b-5bae-4424-8060-2b3ea6cb47a7
+md"
+---
+###### 3.3 Composing Functions and Pipelining 
+(cf. Walck, 2020, p21f)
+
+$(g \circ f)(x) = g(f(x))$
+$x \; \text{|>} \; f \; \text{|>} \; g = g(f(x))$
+"
+
+# ╔═╡ 1e0547bc-dbe8-41b9-82e4-4d2eefc88ded
+begin 
+	square(x) = x * x
+	cosSq1(x) = square(cos(x))
+	cosSq1(x::Float64)::Float64 = square(cos(x))
+end
+
+# ╔═╡ 90d52650-876e-43f7-bebd-d43aefc5fcb1
+cosSq1(x)
+
+# ╔═╡ 85e852d9-7d63-4aa7-b7f0-0b6dd18670b1
+begin 
+	cosSq2(x) = (square ∘ cos)(x)
+	cosSq2(x::Float64)::Float64 = (square ∘ cos)(x)
+end
+
+# ╔═╡ 59367034-5c6c-4bd5-8120-f25f2da4ca8c
+cosSq2(x)
+
+# ╔═╡ b07cb189-b124-45d8-b8d6-50e5363d5c13
+begin 
+	cosSq3(x) =  x |> cos |> square
+	cosSq3(x::Float64)::Float64 = x |> cos |> square
+end
+
+# ╔═╡ bc27a13b-8f30-467f-8882-dd1e7ec849b3
+cosSq3(x)
+
+# ╔═╡ fb831594-67fe-45f9-a826-d455706a1dbd
+md"
+---
+##### 4. Summary
+We see that we can rather easily replace Haskell by Julia. Furthermore we can replace function *composition* by the more intuitive *pipeline* operator $\text{|>}$.
+"
+
+# ╔═╡ 70d6a4e3-da64-4d11-a9d0-f59bd158555d
+md"
+---
+##### 5. References
+
+- **Walck, Sc. N.**; *Learn Physics with Functional Programming*, San Francisco: No Starch Press, 2022, ISBN 978-1-7185-0166-9
+
+"
+
+# ╔═╡ 49f233e0-f333-4faf-943f-184708efa290
+md"
+====================================================================================
+
+This is a **draft** under the Attribution-NonCommercial-ShareAlike 4.0 International **(CC BY-NC-SA 4.0)** license. Comments, suggestions for improvement and bug reports are welcome: **claus.moebus(@)uol.de**
+
+==================================================================================
+"
+
+# ╔═╡ 00000000-0000-0000-0000-000000000001
+PLUTO_PROJECT_TOML_CONTENTS = """
+[deps]
+"""
+
+# ╔═╡ 00000000-0000-0000-0000-000000000002
+PLUTO_MANIFEST_TOML_CONTENTS = """
+# This file is machine-generated - editing it directly is not advised
+
+julia_version = "1.12.0"
+manifest_format = "2.0"
+project_hash = "71853c6197a6a7f222db0f1978c7cb232b87c5ee"
+
+[deps]
+"""
+
+# ╔═╡ Cell order:
+# ╟─aa4bd5f0-a9ca-11f0-ad5f-8f0011c61bc5
+# ╟─6a96df08-e6f6-4f41-b6d0-2a8579cb7264
+# ╟─c7812455-18aa-499f-bbe8-d221733407dc
+# ╟─b0f3bc13-68bd-4808-8d14-49e87a06d548
+# ╟─de64af9f-4515-4353-b1fd-00a2c3019f37
+# ╠═0d5de066-540c-45c7-b44f-3058430d028d
+# ╠═1af8d592-9b4c-4fb5-8a22-c876127e2013
+# ╟─77c7308c-2a83-44d3-9be3-cc8cae86f750
+# ╠═379ef92c-45b6-4a82-a5d5-2dfcc0807aaf
+# ╟─f6745c3d-76ac-4eb7-ae70-922c75a70fc3
+# ╠═3aa51025-959e-4a24-8a7d-5845f34f165d
+# ╟─d8fe50aa-9c54-497b-af5d-688baa41eca2
+# ╠═933e359c-661c-4251-9a4c-bb932e2abd90
+# ╟─e57e8d98-e42f-4f1e-8607-dc7a3e832861
+# ╠═1ed7cebb-aa75-4066-8a26-719c4a474a05
+# ╟─34486f19-e897-4f37-9419-7b89d1a95415
+# ╠═98f79700-3734-4477-9164-0b2cdd302fd5
+# ╟─5408893c-421b-46be-9a94-b60cf9bb7039
+# ╠═54ea13aa-0e85-444b-ac36-bbe353df63fe
+# ╟─68f1e3ef-08e4-45da-9e1c-7186cf6a5a93
+# ╟─f60985b1-7ded-44b2-bb73-096965dadc17
+# ╟─edc429f8-a168-4231-8bbd-670cef350e3b
+# ╠═37768031-500e-4e26-8e00-ec00c6658e5c
+# ╟─f7784ac2-7a23-45f8-99e0-9bfd123aee06
+# ╠═34f03f2a-15ee-4d4a-92ff-4debb1c746cf
+# ╟─f38d2fa2-46c6-4f4a-a499-8e748f98b1df
+# ╠═fd81d372-5590-47ff-af51-e15ec9de1825
+# ╟─df3e8e83-e632-416d-9b74-2e93f3729a7b
+# ╠═e726a4ea-a4ba-42c1-93e5-ea9ce7efd361
+# ╟─53c48e9d-ee19-4922-bd79-6f51dde3d95f
+# ╠═ebf25e62-fe52-41aa-af0f-46bc420b8a82
+# ╟─caea4658-d26c-465b-b6c6-e8529851c7ff
+# ╠═69f3f082-6e0a-4a46-91a6-0684aca1a598
+# ╠═01f2b364-e005-4f62-bc6a-b2bd8671a991
+# ╠═6e187f4b-e1c6-4641-ab17-d6473b1a0198
+# ╠═c7a15cf1-5dce-466a-a39b-11f3fec6438f
+# ╠═8ad9a64c-4d66-4bcf-8c14-3132e4e8b7d3
+# ╠═43dd0592-b199-4ab8-99e5-05a1a71c7f0c
+# ╠═c734fb9a-ce2b-416b-b96b-b909846f80c3
+# ╟─40e53b4b-5bae-4424-8060-2b3ea6cb47a7
+# ╠═1e0547bc-dbe8-41b9-82e4-4d2eefc88ded
+# ╠═90d52650-876e-43f7-bebd-d43aefc5fcb1
+# ╠═85e852d9-7d63-4aa7-b7f0-0b6dd18670b1
+# ╠═59367034-5c6c-4bd5-8120-f25f2da4ca8c
+# ╠═b07cb189-b124-45d8-b8d6-50e5363d5c13
+# ╠═bc27a13b-8f30-467f-8882-dd1e7ec849b3
+# ╟─fb831594-67fe-45f9-a826-d455706a1dbd
+# ╟─70d6a4e3-da64-4d11-a9d0-f59bd158555d
+# ╟─49f233e0-f333-4faf-943f-184708efa290
+# ╟─00000000-0000-0000-0000-000000000001
+# ╟─00000000-0000-0000-0000-000000000002
