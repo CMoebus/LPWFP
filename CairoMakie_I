@@ -26,8 +26,8 @@ end # begin
 # ╔═╡ e68607c2-c185-11f0-a46d-33c819a68b86
 md"""
 =================================================================================
-#### [Tutorial: CairoMakie_I.jl](https://juliadatascience.io/cairomakie_I)
-##### - code:  C:/Users/claus/Nextcloud/PCM\_Book/PCM2025\_Book/MakieTutorial/CairoMakie\_I.jl                                      *** 2025/11/20 ***
+#### [Tutorial: CairoMakie_I.jl](https://juliadatascience.io/cairomakie)
+##### - code:  C:/Users/claus/Nextcloud/PCM\_Book/PCM2025\_Book/MakieTutorial/CairoMakie\_I.jl                                      *** 2025/11/21 ***
 ##### - Julia:        1.12.   -
 ##### - Pluto:        0.20.21 -
 ##### - CairoMakie:   0.15.6  -
