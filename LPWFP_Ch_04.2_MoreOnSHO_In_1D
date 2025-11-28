@@ -33,6 +33,7 @@ md"
 md"
 ---
 ##### 0. Introduction
+The *Scotch-Yoke-Oscillator* is a good demonstrator for *motion in 1D*. An ideal animated visualization can be found [here](https://en.wikipedia.org/wiki/Scotch_yoke#/media/File:Yugo_Escoc%C3%A9s_-_Scotch_yoke_animation.gif). Under assistance of *ChatGPT* we built two animations with Julia's most popular plot packages $Plot.jl$ and $CairoMakie.jl$.
 "
 
 # ╔═╡ 33f6fb91-65d2-41a3-8411-abd03ce2bd64
@@ -92,7 +93,7 @@ function scotchYokeOscillatorPlots(;r=1.0, nSec=4, nFrames=64, lSled=4.25, msCra
 		#-------------------------------------------------------------------------
 	    # crank, rod, sled, yoke, bearing
 	    Plots.plot(legend=false, ratio=1,
-	        xlims=(-4.0, 4.0), ylims=(-1.5, 1.5), framestyle=:none, size=(900,400), 		title=L"Scotch\ Yoke\ Oscillator")
+	        xlims=(-4.0, 4.0), ylims=(-1.5, 1.5), framestyle=:none, size=(900,400), 		title=L"Scotch-Yoke-Oscillator\ based\ on\ Plots.jl", titlefontsize=20)
 		#-------------------------------------------------------------------------
 		# bearing
 		Plots.plot!([0, 0], [0, 0], seriestype=:scatter, color=:orange, ms=10)
@@ -157,7 +158,7 @@ function scotchYokeOscillatorCairoMakie()
 	# --- Figure + Axis ---- 
 	fig   = Figure(size = (1000, 350))
 	ax    = Axis(fig[1, 1],
-				aspect  = DataAspect())
+				 aspect  = DataAspect())
 
 	# --- static x-axis
 	xLowerLimit = -1.5r - 2.0
@@ -213,7 +214,7 @@ function scotchYokeOscillatorCairoMakie()
 
 	# --- label ---
 	label = 
-		Label(fig[1, 1, Top()], "Scotch-Yoke-Oscillator", padding=(5,5,5,5))
+		Label(fig[1, 1, Top()], L"Scotch-Yoke-Oscillator\ based\ on\ CairoMakie.jl", padding=(5,5,5,5), fontsize=30)
 
 	# create line plots bound to observables
 	yoke_plot = 
@@ -288,9 +289,9 @@ md"
 
 - **Walck, Sc. N.**; *Learn Physics with Functional Programming*, San Francisco: No Starch Press, 2022, ISBN 978-1-7185-0166-9
 
-- **Wikipedia**; [*Scotch Yoke System*](https://en.wikipedia.org/wiki/Scotch_yoke); last visit 2025/11/04
+- **Wikipedia**; [*Scotch Yoke System*](https://en.wikipedia.org/wiki/Scotch_yoke); last visit 2025/11/28
 
-- **Wikipedia**; [*Simple Harmonic Motion*](https://en.wikipedia.org/wiki/Simple_harmonic_motion); last visit 2025/11/04
+- **Wikipedia**; [*Simple Harmonic Motion*](https://en.wikipedia.org/wiki/Simple_harmonic_motion); last visit 2025/11/28
 
 "
 
