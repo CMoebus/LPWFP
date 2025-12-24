@@ -22,7 +22,7 @@ md"
 ====================================================================================
 #### LPWFP\_Ch06\_Higher-Order Functions I: Basics
 ##### file: LPWFP\_Ch06\_HigherOrderFunctions\_I
-##### code: Julia/Pluto (1.12.3/0.20.21) by PCM *** 2025/12/22 ***
+##### code: Julia/Pluto (1.12.3/0.20.21) by PCM *** 2025/12/24 ***
 
 ====================================================================================
 "
@@ -707,8 +707,8 @@ md"
 ---
 ###### 3.9.3 Antiderivatives in the *Scotch-Yoke-Oscillator*
 
-###### 3.9.3.1 Dimensionless Time $\tau$
-We define a dimensionless time
+###### 3.9.3.1 Dimensionless *Time* $\tau$
+We define a dimensionless *time*
 
 $\tau = \omega t$
 
@@ -727,7 +727,7 @@ This removes all physical units and keeps only the shape of the motion.
 
 There is a kind of *hierarchy of derivatives* $x'(τ), x''(τ), x'''(τ)$ in the context of the *Scotch-Yoke-Oscillator*:
 
-- *jerk* function
+- [*jerk*](https://en.wikipedia.org/wiki/Jerk_(physics)) function
 $x'''(τ) = jerk(τ) =  sin(τ)$                
 - *acceleration* function
 $x''(τ) = acc(τ)  = -cos(τ)$                
@@ -1032,16 +1032,20 @@ let Δτ      =  1.0E-3                         # should not be smaller than 1.0
 end # let
 
 # ╔═╡ 5cbc5c49-3b78-499d-a419-7ec57d52d6ba
-md"
+md"""
 ---
 ##### 4. Summary
 We kept close to chapter 6 of Walck's book but we substituted his *air car* example by the *Scotch-Yoke-Oscillator*. This has the advantage of computing a *hierarchy* of integration levels. We started with the time-dependent $jerk$ variable and computed its antiderivatives *acceleration* $F_a$, *velocity* $F_v$ and *position* $F_x$. 
 
-The idea to include $jerk$ came when I watched the quiz show 'Wer weiß denn sowas?' on german TV ARD in December 2025. The concept *jerk* was presented as a question. The guess team was presented a set of three multiple choice questions. One hinted to the kinematic meaning of *jerk*.
+The idea to include $jerk$ came when I watched the quiz show '*Who knows such things?*' ('*Wer weiß denn sowas?*') on german TV ARD in 1st December 2025. The concept *jerk* was presented in the question "*Jerk, the English word for ‘idiot’ or 'moron'*" (*Jerk, das englische Wort für 'Idiot' oder 'Trottel',..*"). Two guess teams and the public audience was presented a set of multiple choice answer alternatives: 
+
+- A) "*...originally described villages where many bachelors lived.* (*...beschrieb ursprünglich Dörfer, in denen viele Junggesellen lebten.*") 
+- B) "*...is considered traditional approval in debates in the British House of Commons.* (*...gilt im britischen Unterhaus bei Debatten als traditionelle Zustimmung.*")
+- C) "*...corresponds to the physical quantity ‘jerk’ in mechanics.* (*...entspricht der physikalischen Größe 'Ruck' in der Mechanik.*")
 
 We developed *two* alternative *methods* for the *function* $antiderivative$. The *first* method is close to Walck's Haskell method. It accepts *functional* arguments for the function $f$. The *second* method is *new*. It accepts a *vector* of function *values* instead of one *functional* argument.
 
-"
+"""
 
 # ╔═╡ 9662aa0a-868c-4821-92a3-481cd3aff07b
 md"
