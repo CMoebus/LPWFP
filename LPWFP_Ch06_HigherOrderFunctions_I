@@ -447,7 +447,8 @@ md"
 ---
 ###### 1. Method: Definite Integral F(x) = $\int_a^b f(x)dx$ from Closed Form *Continuous Function* $f(x)$
 
-$\left . F(x)\right |_a^b = \int_a^b f(x)dx \approx \Delta x \sum_{i=1}^n f(x_i)$
+$\left.F(x)\right|_a^b = \int_a^b f(x)dx \approx c + \Delta x \sum_{i=1}^b f(x_i)\;;\; a \le x_i \le b$
+
 "
 
 # ╔═╡ 8a00be3c-1762-46f5-8509-206006237d01
@@ -459,7 +460,7 @@ myIntegral(f::Function, Δx::Float64, a::Float64, b::Float64; c=0.0)::Float64 =
 md"
 ###### 2. Method: Approximation of Definite Integral from *Vector* of Discretized *Function* Values 
 
-$\left.F(x)\right |_a^b \approx \Delta x\sum_{i=1}^n f_x[i]$
+$\left.F(x)\right |_a^b \approx c + \Delta x\sum_{i=1}^n f_x[i]$
 
 
 where: 
@@ -585,7 +586,7 @@ md"
 md"
 ###### 1. *Method* of Function Antiderivative $F(x)$ with *Continuous* Function Parameter $f(x)$
 
-$F(x) = F(a) + \int_a^x f(x') dx' \approx c + \Delta x \sum_{i=1}^x f(x_i)$
+$F(x) = F(a) + \int_a^x f(x') dx' \approx c + \Delta x \sum_{i=1}^x f(x_i)\;;\; x_i \le x$
 
 where:
 
@@ -801,7 +802,7 @@ md"
 
 ###### 1. *Method*: $F_a(t)=acceleration(t)$ with Function Parameter $f_j(t)=jerk(t)$
 
-$F_a(t) = a(t) = \int_0^t f_j(t') dt' \approx c + \Delta t \sum_{i=1}^t f_j(t_i)$
+$F_a(t) = a(t) = a(0) + \int_0^t f_j(t') dt' \approx c + \Delta t \sum_{i=1}^t f_j(t_i)\;;\; t_i \le t$
 
 "
 
@@ -815,7 +816,7 @@ accelerationFromJerk(
 md"
 ###### 2. Method: $F(x)$ with *Vector* of Discretized *Function* Values Parameter
 
-$F_a(t) = a(t) = \int_0^t f_j(t') dt' \approx c + \Delta t \sum_{i=1}^n [...,f_j[i],...]$
+$F_a(t) = a(t) = a(0) + \int_0^t f_j(t') dt' \approx c + \Delta t \sum_{i=1}^n [...,f_j[i],...]$
 
 "
 
@@ -873,7 +874,7 @@ md"
 md"
 ###### 1. *Method*: $F(x)=velocity(t)$ with Function Parameter $f(x)=acceleration(t)$
 
-$F_v(t) = v(t) = v(0) + \int_0^t f_a(t') dt' \approx c + \Delta t \sum_{i=1}^t f_a(t_i)$
+$F_v(t) = v(t) = v(0) + \int_0^t f_a(t') dt' \approx c + \Delta t \sum_{i=1}^t f_a(t_i)\;;\; t_i \le t$
 
 "
 
@@ -890,7 +891,7 @@ velocityFromAcceleration(  #     v           v
 md"
 ###### 2. Method: $F(x)$ with *Vector* of Discretized *Function* Values Parameter
 
-$F_v(t) = v(t) = \int_0^t f_a(t') dt' \approx c + \Delta t \sum_{i=1}^n [...,f_a[i],...]$
+$F_v(t) = v(t) = v(0) + \int_0^t f_a(t') dt' \approx c + \Delta t \sum_{i=1}^n [...,f_a[i],...]$
 "
 
 # ╔═╡ c6a6c9fe-87dd-43e0-8dc5-91aa3ba282d7
@@ -944,9 +945,9 @@ md"
 
 # ╔═╡ 2a85d4bd-6913-4b84-ad09-25af3361ce2c
 md"
-###### 1. *Method* of Function Antiderivative $F(x)$ with *Continuous* Function Parameter $f(x)$
+###### 1. *Method* of Function Antiderivative $F_x(t)$ with *Continuous* Function Parameter $f_x(t)$
 
-$F_x(t) = x(t) = x(0) + \int_0^t f_v(t') dt' \approx c + \Delta t \sum_{i=1}^t f_v(t_i)$
+$F_x(t) = x(t) = x(0) + \int_0^t f_v(t') dt' \approx c + \Delta t \sum_{i=1}^t f_v(t_i)\;;\; t_i \le t$
 
 "
 
@@ -1002,7 +1003,7 @@ let Δτ      =  1.0E-3                         # should not be smaller than 1.0
 	plot!(τs, τ->pos(τ),  lw=1.5, color=:blue, label=L"theoretical\ x(t)")
 	#--------------------------------------------------------------------------------
 	plot!(τs, Fposs, lw=2.5, linestyle=:dot, color=:cornflowerblue, label=L"Fposs(τ) \approx c + \int_0^τ f_v(τ) dτ")
-	plot!(τs, Fposvs, lw=3.5, linestyle=:dashdot, color=:cornflowerblue, label=L"Fposvs(τ) \approx c + \Delta x \sum_{i=1}^τ f_v[i]")
+	plot!(τs, Fposvs, lw=3.5, linestyle=:dashdot, color=:cornflowerblue, label=L"Fposvs(τ) \approx c + \Delta x \sum_{i=1}^n f_v[i]")
 	#-------------------------------------------------------------------------------
 end # let
 
