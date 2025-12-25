@@ -22,7 +22,7 @@ md"
 ====================================================================================
 #### LPWFP\_Ch06\_Higher-Order Functions I: Basics
 ##### file: LPWFP\_Ch06\_HigherOrderFunctions\_I
-##### code: Julia/Pluto (1.12.3/0.20.21) by PCM *** 2025/12/24 ***
+##### code: Julia/Pluto (1.12.3/0.20.21) by PCM *** 2025/12/25 ***
 
 ====================================================================================
 "
@@ -440,7 +440,14 @@ We define *two* methods for function $myIntegral$. The *first* method takes as f
 
 The first method is necessary to compute $F$ from continuous $f$ in closed form. The second methods is necessary to obtain $F$ from a discretisized form of $f$ when we obtained $f$ from $f'$ with the first method from a continuous closed $f'$. 
 
+"
+
+# ╔═╡ afcc8e4b-d561-4c67-b349-cdaa11144855
+md"
+---
 ###### 1. Method: Definite Integral F(x) = $\int_a^b f(x)dx$ from Closed Form *Continuous Function* $f(x)$
+
+$\left . F(x)\right |_a^b = \int_a^b f(x)dx \approx \Delta x \sum_{i=1}^n f(x_i)$
 "
 
 # ╔═╡ 8a00be3c-1762-46f5-8509-206006237d01
@@ -452,26 +459,26 @@ myIntegral(f::Function, Δx::Float64, a::Float64, b::Float64; c=0.0)::Float64 =
 md"
 ###### 2. Method: Approximation of Definite Integral from *Vector* of Discretized *Function* Values 
 
-$\left.F(x)\right |_a^b \approx \sum_{i=a}^b [f(x_i)\Delta x| x_i, i=1,...,n] =$ 
-$= \sum_{i=a}^b [f(x_i)| x_i, i=1,...,n]\Delta x = \Delta x\sum_{i=a}^b [f(x_i)| x_i, i=1,...,n]$
+$\left.F(x)\right |_a^b \approx \Delta x\sum_{i=1}^n f_x[i]$
+
 
 where: 
 
-$[f(x_i)| x_i, i=1,...,n]$ is the *vector* of function values and 
+$[...,f_x[i],...] \;;\; i=1,...,n$ is the *vector* of function values and 
 
-$length([f(x_i)| x_i, i=1,...,n])=n$ 
+$length([...,f_x[i],...] = n$ 
 
 is its *length* $n$ (= *number* $n$ of vector *components*).
 
-There is a *relation* between upper integration limit $x$, $length([f(x_i)| x_i, i=1,...,n])\ and\ \Delta x$:
+There is a *constraint* between upper integration limit $x = b - a$, $length([...,f_x[i],...]\ and\ \Delta x$:
 
-$x = length([f(x_i)| x_i, i=1,...,n]) \cdot \Delta x = n \Delta x$
+$x = length([...,f_x[i],...]) \cdot \Delta x = n \Delta x$
 
 and mappings
 
-$(x, \frac{1}{\Delta x}) \mapsto n \left(= length([f(x_i)| x_i, i=1,...,n])\right)$
+$(x, \frac{1}{\Delta x}) \mapsto n \left(= length([...,f_xx[i],...])\right)$
 
-$(x, n) \mapsto \frac{x}{x} = \Delta x.$
+$(x, n) \mapsto \frac{x}{n} = \Delta x.$
 
 "
 
@@ -544,9 +551,9 @@ md"
 ##### 3.9 Implementing *Antiderivatives*
 (cf. Walck, 2023, p.81, p.85f)
 
-$F(x) + C = \int f(x) dx\;\tag{6.3}$
+$F(x) = C + \int f(x) dx\;\tag{6.3}$
 
-where: $F$ is the antiderivative of $f$
+where: $F(x)$ is the antiderivative of $f(x)$ or short:
 
 $DF = f.$
 
@@ -571,11 +578,18 @@ $v = \text{velocity}\;; a = \text{acceleration}$
 md"
 ---
 ###### 3.9.1 Methods of Function Antiderivative $F(x)$
+
 "
 
 # ╔═╡ 12e35f50-b5e3-4a44-a05d-5a61d39c2804
 md"
 ###### 1. *Method* of Function Antiderivative $F(x)$ with *Continuous* Function Parameter $f(x)$
+
+$F(x) = F(a) + \int_a^x f(x') dx' \approx c + \Delta x \sum_{i=1}^x f(x_i)$
+
+where:
+
+$c = F(a).$
 "
 
 # ╔═╡ 1c5f5df9-53ac-4a87-a695-9874fb1266e2
@@ -593,14 +607,28 @@ antiDerivative(
 md"
 ###### 2. Method of Function Antiderivative $F(x)$ with *Vector* of Discretized *Function* Values 
 
-There is a *relation* between $x$ and $length([f(x_i)| x_i, i=1,...,n]), \Delta x$:
+There is a *constraint* between upper integration limit $x = b - a$, $length([...,f_x[i],...]\ and\ \Delta x$:
 
-$x = |[f(x_i)| x_i, i=1,...,n]| \cdot \Delta x = length([f(x_i)| x_i, i=1,...,n])\cdot \Delta x = n \Delta x$
+$x = length([...,f_x[i],...]) \cdot \Delta x = n \Delta x$
+
+and mappings
+
+$(x, \frac{1}{\Delta x}) \mapsto n \left(= length([...,f_xx[i],...])\right)$
+
+$(x, n) \mapsto \frac{x}{n} = \Delta x.$
 
 So the second *method* of function $antiDerivative$ has *two* values:
-- the *first* value is the *approximation* of *antiderivative* $F(x)\approx \Delta x ∑_{i=0}^x f(x_i)$
-- the *second* value is the *reconstruction* of the integration bound $x$ dependent on the *length* $n$ of the *vector* of function values $|[f(x_i)| x_i, i=1,...,n]|$ and step length $\Delta x$ 
-$|[f(x_i)| x_i, i=1,...,n]| \cdot \Delta x = n\Delta x \mapsto x$
+- the *first* value is the *approximation* of *antiderivative* 
+
+$F(x)\approx c + \Delta x ∑_{i=1}^n f_x[i]$
+
+- the *second* value is the *reconstruction* of the integration bound $x$ dependent on the *length* $n$ of the *vector* of function values $length([...,f_xx[i],...])$ and step length $\Delta x$ 
+
+$length([...,f_xx[i],...]) \cdot \Delta x = n\Delta x \mapsto x$
+
+The *approximation* of the antiderivative is:
+
+$F(x) = F(a) + \int_a^x f(x') dx' \approx c + \Delta x \sum_{i=1}^n [...,f(x)[i],...].$
 "
 
 # ╔═╡ 1a70df53-a323-4a25-9a45-f26b61c7ce18
@@ -624,7 +652,7 @@ $Fs(x) = \int_0^x x'^2 dx'$
 
 - vectorial:
 
-$Fvs(x) \approx \Delta x \sum_{i=0}^x f(x_i)$
+$Fvs(x) \approx c + \Delta x \sum_{i=1}^n [...,f(x)[i],...]$
 
 
 "
@@ -656,8 +684,8 @@ let Δx     = 1.0E-4                           # should not be smaller than 1.0E
 	Xs  = [antiDerivative([x^2 for x in 0.0:Δx:xlim], Δx, c=0.0)[2] for xlim in xs]
 	#--------------------------------------------------------------------------------
 	plot(xlimits=[-0.02, 1.02], ylimits=[-0.02, 1.10], title=L"Approximate\ Antiderivatives\ Fs(x), Fvs(x)\ for\ f(x)=x^2", titlefontsize=12, xlabel=L"x", ylabel=L"Fs(x), Fvs(x) \approx \Delta x\sum_{i=0}^x f(x_i), Xs(x)")
-	plot!(xs, Fs, lw=2.5, linestyle=:dot, color=:red, label=L"functional: Fs(x) \approx \int_0^x f(x') dx'")
-	plot!(xs, Fvs, lw=2.5, linestyle=:dashdot, color=:blue, label=L"vectorial: Fvs(x) \approx \Delta x \sum_{i=0}^x f(x_i)")
+	plot!(xs, Fs, lw=2.5, linestyle=:dot, color=:red, label=L"functional: Fs(x) \approx c + \int_0^x f(x') dx'")
+	plot!(xs, Fvs, lw=2.5, linestyle=:dashdot, color=:blue, label=L"vectorial: Fvs(x) \approx c + \Delta x \sum_{i=1}^n f_x[i]")
 	plot!(xs, y -> 1/3, linestyle=:dash, lw=1, color=:red, label="")
 	plot!(xs, Xs, linestyle=:dashdot, lw=1, color=:cornflowerblue, label="")
 	plot!(xs, y -> 1.0, linestyle=:dash, lw=1, color=:cornflowerblue, label="")
@@ -692,8 +720,8 @@ let Δx     = 1.0E-4                           # should not be smaller than 1.0E
 	Xs  = [antiDerivative([f(x) for x in 0.0:Δx:xlim], Δx, c=0.0)[2] for xlim in xs]
 	#--------------------------------------------------------------------------------
 	plot(xlimits=[-0.02, 1.02], ylimits=[-0.02, 0.36], title=L"Approximate\ Antiderivatives\ Fs(x), Fvs(x)\ for\ f(x)=x^2", titlefontsize=12, xlabel=L"x", ylabel=L"Fs(x), Fvs(x), Xs(x)")
-	plot!(xs, Fs, lw=2.5, linestyle=:dot, color=:red, label=L"functional:\ Fs(x) \approx \int_0^x f(x') dx'")
-	plot!(xs, Fds, lw=2.5, linestyle=:dashdot, color=:blue, label=L"vectorial:\ Fvs(x) \approx \Delta x \sum_{i=0}^x f(x_i)")
+	plot!(xs, Fs, lw=2.5, linestyle=:dot, color=:red, label=L"functional:\ Fs(x) \approx c + \int_0^x f(x') dx'")
+	plot!(xs, Fds, lw=2.5, linestyle=:dashdot, color=:blue, label=L"vectorial:\ Fvs(x) \approx c + \Delta x \sum_{i=1}^n f_x[i]")
 	plot!(xs, y -> 1/3, linestyle=:dash, lw=1, color=:red, label="")
 	plot!(xs, Xs, linestyle=:dashdot, lw=1, color=:cornflowerblue, label="")
 	plot!(xs, y -> 1.0, linestyle=:dash, lw=1, color=:cornflowerblue, label="")
@@ -771,10 +799,10 @@ md"
 ---
 ###### 3.9.4 *Acceleration* from *Jerk* in *Scotch-Yoke-Oscillator*
 
-$a(t) = \int_0^t j(t') dt'$
-$a(t_i) = \Delta t \sum_{i=0}^t j(t_i)\;;\;\;t_i \le t$
+###### 1. *Method*: $F_a(t)=acceleration(t)$ with Function Parameter $f_j(t)=jerk(t)$
 
-###### 1. *Method*: $F(x)=acceleration(t)$ with Function Parameter $f(x)=jerk(t)$
+$F_a(t) = a(t) = \int_0^t f_j(t') dt' \approx c + \Delta t \sum_{i=1}^t f_j(t_i)$
+
 "
 
 # ╔═╡ 53239c47-7d9e-492d-b0e5-cda6aff7c15b
@@ -786,6 +814,9 @@ accelerationFromJerk(
 # ╔═╡ 9c5a47cb-eb45-4045-bbd1-7e6b5bc6c3c7
 md"
 ###### 2. Method: $F(x)$ with *Vector* of Discretized *Function* Values Parameter
+
+$F_a(t) = a(t) = \int_0^t f_j(t') dt' \approx c + \Delta t \sum_{i=1}^n [...,f_j[i],...]$
+
 "
 
 # ╔═╡ aac960d3-2fca-4efb-bba4-cca94337cd21
@@ -819,15 +850,15 @@ let Δτ      =  1.0E-3                         # should not be smaller than 1.0
 	#           v                         v              v
 				[f(τ) for τ in 0.0:Δτ:τlim], Δτ, c=-1.0)[1] for τlim in τs]
 	#--------------------------------------------------------------------------------
-	plot(xlimits=[-0.02, 10.52], ylimits=[-1.52, 1.56], title=L"Antiderivatives\ Faccs(τ), Faccvs(τ)\ for\ f(τ)=jerk(τ)=sin(τ)", titlefontsize=12, xlabel=L"τ", ylabel=L"Fs(τ), Fvs(τ), Ts(τ)")
+	plot(xlimits=[-0.02, 11.02], ylimits=[-1.52, 1.56], title=L"Antiderivatives\ Faccs(τ), Faccvs(τ)\ for\ f(τ)=jerk(τ)=sin(τ)", titlefontsize=12, xlabel=L"τ", ylabel=L"Fs(τ), Fvs(τ), Ts(τ)")
 	#--------------------------------------------------------------------------------
 	plot!(τs, τ->jerk(τ), lw=1.5, color=:red, label=L"theoretical\ j(τ)")
 	plot!(τs, τ->acc(τ),  lw=1.5, color=:green, label=L"theoretical\ a(t)")
 	plot!(τs, τ->vel(τ),  lw=1.5, color=:orange, label=L"theoretical\ v(t)")
 	plot!(τs, τ->pos(τ),  lw=1.5, color=:blue, label=L"theoretical\ x(t)")
 	#--------------------------------------------------------------------------------
-	plot!(τs, Fas, lw=2.5, linestyle=:dot, color=:green, label=L"Faccs(τ) \approx \int_0^τ f(t) dt")
-	plot!(τs, Favs, lw=1.5, linestyle=:dashdot, color=:green, label=L"Faccvs(τ) \approx \Delta x \sum_{i=0}^τ f(t_i)")
+	plot!(τs, Fas, lw=2.5, linestyle=:dot, color=:green, label=L"Faccs(τ) \approx c + \int_0^τ f(t) dt")
+	plot!(τs, Favs, lw=1.5, linestyle=:dashdot, color=:green, label=L"Faccvs(τ) \approx c + \Delta x \sum_{i=1}^τ f_j[i]")
 	#-------------------------------------------------------------------------------
 end # let
 
@@ -836,13 +867,14 @@ md"
 ---
 ###### 3.9.5 *Velocity* from *Acceleration* in *Scotch-Yoke-Oscillator*
 
-$v(t) = v(0) + \int_0^t a(t') dt'$
-$v(t_i) = \Delta t \sum_{i=0}^t a(t_i)\;;\;\;t_i \le t$
 "
 
 # ╔═╡ 2d2770fe-cf01-48f0-9a43-50de07db1168
 md"
 ###### 1. *Method*: $F(x)=velocity(t)$ with Function Parameter $f(x)=acceleration(t)$
+
+$F_v(t) = v(t) = v(0) + \int_0^t f_a(t') dt' \approx c + \Delta t \sum_{i=1}^t f_a(t_i)$
+
 "
 
 # ╔═╡ ce00d4ce-315e-40bc-b613-d5a33d8aba13
@@ -857,6 +889,8 @@ velocityFromAcceleration(  #     v           v
 # ╔═╡ a5246fd1-ced4-44fa-b068-4f11b7070632
 md"
 ###### 2. Method: $F(x)$ with *Vector* of Discretized *Function* Values Parameter
+
+$F_v(t) = v(t) = \int_0^t f_a(t') dt' \approx c + \Delta t \sum_{i=1}^n [...,f_a[i],...]$
 "
 
 # ╔═╡ c6a6c9fe-87dd-43e0-8dc5-91aa3ba282d7
@@ -889,15 +923,15 @@ let Δτ      =  1.0E-3                         # should not be smaller than 1.0
 	#           v                         v             v
 				[f(τ) for τ in 0.0:Δτ:τlim], Δτ, c=0.0)[1] for τlim in τs]
 	#--------------------------------------------------------------------------------
-	plot(xlimits=[-0.02, 10.52], ylimits=[-1.52, 1.56], title=L"Antiderivatives\ Fvels(τ), Fvelvs(τ)\ for\ f(τ)=acc(τ)=-cos(τ)", titlefontsize=12, xlabel=L"τ", ylabel=L"Fs(τ), Fvs(τ), Ts(τ)")
+	plot(xlimits=[-0.02, 11.02], ylimits=[-1.52, 1.56], title=L"Antiderivatives\ Fvels(τ), Fvelvs(τ)\ for\ f(τ)=acc(τ)=-cos(τ)", titlefontsize=12, xlabel=L"τ", ylabel=L"Fs(τ), Fvs(τ), Ts(τ)")
 	#--------------------------------------------------------------------------------
 	plot!(τs, τ->jerk(τ), lw=1.5, color=:red, label=L"theoretical\ j(τ)")
 	plot!(τs, τ->acc(τ),  lw=1.5, color=:green, label=L"theoretical\ a(t)")
 	plot!(τs, τ->vel(τ),  lw=1.0, color=:orange, label=L"theoretical\ v(t)")
 	plot!(τs, τ->pos(τ),  lw=1.5, color=:blue, label=L"theoretical\ x(t)")
 	#--------------------------------------------------------------------------------
-	plot!(τs, Fvels, lw=1.5, linestyle=:dot, color=:orange, label=L"Fvels(τ) \approx \int_0^τ f(t) dt")
-	plot!(τs, Fvelvs, lw=3.0, linestyle=:dashdot, color=:orange, label=L"Fvelvs(τ) \approx \Delta x \sum_{i=0}^τ f(t_i)")
+	plot!(τs, Fvels, lw=1.5, linestyle=:dot, color=:orange, label=L"Fvels(τ) \approx c + \int_0^τ f_a(t) dt")
+	plot!(τs, Fvelvs, lw=3.0, linestyle=:dashdot, color=:orange, label=L"Fvelvs(τ) \approx c + \Delta x \sum_{i=1}^n f_a[i]")
 	#-------------------------------------------------------------------------------
 end # let
 
@@ -906,13 +940,14 @@ md"
 ---
 ###### 3.9.6 *Position* from *Velocity* in *Scotch-Yoke-Oscillator*
 
-$x(t) = x(0) + \int_0^t v(t') dt'$
-$x(t_i) = \Delta t \sum_{i=0}^t v(t_i)\;;\;\;t_i \le t$
 "
 
 # ╔═╡ 2a85d4bd-6913-4b84-ad09-25af3361ce2c
 md"
 ###### 1. *Method* of Function Antiderivative $F(x)$ with *Continuous* Function Parameter $f(x)$
+
+$F_x(t) = x(t) = x(0) + \int_0^t f_v(t') dt' \approx c + \Delta t \sum_{i=1}^t f_v(t_i)$
+
 "
 
 # ╔═╡ 2e08376d-d48c-4452-b335-8c5dd426abf2
@@ -924,6 +959,9 @@ positionFromVelocity(
 # ╔═╡ de2d212e-4669-4b09-b149-1a8fb0cd6ef8
 md"
 ###### 2. Method of Function Antiderivative $F(x)$ with *Vector* of Discretized *Function* Values 
+
+$F_x(t) = x(t) = \int_0^t f_v(t') dt' \approx c + \Delta t \sum_{i=1}^n [...,f_v[i],...]$
+
 "
 
 # ╔═╡ 85f60a52-c682-49e0-ab72-2f2fa8095d9d
@@ -963,8 +1001,8 @@ let Δτ      =  1.0E-3                         # should not be smaller than 1.0
 	plot!(τs, τ->vel(τ),  lw=1.0, color=:orange, label=L"theoretical\ v(t)")
 	plot!(τs, τ->pos(τ),  lw=1.5, color=:blue, label=L"theoretical\ x(t)")
 	#--------------------------------------------------------------------------------
-	plot!(τs, Fposs, lw=2.5, linestyle=:dot, color=:cornflowerblue, label=L"Fposs(τ) \approx \int_0^τ f(τ) dτ")
-	plot!(τs, Fposvs, lw=3.5, linestyle=:dashdot, color=:cornflowerblue, label=L"Fposvs(τ) \approx \Delta x \sum_{i=0}^τ f(t_i)")
+	plot!(τs, Fposs, lw=2.5, linestyle=:dot, color=:cornflowerblue, label=L"Fposs(τ) \approx c + \int_0^τ f_v(τ) dτ")
+	plot!(τs, Fposvs, lw=3.5, linestyle=:dashdot, color=:cornflowerblue, label=L"Fposvs(τ) \approx c + \Delta x \sum_{i=1}^τ f_v[i]")
 	#-------------------------------------------------------------------------------
 end # let
 
@@ -1015,19 +1053,19 @@ let Δτ      =  1.0E-3                         # should not be smaller than 1.0
 	#           v                           v             v
 				[vel(τ) for τ in 0.0:Δτ:τlim], Δτ, c=1.0)[1] for τlim in τs]
 	#--------------------------------------------------------------------------------
-	plot(xlimits=[-0.02, 11.02], ylimits=[-1.52, 1.56], title=L"All\ Numerical\ Antiderivatives\ of\ Scotch-Yoke-Oscillator", titlefontsize=12, xlabel=L"τ", ylabel=L"Fs(τ), Fvs(τ), Ts(τ)") 
+	plot(xlimits=[-0.02, 10.52], ylimits=[-1.52, 1.56], title=L"All\ Numerical\ Antiderivatives\ of\ Scotch-Yoke-Oscillator", titlefontsize=12, xlabel=L"τ", ylabel=L"Fs(τ), Fvs(τ), Ts(τ)") 
 	#--------------------------------------------------------------------------------
-	plot!(τs, τ->jerk(τ), lw=1.5, color=:red, label=L"theoretical\ j(τ)")
+	plot!(τs, τ->jerk(τ), lw=1.5, color=:red, label=L"theoretical\ f_j(τ)")
 	# plot!(τs, τ->acc(τ),  lw=1.5, color=:green, label=L"theoretical\ a(t)")
 	# plot!(τs, τ->vel(τ),  lw=1.0, color=:orange, label=L"theoretical\ v(t)")
 	# plot!(τs, τ->pos(τ),  lw=1.5, color=:blue, label=L"theoretical\ x(t)")
 	#--------------------------------------------------------------------------------
-	plot!(τs, Fas, lw=2.5, linestyle=:dot, color=:green, label=L"Faccs(τ) \approx \int_0^τ f(t) dt")
-	plot!(τs, Favs, lw=1.5, linestyle=:dashdot, color=:green, label=L"Faccvs(τ) \approx \Delta x \sum_{i=0}^τ f(t_i)")
-	plot!(τs, Fvels, lw=1.5, linestyle=:dot, color=:orange, label=L"Fvels(τ) \approx \int_0^τ f(t) dt")
-	plot!(τs, Fvelvs, lw=3.0, linestyle=:dashdot, color=:orange, label=L"Fvelvs(τ) \approx \Delta x \sum_{i=0}^τ f(t_i)")
-	plot!(τs, Fposs, lw=2.5, linestyle=:dot, color=:cornflowerblue, label=L"Fposs(τ) \approx \int_0^τ f(τ) dτ")
-	plot!(τs, Fposvs, lw=3.5, linestyle=:dashdot, color=:cornflowerblue, label=L"Fposvs(τ) \approx \Delta x \sum_{i=0}^τ f(t_i)")
+	plot!(τs, Fas, lw=2.5, linestyle=:dot, color=:green, label=L"F_a(τ) \approx \int_0^τ f_j(t) dt")
+	plot!(τs, Favs, lw=1.5, linestyle=:dashdot, color=:green, label=L"F_a(τ) \approx c + \Delta x \sum_{i=1}^n f_j[i]")
+	plot!(τs, Fvels, lw=1.5, linestyle=:dot, color=:orange, label=L"F_v(τ) \approx \int_0^τ f_a(t) dt")
+	plot!(τs, Fvelvs, lw=3.0, linestyle=:dashdot, color=:orange, label=L"F_v(τ) \approx c + \Delta x \sum_{i=1}^n f_a[i]")
+	plot!(τs, Fposs, lw=2.5, linestyle=:dot, color=:cornflowerblue, label=L"F_x(τ) \approx \int_0^τ f_v(τ) dτ")
+	plot!(τs, Fposvs, lw=3.5, linestyle=:dashdot, color=:cornflowerblue, label=L"F_x(τ) \approx c + \Delta x \sum_{i=1}^n f_v[i]")
 	#-------------------------------------------------------------------------------
 end # let
 
@@ -2398,6 +2436,7 @@ version = "1.13.0+0"
 # ╟─7e5c8c2c-b41b-4467-9d1a-431f14b655dd
 # ╟─673ab792-25a1-4ff9-b886-f356b612306a
 # ╟─635f5336-6d07-4b81-9c43-dcd9402687cd
+# ╟─afcc8e4b-d561-4c67-b349-cdaa11144855
 # ╠═8a00be3c-1762-46f5-8509-206006237d01
 # ╟─985ef39e-4be8-4626-9603-fe4ae2f54545
 # ╠═1d33ad08-fa2d-4c7c-9329-330159d5d56c
