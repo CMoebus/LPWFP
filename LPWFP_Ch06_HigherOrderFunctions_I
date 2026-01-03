@@ -28,7 +28,7 @@ md"
 ====================================================================================
 #### LPWFP\_Ch06\_Higher-Order Functions I: Basics
 ##### file: LPWFP\_Ch06\_HigherOrderFunctions\_I
-##### code: Julia/Pluto (1.12.3/0.20.21) by PCM *** 2026/01/02 ***
+##### code: Julia/Pluto (1.12.3/0.20.21) by PCM *** 2026/01/03 ***
 
 ====================================================================================
 "
@@ -438,9 +438,9 @@ $myIntegral: (f, dt, a, b) \mapsto \int_a^b f\;dt$
 
 # ╔═╡ 635f5336-6d07-4b81-9c43-dcd9402687cd
 md"
-We define *two* methods for function $myIntegral$. This implements the *Midpoint Rule* (Walck, 2024, p.84; Richter et al., 2024, p.453). The *first* method takes as first *argument* a *continuous* function $f$ in *closed* form wheras the *second* method takes as first argument a *discretisized* version of $f$. This is a *vector* of function *values*. 
+We define *three* methods for function $myIntegral$. All implement the *Midpoint Rule* (Walck, 2024, p.84; Richter et al., 2024, p.453). The *first* method takes as first *argument* a *continuous* function $f$ in *closed* form wheras the *second* and *third* method take as first argument a *vector* of function *values*. 
 
-The first method is necessary to compute $F$ from continuous $f$ in closed form. The second methods is necessary to obtain $F$ from a discretisized form of $f$ when we obtained $f$ from $f'$ with the first method from a continuous closed $f'$. 
+The first method is necessary to compute $F$ from continuous $f$ in closed form. The other methods are necessary to obtain $F$ from a discretisized form of $f$. This is necessary when we obtained $f$s from other first method's.
 
 "
 
@@ -482,7 +482,7 @@ md"
 ---
 ###### 2nd Method: Approximation of Definite Integral from *Vector* of Discretized *Function* Values 
 
-$\left.F(x)\right |_a^b \approx c + \Delta x\sum_{i=1}^n f_x[i]$
+$\left.F(x)\right |_a^b \approx c + \Delta x\sum_{i=1}^n [...,f_x[i],...]$
 
 
 where: 
@@ -507,7 +507,7 @@ $x = length([...,f_x[i],...]) \cdot \Delta x = n \Delta x$
 
 and mappings
 
-$(x, \frac{1}{\Delta x}) \mapsto n \left(= length([...,f_xx[i],...])\right)$
+$(x, \frac{1}{\Delta x}) \mapsto n \left(= length([...,f_x[i],...])\right)$
 
 $(x, n) \mapsto \frac{x}{n} = \Delta x.$
 
@@ -535,6 +535,14 @@ end # function myIntegral
 md"
 ---
 ###### 3rd Method of Function $myIntegral$
+"
+
+# ╔═╡ d527abb6-ef12-4189-8def-fe84803ab7ff
+md"
+###### Signature of *3rd method* of *function* $myIntegral$
+
+$myIntegral: [...,\mathbb R,...] \times \mathbb R \times \mathbb N \rightarrow \mathbb R \times \mathbb R \times \mathbb R$
+$myIntegral: (fs, Δx, ntemp, c) \mapsto (integral, Δx, interval)$
 "
 
 # ╔═╡ 5f923b97-f08e-4b23-8d7e-52d8bfa6a6de
@@ -567,9 +575,15 @@ let Δx   = 0.01
 	annotate!(0.75, 0.20, text(L"\int_0^1 x^2 dx = 1/3", 12))
 end # let
 
+# ╔═╡ cee1fb75-94f4-432b-a221-6c5bf241091e
+md"
+---
+###### 1st *Method* of Function $myIntegral$
+"
+
 # ╔═╡ d77bbfd0-8a77-4d95-abfe-c9941b57cf56
 md"
-Now we determine the smallest step size $Δt$ such that the value of the *numerical* integral is no longer distinguishable from the value $1/3$ of the *analytical* integral. As we see the smallest step size is $Δt = 1.0/2.0^{25} = 2.9802322387695312e-8$.
+Now we determine the smallest step size $Δt$ such that the value of the *numerical* integral is no longer distinguishable from the value $1/3$ of the *analytical* integral. As we see the smallest step size is $Δt = 1.0/2.0^{25} = 2.9802322387695312e-8$. The absolute deviation $error = 5.551115123125783e-17.$ This is nearly perfect from an applied science point of view.
 "
 
 # ╔═╡ a0d65d55-8602-46d8-bbe1-9e42c4fbd2e6
@@ -611,28 +625,24 @@ myIntegral(x -> x^2, 2^25, 0.0, 1.0)
 # ╔═╡ 0327edf7-1420-48b4-8472-409c2972c549
 let n    = 1      # how much should n grow and small should Δx shrink ?
 	f(x) = x^2
+	Δx   = 0.0
 	trueValue = 1.0/3.0
+	integralValue = 0.0
+	intervalLength = 0.0
 	error = abs(myIntegral(f, 2^n, 0.0, 1.0)[1] - trueValue)
-	while error > 1.0E-17
-		println("2^n = 2^$n, error = $error")
+	while error > 1.0E-16
+		integralValue, Δx, intervalLength = myIntegral(f, 2^n, 0.0, 1.0)
+		error = abs(integralValue - trueValue)
+		println("2^$n, integral = $integralValue, error = $error")
 		n += 1
-		error = abs(myIntegral(f, 2^n, 0.0, 1.0)[1] - trueValue)
 	end # while
-	integral, Δx, interval = myIntegral(f, 2^n, 0.0, 1.0)
-	integral, Δx, interval, error
+	integralValue, Δx, intervalLength, error
 end # let
-
-# ╔═╡ cee1fb75-94f4-432b-a221-6c5bf241091e
-md"
-###### Example Definite Integral of Parabola: *Method 1* of Function $myIntegral$
-"
-
-# ╔═╡ cd6f3a52-1bb3-42fb-bd9e-de53a53f14bc
-myIntegral(x -> x^2, 2^25, 0.0, 1.0)
 
 # ╔═╡ 0487a189-7405-460f-8305-195e5bd169e2
 md"
-###### Example Definite Integral of Parabola: *Method 2* of Function $myIntegral$
+---
+###### 2nd *Method 2* of Function $myIntegral$
 The value of $myIntegral(fs, 2^{25}, 0.0, 1.0) = (0.333333, 2.98023e-8, 1.0, 2.05391e-14)$. 
 - This means that the numerical *approximation* of the definite integral is $0.33333333333333337 \approx 1/3$. The approximation is $abs(integral - 1.0/3.0) ≈ 2.05391e-14$ which is nearly perfect.
 - The third value is $1.0$. This is a perfect *reconstruction* of the *length* of the integration *interval* $|a-b| = |[0.0, 1.0]| = 1.0$.
@@ -643,11 +653,45 @@ let n    = 2^25
 	a    = 0.0
 	b    = 1.0
 	f(x) = x^2
+	Δx   = abs(a-b)/n
+	xs   = [x for x in 0.0+Δx/2:Δx:1.0-Δx/2]       # ==> 0.0+Δx/2:Δx:1.0-Δx/2 !!!
+	fs   = [f(x) for x in xs]  
+	n    = length(fs)
+	# definite integral of discretized function
+	#                                          +---------------------- vector (!)
+	#                                          |  +------------------- #intervals
+	#                                          |  |  +---------------- lower limit
+	#                                          |  |  |  +------------- upper limit
+	#                                          v  v  v  v
+	integral, Δx, intervalLength = myIntegral(fs, n, a, b) #  <--------- 2nd method
+	error = abs(integral - 1.0/3.0)  # ==> 2.05391e-14 --> :)
+	integral, Δx, intervalLength, error
+end # let
+
+# ╔═╡ d0391a15-6ec6-42bb-800a-0789c4f7d62f
+md"
+---
+###### 3rd *Method 2* of Function $myIntegral$
+The value of $myIntegral(fs, Δx, n) = (0.333333, 2.98023e-8, 1.0, 5.55112e-17)$. 
+- This means that the numerical *approximation* of the definite integral is $0.33333333333333337 \approx 1/3$. The approximation is $abs(integral - 1.0/3.0) ≈ 5.55112e-17$ which is nearly perfect.
+- The third value is $1.0$. This is a perfect *reconstruction* of the *length* of the integration *interval* $|a-b| = |[0.0, 1.0]| = 1.0$.
+"
+
+# ╔═╡ dfafbffa-c242-4193-94e5-5ce6e25c1368
+let n    = 2^25
+	a    = 0.0
+	b    = 1.0
+	f(x) = x^2
 	Δx = abs(a-b)/n
 	xs = [x for x in 0.0+Δx/2:Δx:1.0-Δx/2]         # ==> 0.0+Δx/2:Δx:1.0-Δx/2 !!!
 	fs = [f(x) for x in xs]  
+	n  = length(fs)
 	# definite integral of discretized function
-	integral, Δx, intervalLength = myIntegral(fs, 2^25, 0.0, 1.0) 
+	#                                          +---------------------- vector (!)
+	#                                          |  +------------------- step width
+	#                                          |  |   +--------------- vector length
+	#                                          v  v   v
+	integral, Δx, intervalLength = myIntegral(fs, Δx, n) #  <--------- 3rd method
 	error = abs(integral - 1.0/3.0)  # ==> 2.05391e-14 --> :)
 	integral, Δx, intervalLength, error
 end # let
@@ -665,8 +709,9 @@ $I(f) = \int_0^1 exp(1.0 + sin^2(x)) dx \approx 4.7662017991376737307$
 
 With our function $myIntegral(.)$ we are in in close agreement with *WolframAlpha*, the Julia functions $romberg, integrate$ and $quadgk$ of packages $Romberg.jl$, $NumericalIntegration.jl$, and $QuadGK.jl$.
 
-$myIntegral(f,   n4, 0.0, 1.0)[1] \Rightarrow 3.662415703289976$    
-$myIntegral(fs4, n4, 0.0, 1.0)[1] \Rightarrow 3.6624157032899713$   
+- 1st method: $myIntegral(f,   n4, 0.0, 1.0)[1] \Rightarrow 3.662415703289976$    
+- 2nd method: $myIntegral(fs4, n4, 0.0, 1.0)[1] \Rightarrow 3.6624157032899713$  
+- 3rd method: $myIntegral(fs4, Δx4, n4)[1] \Rightarrow 3.662415703289976$
 
 for
 
@@ -899,7 +944,8 @@ md"
 
 # ╔═╡ 12e35f50-b5e3-4a44-a05d-5a61d39c2804
 md"
-###### 1st *Method* of Function Antiderivative $F(x)$ with *Continuous* Function Parameter $f(x)$
+---
+###### 1st *Method* of Function *Antiderivative* $F(x)$ with Continuous *Function Parameter* $f$
 
 $F(x) = F(a) + \int_a^x f(x') dx' \approx c + \Delta x \sum_{i=1}^x f(x_i)\;;\; x_i \le x$
 
@@ -919,7 +965,7 @@ function antiDerivative(   # --------------------------------- 1st method
 #   +--------------------------------------------------------- functional argument f
 #   |            +-------------------------------------------- number of intervals
 #   |            |         +---------------------------------- lower limit a
-#   |            |         |           +---------------------- upper limit b = x
+#   |            |         |           +---------------------- upper limit x
 #	|            |         |           |           +---------- integration constant c
 #   |            |         |           |           |
 #   v            v         v           v           v                        
@@ -929,7 +975,8 @@ end # function antiDerivative
 
 # ╔═╡ daffe586-9327-4289-be04-1e5e3e0d1764
 md"
-###### 2nd Method of Function Antiderivative $F(x)$ with *Vector* of Discretized *Function* Values 
+---
+###### 2nd Method of Function Antiderivative $F(x)$ with *Vector* $fs$ of Discretized *Function* Values 
 
 There is a *constraint* between upper integration limit $x = b - a$, $length([...,f_x[i],...]\ and\ \Delta x$:
 
@@ -941,10 +988,12 @@ $(x, \frac{1}{\Delta x}) \mapsto n \left(= length([...,f_xx[i],...])\right)$
 
 $(x, n) \mapsto \frac{x}{n} = \Delta x.$
 
-So the second *method* of function $antiDerivative$ has *two* values:
-- the *first* value is the *approximation* of *antiderivative* 
+So the second *method* of function $antiDerivative$ has *three* values:
+- the *first* value is the *approximation* of *antiderivative* $F(x)$
+- the *second* value is the *step width* $Δx$
+- the *third* value is the reconstructed *interval length* $|a-b|$
 
-$F(x)\approx c + \Delta x ∑_{i=1}^n f_x[i]$
+$F(x)\approx c + \Delta x ∑_{i=1}^n [...,f_x[i],...]$
 
 where: 
 
@@ -954,20 +1003,23 @@ $a + \frac{\Delta x}{2} \le x_i \le b - \frac{\Delta x}{2},$
 
 $x_{i+1} = x_i + \Delta x$
 
-- the *second* value is the *reconstruction* of the integration bound $x$ dependent on the *length* $n$ of the *vector* of function values $length([...,f_xx[i],...])$ and step length $\Delta x$ 
+- the *third* value is the *reconstruction* of the integration bound $x$ dependent on the *length* $n$ of the *vector* of function values $length([...,f_xx[i],...])$ and step length $\Delta x$ 
 
-$length([...,f_xx[i],...]) \cdot \Delta x = n\Delta x \mapsto x$
+$length([...,f_x[i],...]) \cdot \Delta x = n\Delta x \mapsto x$
 
 The *approximation* of the antiderivative is:
 
-$F(x) = F(a) + \int_a^x f(x') dx' \approx c + \Delta x \sum_{i=1}^n [...,f(x)[i],...].$
+$F(x) = F(a) + \int_a^x f(x') dx' \approx c + \Delta x \sum_{i=1}^n [...,f_x[i],...].$
 "
 
 # ╔═╡ 1a70df53-a323-4a25-9a45-f26b61c7ce18
 function antiDerivative(   # ----------------------------- 2nd method
-#   +----------------------------------------------------- vector of function values 
-#   |    
-#   v    
+#   +----------------------------------------------------- vector of function values
+#   |                    +-------------------------------- #intervals
+#   |                    |         +---------------------- lower limit
+#   |                    |         |           +---------- upper limit
+#   |                    |         |           |
+#   v                    v         v           v  
 	fs::Vector{Float64}, n::Int64, a::Float64, x::Float64; c::Float64=0.0)::Tuple{Float64, Float64, Float64} 
 	myIntegral(fs, n, a, x, c = c)
 end # unction antiDerivative
@@ -980,9 +1032,11 @@ md"
 
 # ╔═╡ 3e364235-8327-4127-95a4-5a2b087f1725
 function antiDerivative(   # ----------------------------- 3rd method
-#   +----------------------------------------------------- vector of function values 
-#   |    
-#   v    
+#   +----------------------------------------------------- vector of function values
+#   |                    +-------------------------------- step width
+#   |                    |              +----------------- index of upper limit
+#   |                    |              |           
+#   v                    v              v           
 	fs::Vector{Float64}, Δx::Float64, ntemp::Int64; c::Float64=0.0)::Tuple{Float64, Float64, Float64} 
 	myIntegral(fs, Δx, ntemp, c = c)
 end # function antiDerivative
@@ -994,13 +1048,11 @@ md"
 
 - functional:
 
-$F(x) \approx \int_0^x f(x') dx'$
-
-$Fs(x) = \int_0^x x'^2 dx'$
+$F(x) \approx c + \Delta x \sum_{i=1}^n f(x_i)$
 
 - vectorial:
 
-$Fvs(x) \approx c + \Delta x \sum_{i=1}^n [...,f(x)[i],...]$
+$Fv(x) \approx c + \Delta x \sum_{i=1}^n [...,f_x[i],...]$
 
 
 "
@@ -1036,11 +1088,11 @@ let n      = 1E+3                             # number of intervals
 	#                     v             v
 	Xs = [antiDerivative(fs, Δx, nxlim)[3] for nxlim in 1:n]
 	#--------------------------------------------------------------------------------
-	plot(xlimits=[-0.02, 1.02], ylimits=[-0.02, 1.10], title=L"Approximate\ Antiderivatives\ Fs(x), Fvs(x)\ for\ f(x)=x^2", titlefontsize=12, xlabel=L"x", ylabel=L"Fs(x), Fvs(x) \approx \Delta x\sum_{i=0}^x f(x_i), Xs(x)")
-	plot!(xs, Fs, lw=2.5, linestyle=:dot, color=:red, label=L"functional: Fs(x) \approx \int_0^x f(x') dx'")
-	plot!(xs, Fvs, lw=2.5, linestyle=:dashdot, color=:blue, label=L"vectorial: Fvs(x) \approx c + \Delta x \sum_{i=1}^n f_x[i]")
+	plot(xlimits=[-0.02, 1.02], ylimits=[-0.02, 1.10], title=L"Approximate\ Antiderivatives\ F(x), Fv(x)\ for\ f(x)=x^2", titlefontsize=12, xlabel=L"x", ylabel=L"F(x), Fv(x) \approx \Delta x\sum_{i=0}^x f(x_i), X(x)")
+	plot!(xs, Fs, lw=2.5, linestyle=:dot, color=:red, label=L"functional: F(x) \approx \int_0^x f(x') dx'")
+	plot!(xs, Fvs, lw=2.5, linestyle=:dashdot, color=:blue, label=L"vectorial: Fv(x) \approx c + \Delta x \sum_{i=1}^n f_x[i]")
 	plot!(xs, y -> 1/3, linestyle=:dash, lw=1, color=:red, label="")
-	plot!(xs, Xs, linestyle=:dashdot, lw=1, color=:cornflowerblue, label="")
+	plot!(xs, Xs, linestyle=:dashdot, lw=1, color=:cornflowerblue, label=L"X(n) = \sum_{i=1}^n Δx")
 	plot!(xs, y -> 1.0, linestyle=:dash, lw=1, color=:cornflowerblue, label="")
 	plot!([1.0 for x in 0.0:1.0:xUpLim], [y for y in 0.0:1.0:xUpLim], linestyle=:dash, lw=1, color=:cornflowerblue, label="")
 	plot!([1.0 for x in 0.0:Δx:1/3], [y for y in 0.0:Δx:1/3], linestyle=:dash, lw=1, color=:red, label="")
@@ -1078,11 +1130,11 @@ let n      = 1E+3                             # number of intervals
 	#                     v             v
 	Xs = [antiDerivative(fs, Δx, nxlim)[3] for nxlim in 1:n]
 	#--------------------------------------------------------------------------------
-	plot(xlimits=[-0.02, 1.02], ylimits=[-0.02, 0.55], title=L"Approximate\ Antiderivatives\ Fs(x), Fvs(x)\ for\ f(x)=x^2", titlefontsize=12, xlabel=L"x", ylabel=L"Fs(x), Fvs(x) \approx \Delta x\sum_{i=0}^x f(x_i), Xs(x)")
-	plot!(xs, Fs, lw=2.5, linestyle=:dot, color=:red, label=L"functional: Fs(x) \approx \int_0^x f(x') dx'")
-	plot!(xs, Fvs, lw=2.5, linestyle=:dashdot, color=:blue, label=L"vectorial: Fvs(x) \approx c + \Delta x \sum_{i=1}^n f_x[i]")
+	plot(xlimits=[-0.02, 1.02], ylimits=[-0.02, 0.65], title=L"Approximate\ Antiderivatives\ F(x), Fv(x)\ for\ f(x)=x^2", titlefontsize=12, xlabel=L"x", ylabel=L"F(x), Fv(x) \approx \Delta x\sum_{i=0}^x f(x_i), X(x)")
+	plot!(xs, Fs, lw=2.5, linestyle=:dot, color=:red, label=L"functional: F(x) \approx \int_0^x f(x') dx'")
+	plot!(xs, Fvs, lw=2.5, linestyle=:dashdot, color=:blue, label=L"vectorial: Fv(x) \approx c + \Delta x \sum_{i=1}^n f_x[i]")
 	plot!(xs, y -> 1/3, linestyle=:dash, lw=1, color=:red, label="")
-	plot!(xs, Xs, linestyle=:dashdot, lw=1, color=:cornflowerblue, label="")
+	plot!(xs, Xs, linestyle=:dashdot, lw=1, color=:cornflowerblue, label=L"X(n) = \sum_{i=1}^n Δx")
 	plot!(xs, y -> 1.0, linestyle=:dash, lw=1, color=:cornflowerblue, label="")
 	plot!([1.0 for x in 0.0:1.0:xUpLim], [y for y in 0.0:1.0:xUpLim], linestyle=:dash, lw=1, color=:cornflowerblue, label="")
 	plot!([1.0 for x in 0.0:Δx:1/3], [y for y in 0.0:Δx:1/3], linestyle=:dash, lw=1, color=:red, label="")
@@ -1174,17 +1226,17 @@ end # function accelerationFromJerk
 # ╔═╡ 9c5a47cb-eb45-4045-bbd1-7e6b5bc6c3c7
 md"
 ---
-###### 3rd Method: $F(x)$ with *Vector* of Discretized *Function* Values Parameter
+###### 3rd Method: $F(x)$ with *Vector* Parameter of Discretized *Function* Values
 
-$F_a(t) = a(t) = a(0) + \int_0^t f_j(t') dt' \approx c + \Delta t \sum_{i=1}^n [...,f_j[i],...]$
+$F_a(t) = a(t) = a(0) + \int_0^τ f_j(τ') dτ' \approx c + \Delta t \sum_{i=1}^n [...,f_j[i],...]$
 
 where: 
 
-$f_x[i] = f(x_i),$
+$f_j[i] = f_j(τ_i),$
 
-$a + \frac{\Delta x}{2} \le x_i \le b - \frac{\Delta x}{2},$ 
+$a + \frac{\Delta τ}{2} \le j_i \le b - \frac{\Delta τ}{2},$ 
 
-$x_{i+1} = x_i + \Delta x$
+$τ_{i+1} = x_i + \Delta τ.$
 
 "
 
@@ -1210,30 +1262,28 @@ let nIntvs  =  10^3                           # number of intervals
 	nfs     =  length(fs)
 	#--------------------------------------------------------------------------------
 	# Fs = antiderivative from continuous function f(t)
-	#                              +----------------------------------- function (!)
-	#                              |                          +-------- integral  
-	#                              |                          |
-	#                              v                          v
-	Faccs  = [accelerationFromJerk(f, nIntvs, -1.5, τ, c=0.0)[1] for τ in τs]
+	#                            +------------------------------------- function (!)
+	#                            |                          +---------- integral  
+	#                            v                          v
+	Fas  = [accelerationFromJerk(f, nIntvs, -1.5, τ, c=0.0)[1] for τ in τs]
 	#--------------------------------------------------------------------------------
 	# Fvs = antiderivative from vector of function values f(t)
-	Faccvs = 
+	Fasv = 
 		[accelerationFromJerk(
 	#           +-------------------------------------------------------- vector (!)
 	#           |                      +--------------------------------- integral
-	#           |                      |
 	#           v                      v
 				fs, Δτ, ntemp, c=-1.0)[1] for ntemp in 1:nIntvs]
 	#--------------------------------------------------------------------------------
-	plot(xlimits=[-0.02, 11.02], ylimits=[-1.52, 1.56], title=L"Antiderivatives\ Fas(τ), Faccs(τ), Faccvs(τ)\ for\ f(τ)=jerk(τ)=sin(τ)", titlefontsize=12, xlabel=L"τ", ylabel=L"Fas(τ), Faccs(τ), Faccvs(τ)")
+	plot(xlimits=[-0.02, 10.52], ylimits=[-1.52, 1.56], title=L"Antiderivatives\ F_a(τ), F_av(τ)\ for\ f(τ)=jerk(τ)=sin(τ)", titlefontsize=12, xlabel=L"τ", ylabel=L"F_a(τ), F_av(τ)")
 	#--------------------------------------------------------------------------------
 	plot!(τs, τ->jerk(τ), lw=1.5, color=:red, label=L"theoretical\ j(τ)")
-	plot!(τs, τ->acc(τ),  lw=1.5, color=:green, label=L"theoretical\ Fas(τ)=a(τ)")
-	plot!(τs, τ->vel(τ),  lw=1.5, color=:orange, label=L"theoretical\ v(t)")
+	plot!(τs, τ->acc(τ),  lw=1.5, color=:green, label=L"theoretical\ a(τ)")
+	plot!(τs, τ->vel(τ),  lw=1.5, color=:orange, label=L"theoretical\ v(τ)")
 	plot!(τs, τ->pos(τ),  lw=1.5, color=:blue, label=L"theoretical\ x(τ)")
 	#--------------------------------------------------------------------------------
-	plot!(τs, Faccs, lw=2.5, linestyle=:dot, color=:green, label=L"Faccs(τ) \approx c + \int_0^τ f(t) dt")
-	plot!(τs, Faccvs, lw=1.5, linestyle=:dashdot, color=:green, label=L"Faccvs(τ) \approx c + \Delta x \sum_{i=1}^τ f_j[i]")
+	plot!(τs, Fas, lw=2.5, linestyle=:dot, color=:green, label=L"F_a(τ) \approx c + \int_0^τ f_j(τ')\ dτ'")
+	plot!(τs, Fasv, lw=1.5, linestyle=:dashdot, color=:green, label=L"F_av(τ) \approx c + \Delta x \sum_{i=1}^n f_j[i]")
 	#-------------------------------------------------------------------------------
 end # let
 
@@ -1269,15 +1319,15 @@ md"
 ---
 ###### 3rd Method: $F(x)$ with *Vector* of Discretized *Function* Values Parameter
 
-$F_v(t) = v(t) = v(0) + \int_0^t f_a(t') dt' \approx c + \Delta t \sum_{i=1}^n [...,f_a[i],...]$
+$F_v(τ) = v(τ) = v(0) + \int_0^τ f_a(τ') dτ' \approx c + Δτ \sum_{i=1}^n [...,f_a[i],...]$
 
 where: 
 
-$f_x[i] = f(x_i),$
+$f_a[i] = f_a(τ_i),$
 
-$a + \frac{\Delta x}{2} \le x_i \le b - \frac{\Delta x}{2},$ 
+$a + \frac{Δτ}{2} \le x_i \le b - \frac{Δτ}{2},$ 
 
-$x_{i+1} = x_i + \Delta x$
+$a_{i+1} = a_i + Δτ$
 "
 
 # ╔═╡ c6a6c9fe-87dd-43e0-8dc5-91aa3ba282d7
@@ -1302,14 +1352,14 @@ let nIntvs  =  10^3                           # number of intervals
 	nfs     =  length(fs)
 	#--------------------------------------------------------------------------------
 	# Fs = antiderivative from continuous function f(t) # -------------- 1st method
-	#                                  +-------------------------------- function (!)
-	#                                  |                          +----- integral
-	#                                  |                          |
-	#                                  v                          v
-	Fvels  = [velocityFromAcceleration(f, nIntvs, 0.0, τ, c=0.0)[1] for τ in τs]
+	#                                +---------------------------------- function (!)
+	#                                |                         +-------- integral
+	#                                |                         |
+	#                                v                         v
+	Fv  = [velocityFromAcceleration(f, nIntvs, 0.0, τ, c=0.0)[1] for τ in τs]
 	#--------------------------------------------------------------------------------
 	# Fvs = antiderivative from vector of function values f(t) 
-	Fvelvs = 
+	Fvv = 
 		[velocityFromAcceleration(                     # ---------------- 3rd method
 	#           +-------------------------------------------------------- vector (!)
 	#           |                     +---------------------------------- integral  
@@ -1317,17 +1367,16 @@ let nIntvs  =  10^3                           # number of intervals
 	#           v                     v             
 				fs, Δτ, ntemp, c=0.0)[1] for ntemp in 1:nIntvs]
 	#--------------------------------------------------------------------------------
-	plot(xlimits=[-0.02, 11.02], ylimits=[-1.52, 1.56], title=L"Antiderivatives\ Fvs(τ), Fvels(τ), Fvelvs(τ)\ for\ f(τ)=acc(τ)=-cos(τ)", titlefontsize=12, xlabel=L"τ", ylabel=L"Fvs(τ), Fvels(τ), Fvelvs")
+	plot(xlimits=[-0.02, 10.52], ylimits=[-1.52, 1.56], title=L"Antiderivatives\ F_v(τ), F_vv(τ)\ for\ f(τ)=acc(τ)=-cos(τ)", titlefontsize=12, xlabel=L"τ", ylabel=L"F_v(τ), F_vv(τ)")
 	#--------------------------------------------------------------------------------
 	plot!(τs, τ->jerk(τ), lw=1.5, color=:red, label=L"theoretical\ j(τ)")
 	plot!(τs, τ->acc(τ),  lw=1.5, color=:green, label=L"theoretical\ a(t)")
-	plot!(τs, τ->vel(τ),  lw=1.0, color=:orange, label=L"theoretical\ Fvs(τ)=v(t)")
+	plot!(τs, τ->vel(τ),  lw=1.0, color=:orange, label=L"theoretical\ v(t)")
 	plot!(τs, τ->pos(τ),  lw=1.5, color=:blue, label=L"theoretical\ x(t)")
 	#--------------------------------------------------------------------------------
-	plot!(τs, Fvels, lw=1.5, linestyle=:dot, color=:orange, label=L"Fvels(τ) \approx c + \int_0^τ f_a(t) dt")
-	plot!(τs, Fvelvs, lw=3.0, linestyle=:dashdot, color=:orange, label=L"Fvelvs(τ) \approx c + \Delta x \sum_{i=1}^n f_a[i]")
+	plot!(τs, Fv, lw=1.5, linestyle=:dot, color=:orange, label=L"F_v(τ) \approx c + \int_0^τ f_a(τ') dτ")
+	plot!(τs, Fv, lwv=3.0, linestyle=:dashdot, color=:orange, label=L"F_vv(τ) \approx c + \Delta x \sum_{i=1}^n f_a[i]")
 	#-------------------------------------------------------------------------------
-	# length(Fvelvs), Fvelvs
 end # let
 
 # ╔═╡ 82f1fd2a-fab2-4708-90b7-b1952ed66882
@@ -1342,7 +1391,7 @@ md"
 ---
 ###### 1st *Method* of Function Antiderivative $F_x(t)$ with *Continuous* Function Parameter $f_x(t)$
 
-$F_x(t) = x(t) = x(0) + \int_0^t f_v(t') dt' \approx c + \Delta t \sum_{i=1}^t f_v(t_i)\;;\; t_i \le t$
+$F_x(τ) = x(τ) = x(0) + \int_0^τ f_v(τ') dτ' \approx c + Δτ \sum_{i=1}^τ f_v(τ_i)\;;\; τ_i \le τ$
 
 "
 
@@ -1358,15 +1407,15 @@ md"
 ---
 ###### 3rd Method of Function Antiderivative $F(x)$ with *Vector* of Discretized *Function* Values 
 
-$F_x(t) = x(t) = \int_0^t f_v(t') dt' \approx c + \Delta t \sum_{i=1}^n [...,f_v[i],...]$
+$F_x(τ) = x(τ) = \int_0^τ f_v(τ') dτ' \approx c + Δτ \sum_{i=1}^n [...,f_v[i],...]$
 
 where: 
 
-$f_x[i] = f(x_i),$
+$f_v[i] = f_v(τ_i),$
 
-$a + \frac{\Delta x}{2} \le x_i \le b - \frac{\Delta x}{2},$ 
+$a + \frac{Δτ}{2} \le τ_i \le b - \frac{Δτ}{2},$ 
 
-$x_{i+1} = x_i + \Delta x$
+$v_{i+1} = v_i + Δτ$
 
 "
 
@@ -1395,10 +1444,10 @@ let nIntvs  =  10^3                           # number of intervals
 	#                 +------------------------------------------------ function (!)
 	#                 |
 	#                 v
-	Fposs  = [positionFromVelocity(f, nIntvs, 0.0, τ, c=1.0)[1] for τ in τs]
+	Fx  = [positionFromVelocity(f, nIntvs, 0.0, τ, c=1.0)[1] for τ in τs]
 	#--------------------------------------------------------------------------------
 	# Fvs = antiderivative from vector of function values f(t)
-	Fposvs = 
+	Fxv = 
 		[positionFromVelocity(                           # ------------- 3rd method
 	#           +------------------------------------------------------- vector (!)
 	#           |                     +--------------------------------- integral  
@@ -1406,15 +1455,15 @@ let nIntvs  =  10^3                           # number of intervals
 	#           v                     v             
 				fs, Δτ, ntemp, c=1.0)[1] for ntemp in 1:nIntvs]
 	#--------------------------------------------------------------------------------
-	plot(xlimits=[-0.02, 11.02], ylimits=[-1.52, 1.56], title=L"Antiderivatives\ Fx(τ), Fposs(τ), Fposvs(τ)\ for\ f(τ)=vel(τ)=-sin(τ)", titlefontsize=12, xlabel=L"τ", ylabel=L"Fxs(τ), Fposs(τ), Fpossvs(τ)")
+	plot(xlimits=[-0.02, 10.52], ylimits=[-1.52, 1.56], title=L"Antiderivatives\ F_x(τ), F_xv(τ)\ for\ f_v(τ)=vel(τ)=-sin(τ)", titlefontsize=12, xlabel=L"τ", ylabel=L"F_x(τ), F_xv(τ)")
 	#--------------------------------------------------------------------------------
 	plot!(τs, τ->jerk(τ), lw=1.5, color=:red, label=L"theoretical\ j(τ)")
 	plot!(τs, τ->acc(τ),  lw=1.5, color=:green, label=L"theoretical\ a(t)")
 	plot!(τs, τ->vel(τ),  lw=1.0, color=:orange, label=L"theoretical\ v(t)")
-	plot!(τs, τ->pos(τ),  lw=1.5, color=:blue, label=L"theoretical\ Fx(τ)=x(t)")
+	plot!(τs, τ->pos(τ),  lw=1.5, color=:blue, label=L"theoretical\ x(t)")
 	#--------------------------------------------------------------------------------
-	plot!(τs, Fposs, lw=2.5, linestyle=:dot, color=:cornflowerblue, label=L"Fposs(τ) \approx c + \int_0^τ f_v(τ) dτ")
-	plot!(τs, Fposvs, lw=3.5, linestyle=:dashdot, color=:cornflowerblue, label=L"Fposvs(τ) \approx c + \Delta x \sum_{i=1}^n f_v[i]")
+	plot!(τs, Fx, lw=2.5, linestyle=:dot, color=:cornflowerblue, label=L"F_x(τ) \approx c + \int_0^τ f_v(τ) dτ")
+	plot!(τs, Fxv, lw=3.5, linestyle=:dashdot, color=:cornflowerblue, label=L"F_xv(τ) \approx c + \Delta x \sum_{i=1}^n f_v[i]")
 	#-------------------------------------------------------------------------------
 end # let
 
@@ -1441,48 +1490,48 @@ let nIntvs  =  10^3                           # number of intervals
 	nfs     =  length(fjs)
 	#--------------------------------------------------------------------------------
 	# Fs = antiderivative from continuous function f(t)
-	#                              +---------------------------------- function (!)
-	#                              |
-	#                              v
-	Fas  = [accelerationFromJerk(jerk, nIntvs, -1.5, τ, c=0.0)[1] for τ in τs]
-	Fvs  = [velocityFromAcceleration(acc, nIntvs, 0.0, τ, c=0.0)[1] for τ in τs]
-	Fxs  = [positionFromVelocity(vel, nIntvs, 0.0, τ, c=1.0)[1] for τ in τs]
+	#                             +---------------------------------- function (!)
+	#                             |
+	#                             v
+	Fa  = [accelerationFromJerk(jerk, nIntvs, -1.5, τ, c=0.0)[1] for τ in τs]
+	Fv  = [velocityFromAcceleration(acc, nIntvs, 0.0, τ, c=0.0)[1] for τ in τs]
+	Fx  = [positionFromVelocity(vel, nIntvs, 0.0, τ, c=1.0)[1] for τ in τs]
 	#--------------------------------------------------------------------------------
 	# Fvs = antiderivative from vector of function values fs
-	Favs = 
+	Fav = 
 		[accelerationFromJerk(
 	#            +------------------------------------------------------ vector (!)
 	#            |                                    
 	#            v                                     
 				fjs, Δτ, ntemp, c=-1.0)[1] for ntemp in 1:nfs]
 	#-----------------------------------------------------------------------------
-	Fvvs = 
+	Fvv = 
 		[velocityFromAcceleration(
 	#            +------------------------------------------------------ vector (!)
 	#            |                                    
 	#            v                                
 				fas, Δτ, ntemp, c=0.0)[1] for ntemp in 1:nfs]
 	#-----------------------------------------------------------------------------
-	Fxvs = 
+	Fxv = 
 		[positionFromVelocity(
 	#            +------------------------------------------------------ vector (!)
 	#            |                                   
 	#            v                                  
 			 	fvs, Δτ, ntemp, c=1.0)[1] for ntemp in 1:nfs]
 	#--------------------------------------------------------------------------------
-	plot(xlimits=[-0.02, 10.52], ylimits=[-1.52, 1.56], title=L"All\ Numerical\ Antiderivatives\ of\ Scotch-Yoke-Oscillator", titlefontsize=12, xlabel=L"τ", ylabel=L"Fs(τ), Fvs(τ), Ts(τ)") 
+	plot(xlimits=[-0.02, 10.52], ylimits=[-1.52, 1.56], title=L"All\ Numerical\ Antiderivatives\ of\ Scotch-Yoke-Oscillator", titlefontsize=12, xlabel=L"τ", ylabel=L"F(τ), Fv(τ)") 
 	#--------------------------------------------------------------------------------
-	plot!(τs, τ->jerk(τ), lw=1.5, color=:red, label=L"theoretical\ j(τ)")
+	plot!(τs, jerk, lw=1.5, color=:red, label=L"theoretical\ j(τ)")
 	plot!(τs, τ->acc(τ),  lw=1.5, color=:green, label=L"theoretical\ a(t)")
 	plot!(τs, τ->vel(τ),  lw=1.0, color=:orange, label=L"theoretical\ v(t)")
 	plot!(τs, τ->pos(τ),  lw=1.5, color=:blue, label=L"theoretical\ x(t)")
 	#--------------------------------------------------------------------------------
-	plot!(τs, Fas, lw=2.5, linestyle=:dot, color=:green, label=L"F_a(τ) \approx \int_0^τ f_j(t) dt")
-	plot!(τs, Favs, lw=1.5, linestyle=:dashdot, color=:green, label=L"F_a(τ) \approx c + \Delta x \sum_{i=1}^n f_j[i]")
-	plot!(τs, Fvs, lw=2.5, linestyle=:dot, color=:orange, label=L"F_v(τ) \approx \int_0^τ f_j(t) dt")
-	plot!(τs, Fvvs, lw=3.0, linestyle=:dashdot, color=:orange, label=L"F_v(τ) \approx c + \Delta x \sum_{i=1}^n f_a[i]")
-	plot!(τs, Fxs, lw=2.5, linestyle=:dot, color=:cornflowerblue, label=L"F_x(τ) \approx \int_0^τ f_v(τ) dτ")
-	plot!(τs, Fxvs, lw=3.5, linestyle=:dashdot, color=:cornflowerblue, label=L"F_x(τ) \approx c + \Delta x \sum_{i=1}^n f_v[i]")
+	plot!(τs, Fa, lw=2.5, linestyle=:dot, color=:green, label=L"F_a(τ) \approx \int_0^τ f_j(τ') dτ'")
+	plot!(τs, Fav, lw=1.5, linestyle=:dashdot, color=:green, label=L"F_a(τ) \approx c + \Delta x \sum_{i=1}^n f_j[i]")
+	plot!(τs, Fv, lw=2.5, linestyle=:dot, color=:orange, label=L"F_v(τ) \approx \int_0^τ f_a(τ') dτ'")
+	plot!(τs, Fvv, lw=3.0, linestyle=:dashdot, color=:orange, label=L"F_v(τ) \approx c + \Delta x \sum_{i=1}^n f_a[i]")
+	plot!(τs, Fx, lw=2.5, linestyle=:dot, color=:cornflowerblue, label=L"F_x(τ) \approx \int_0^τ f_v(τ) dτ")
+	plot!(τs, Fxv, lw=3.5, linestyle=:dashdot, color=:cornflowerblue, label=L"F_x(τ) \approx c + \Delta x \sum_{i=1}^n f_v[i]")
 	#-------------------------------------------------------------------------------
 end # let
 
@@ -1490,7 +1539,7 @@ end # let
 md"""
 ---
 ##### 4. Summary
-We kept close to chapter 6 of Walck's book but we substituted his *air car* example by the *Scotch-Yoke-Oscillator*. This has the advantage of computing a *hierarchy* of integration levels. We started with the time-dependent $jerk$ variable and computed its antiderivatives *acceleration* $F_a$, *velocity* $F_v$ and *position* $F_x$. 
+We kept close to chapter 6 of Walck's book but we substituted his *air car* example by the *Scotch-Yoke-Oscillator*. This has the advantage of computing a *hierarchy* of integration levels. We started with the time-dependent $jerk, acceleration, velocity$ variables and computed in *parallel* its antiderivatives *acceleration* $F_a$, *velocity* $F_v$ and *position* $F_x$. 
 
 The idea to include $jerk$ came when I watched the quiz show '*Who knows such things?*' ('*Wer weiß denn sowas?*') on german TV ARD in 1st December 2025. The concept *jerk* was presented in the question "*Jerk, the English word for ‘idiot’ or 'moron'*" (*Jerk, das englische Wort für 'Idiot' oder 'Trottel',..*"). Two guess teams and the public audience was presented a set of multiple choice answer alternatives: 
 
@@ -1498,7 +1547,7 @@ The idea to include $jerk$ came when I watched the quiz show '*Who knows such th
 - B) "*...is considered traditional approval in debates in the British House of Commons.* (*...gilt im britischen Unterhaus bei Debatten als traditionelle Zustimmung.*")
 - C) "*...corresponds to the physical quantity ‘jerk’ in mechanics.* (*...entspricht der physikalischen Größe 'Ruck' in der Mechanik.*")
 
-We developed *three* alternative *methods* for the *functions* $myIntegral$ and $antiderivative$. The *first* method is close to Walck's Haskell method. It accepts *functional* arguments for the function $f$. The *second* and *third* methods are *new*. They accept *vectors* of function *values* instead of one *functional* argument.
+We developed *three* alternative *methods* for the *functions* $myIntegral$ and $antiderivative$. The *first* method is close to Walck's Haskell method and operates according to the *midpoint rule*. It accepts *functional* arguments for the function $f$. The *second* and *third* methods are *new*. They accept *vectors* of function *values* as arguments instead of one *functions*. 
 
 """
 
@@ -2997,9 +3046,11 @@ version = "1.13.0+0"
 # ╟─e5a558b1-796f-4662-b1b3-63997b2c430c
 # ╠═41820e7b-76ac-41fe-af26-06c1249c942e
 # ╟─46564854-56ec-4b46-9b19-fb6575ca29eb
+# ╟─d527abb6-ef12-4189-8def-fe84803ab7ff
 # ╠═5f923b97-f08e-4b23-8d7e-52d8bfa6a6de
 # ╟─17b08210-1094-4b72-ac49-3ba582d549b3
 # ╟─6079f469-d9f8-48e3-b861-bb9e258ad098
+# ╟─cee1fb75-94f4-432b-a221-6c5bf241091e
 # ╟─d77bbfd0-8a77-4d95-abfe-c9941b57cf56
 # ╠═a0d65d55-8602-46d8-bbe1-9e42c4fbd2e6
 # ╠═19d660cd-f93f-4dda-9f0f-397e65651cb4
@@ -3014,10 +3065,10 @@ version = "1.13.0+0"
 # ╠═f4caa863-b4bc-469b-bf34-111bef2fa4ba
 # ╠═59ae302f-e07d-4e57-a248-55a865431369
 # ╠═0327edf7-1420-48b4-8472-409c2972c549
-# ╟─cee1fb75-94f4-432b-a221-6c5bf241091e
-# ╠═cd6f3a52-1bb3-42fb-bd9e-de53a53f14bc
 # ╟─0487a189-7405-460f-8305-195e5bd169e2
 # ╠═dccc36ce-a235-45d2-856d-d6bffd57cc51
+# ╟─d0391a15-6ec6-42bb-800a-0789c4f7d62f
+# ╠═dfafbffa-c242-4193-94e5-5ce6e25c1368
 # ╟─db027011-d754-4377-b8cb-d25af9592855
 # ╟─fc88b7e5-5e70-4530-814d-2aa4b4f03b03
 # ╟─982ef57f-fffe-4378-9e9a-feb54ff1c6c6
