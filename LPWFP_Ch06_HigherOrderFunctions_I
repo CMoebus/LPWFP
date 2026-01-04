@@ -28,7 +28,7 @@ md"
 ====================================================================================
 #### LPWFP\_Ch06\_Higher-Order Functions I: Basics
 ##### file: LPWFP\_Ch06\_HigherOrderFunctions\_I
-##### code: Julia/Pluto (1.12.3/0.20.21) by PCM *** 2026/01/03 ***
+##### code: Julia/Pluto (1.12.3/0.20.21) by PCM *** 2026/01/04 ***
 
 ====================================================================================
 "
@@ -96,9 +96,11 @@ md"
 ###### 3.1.3 Higher-Order (HO) *Currified* Function $springForce$
 (cf. Walck, 2023, p.70)
 
+Haskell's operator $\rightarrow$ is *right-associative* so that
+
 $springForce: \mathbb R \rightarrow \mathbb R \rightarrow \mathbb R = \mathbb R \rightarrow (\mathbb R \rightarrow \mathbb R)$
 
-$springForce: k \mapsto x \mapsto -k \cdot x = k \mapsto (x \mapsto -k \cdot x)$
+$springForce: k \mapsto x \mapsto -k \cdot x = k \mapsto (x \mapsto -k \cdot x).$
 "
 
 # ╔═╡ 3d0e7b22-2d2d-4a96-8c41-2db80c6317b7
@@ -1470,7 +1472,7 @@ end # let
 # ╔═╡ 8c9590cf-8fdb-4205-bfd5-ba40918806c4
 md"
 ---
-###### 9.3.7 All Numerical AntiDerivatives
+###### 9.3.7 The Totality of all Numerical *AntiDerivatives* of *Scotch-Yoke-Oscillator (SYO)*
 "
 
 # ╔═╡ 8a11da66-9f5d-4009-9270-b0b39ca7a523
@@ -1519,7 +1521,7 @@ let nIntvs  =  10^3                           # number of intervals
 	#            v                                  
 			 	fvs, Δτ, ntemp, c=1.0)[1] for ntemp in 1:nfs]
 	#--------------------------------------------------------------------------------
-	plot(xlimits=[-0.02, 10.52], ylimits=[-1.52, 1.56], title=L"All\ Numerical\ Antiderivatives\ of\ Scotch-Yoke-Oscillator", titlefontsize=12, xlabel=L"τ", ylabel=L"F(τ), Fv(τ)") 
+	plot(xlimits=[-0.02, 10.52], ylimits=[-1.52, 1.56], title=L"The\ Totality\ of\ Numerical\ Antiderivatives\ of\ SYO", titlefontsize=12, xlabel=L"τ", ylabel=L"F(τ), Fv(τ)") 
 	#--------------------------------------------------------------------------------
 	plot!(τs, jerk, lw=1.5, color=:red, label=L"theoretical\ j(τ)")
 	plot!(τs, τ->acc(τ),  lw=1.5, color=:green, label=L"theoretical\ a(t)")
