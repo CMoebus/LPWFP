@@ -25,7 +25,7 @@ md"
 ====================================================================================
 #### LPWFP\_Ch06\_Higher-Order Functions II: Scotch-Yoke-Oscillator
 ##### file: LPWFP\_Ch06\_HigherOrderFunctions\_II
-##### code: Julia/Pluto (1.12.2/0.20.21) by PCM *** 2025/12/30 ***
+##### code: Julia/Pluto (1.12.2/0.20.21) by PCM *** 2026/01/04 ***
 
 ====================================================================================
 "
@@ -62,30 +62,115 @@ md"
 # ╔═╡ 602a632e-c190-47a5-b9a3-e04057f02e37
 md"
 ---
-###### 3.1 *Quadrature*
-###### 1. Method: Definite Integral $F(x)$ from Closed Form *Continuous Function* $f(x)$
+###### 3.1 Numerical *Quadrature*
+---
+###### 1st Method: Definite Integral F(x) = $\int_a^b f(x)dx$ from Closed Form *Continuous Function* $f(x)$
 
-$\left.F(x)\right|_a^b = \int_a^b f(x)dx \approx c + \Delta x \sum_{i=1}^b f(x_i)\;;\; a \le x_i \le b$
+$\left.F(x)\right|_a^b = \int_a^b f(x)dx \approx c + \Delta x \sum_{i=1}^b f(x_i)$
 
+$\Delta x = \frac{|a-b|}{n}\;;\;\text{ where } n = \text{ number of intervals}$
+
+$a + \frac{\Delta x}{2} \le x_i \le b - \frac{\Delta x}{2},$ 
+
+$x_{i+1} = x_i + \Delta x.$
+
+"
+
+# ╔═╡ 68178cf6-f516-4fe2-a002-e704ba116eb7
+md"
+###### Signature of *1st method* of *function* $myIntegral$
+
+$myIntegral: \mathbb R \times \mathbb N  \times \mathbb R \times \mathbb R \rightarrow \mathbb R \times \mathbb R \times \mathbb R$
+$myIntegral: (f, n, a, b, c) \mapsto (integral, Δx, interval)$
 "
 
 # ╔═╡ 2b98eb0a-ff15-4a94-8c23-8c154905cc02
-# definite integral of function f
-myIntegral(f::Function, Δx::Float64, a::Float64, b::Float64; c=0.0)::Float64 =      
-	c + Δx * sum([f(x) for x in a + Δx/2.0:Δx:b - Δx/2.0])
+function myIntegral(
+	f::Function, n::Int64, a::Float64, b::Float64; c::Float64=0.0)::Tuple{Float64, Float64, Float64}  
+	Δx  = abs(a-b)/n
+	xs = a + Δx/2.0:Δx:b - Δx/2.0
+	integral = c + Δx * sum([f(x) for x in xs])
+	intervalLength = Δx * length(xs)       # == abs(a-b)
+    integral, Δx, intervalLength
+end # function myIntegral
 
 # ╔═╡ 431c33a7-cdbe-4d64-8edd-b9962d83ec69
 md"
-###### 2. Method: Approximation of Definite Integral from *Vector* of Discretized *Function* Values $f_x[i]$
+---
+###### 2nd Method: Approximation of Definite Integral from *Vector* of Discretized *Function* Values 
 
-$\left.F(x)\right|_a^b \approx c + \Delta x \sum_{i=1}^n f_x[i].$
+$\left.F(x)\right |_a^b \approx c + \Delta x\sum_{i=1}^n [...,f_x[i],...]$
+
+
+where: 
+
+$f_x[i] = f(x_i),$
+
+$a + \frac{\Delta x}{2} \le x_i \le b - \frac{\Delta x}{2},$ 
+
+$x_{i+1} = x_i + \Delta x,$
+
+and
+
+$[...,f_x[i],...] \;;\; i=1,...,n$ is the *vector* of function values and 
+
+$length([...,f_x[i],...] = n$ 
+
+is its *length* $n$ (= *number* $n$ of vector *components*).
+
+There is a *constraint* between upper integration limit $x = b - a$, $length([...,f_x[i],...]\ and\ \Delta x$:
+
+$x = length([...,f_x[i],...]) \cdot \Delta x = n \Delta x$
+
+and mappings
+
+$(x, \frac{1}{\Delta x}) \mapsto n \left(= length([...,f_x[i],...])\right)$
+
+$(x, n) \mapsto \frac{x}{n} = \Delta x.$
+
+"
+
+# ╔═╡ f6711618-992e-4864-a577-cfd4d372db36
+md"
+###### Signature of *2nd method* of *function* $myIntegral$
+
+$myIntegral: [...,\mathbb R,...] \times \mathbb N  \times \mathbb R \times \mathbb R \rightarrow \mathbb R \times \mathbb R \times \mathbb R$
+$myIntegral: (fs, n, a, b, c) \mapsto (integral, Δx, interval)$
 "
 
 # ╔═╡ a8623a1b-4865-4264-9cbb-80a686798b4b
-# integration of vector of values
-myIntegral(fs::Vector{Float64}, Δx::Float64; c=0.0)::Tuple{Float64, Float64} =    
+function myIntegral(
+	fs::Vector{Float64}, n::Int64, a::Float64, b::Float64; c::Float64=0.0)::Tuple{Float64, Float64, Float64} 
+	Δx  = abs(a-b)/n
 	# value by generator, integration limit x
-	c + Δx * sum((f for f in fs)), length(fs) * Δx # length(fs) * Δx = n
+	integral = c + Δx * sum((f for f in fs))
+	intervalLength = Δx * length(fs)  # == abs(a-b)
+	integral, Δx, intervalLength
+end # function myIntegral
+
+# ╔═╡ a1916494-9b0f-4b03-a7c6-711185703859
+md"
+---
+###### 3rd Method of Function $myIntegral$
+"
+
+# ╔═╡ 7980a71e-18b5-4159-bf42-bd204e2dd5c1
+md"
+###### Signature of *3rd method* of *function* $myIntegral$
+
+$myIntegral: [...,\mathbb R,...] \times \mathbb R \times \mathbb N \rightarrow \mathbb R \times \mathbb R \times \mathbb R$
+$myIntegral: (fs, Δx, ntemp, c) \mapsto (integral, Δx, interval)$
+"
+
+# ╔═╡ 22cbe868-6318-435b-94d6-1d002688bce8
+function myIntegral(
+	fs::Vector{Float64}, Δx::Float64, ntemp::Int64; c::Float64=0.0)::Tuple{Float64, Float64, Float64} 
+	# value by generator, integration limit x
+	fss      = [fs[i] for i in 1:ntemp]
+	integral = c + Δx * sum(fss)
+	intervalLength = Δx * length(fss)  
+	integral, Δx, intervalLength
+end # function myIntegral
 
 # ╔═╡ a64a655d-e31d-4fb9-bdb0-1fe8b9f6a434
 md"
@@ -98,225 +183,357 @@ Each one of the antiderivatives $F_a(τ)=accelerationFromJerk(τ)$, $F_v(τ)=vel
 # ╔═╡ 80d36f05-8dd4-4c5b-b54e-d695b709532b
 md"
 ---
-###### 3.2.1. *Method* of Function Antiderivative $F(x)$ with *Continuous* Function Parameter $f(x)$
+###### 3.2.1 Numerical Antiderivatives
+###### 1st *Method* of Function *Antiderivative* $F(x)$ with Continuous *Function Parameter* $f$
 
 $F(x) = F(a) + \int_a^x f(x') dx' \approx c + \Delta x \sum_{i=1}^x f(x_i)\;;\; x_i \le x$
 
 where:
 
-$c = F(a).$
+$c = F(a),$
+
+$\Delta x = \frac{|a-b|}{n}\;;\;\text{ where } n = \text{ number of intervals}$
+
+$a + \frac{\Delta x}{2} \le x_i \le b - \frac{\Delta x}{2},$ 
+
+$x_{i+1} = x_i + \Delta x.$
+
 "
 
 # ╔═╡ db44b28c-9d51-49d3-a7a3-3f665e98fcb9
-antiDerivative(   
-#   +-----+--------------------------------------------------- functional argument f
-#   |     |                   +------------------------------- lower limit a
-#   |     |                   |           +------------------- upper limit b = x
-#	|     |                   |           |           +------- integration constant c
-#   |     |                   |           |           |
-#   v     v                   v           v           v                        
-	f::Function, Δx::Float64, a::Float64, x::Float64; c::Float64=0.0)::Float64 = 
-	myIntegral(f, Δx, a, x, c = c)      
+function antiDerivative(   # --------------------------------- 1st method
+#   +--------------------------------------------------------- functional argument f
+#   |            +-------------------------------------------- number of intervals
+#   |            |         +---------------------------------- lower limit a
+#   |            |         |           +---------------------- upper limit x
+#	|            |         |           |           +---------- integration constant c
+#   |            |         |           |           |
+#   v            v         v           v           v                        
+	f::Function, n::Int64, a::Float64, x::Float64; c::Float64=0.0)::Tuple{Float64, Float64, Float64}
+	myIntegral(f, n, a, x, c = c)   
+end # function antiDerivative   
 
 # ╔═╡ d0df5abd-47bb-4d84-ab99-18061471c981
 md"
-###### 2. *Method* of Function Antiderivative $F(x)$ with *Vector* of Discretized *Function* Values 
+---
+###### 2nd Method of Function Antiderivative $F(x)$ with *Vector* $fs$ of Discretized *Function* Values 
 
-$F(x) = F(a) + \int_a^x f(x') dx' \approx c + \Delta x \sum_{i=1}^n [...,f(x)[i],...].$
+There is a *constraint* between upper integration limit $x = b - a$, $length([...,f_x[i],...]\ and\ \Delta x$:
 
+$x = length([...,f_x[i],...]) \cdot \Delta x = n \Delta x$
+
+and mappings
+
+$(x, \frac{1}{\Delta x}) \mapsto n \left(= length([...,f_xx[i],...])\right)$
+
+$(x, n) \mapsto \frac{x}{n} = \Delta x.$
+
+So the second *method* of function $antiDerivative$ has *three* values:
+- the *first* value is the *approximation* of *antiderivative* $F(x)$
+- the *second* value is the *step width* $Δx$
+- the *third* value is the reconstructed *interval length* $|a-b|$
+
+$F(x)\approx c + \Delta x ∑_{i=1}^n [...,f_x[i],...]$
+
+where: 
+
+$f_x[i] = f(x_i),$
+
+$a + \frac{\Delta x}{2} \le x_i \le b - \frac{\Delta x}{2},$ 
+
+$x_{i+1} = x_i + \Delta x$
+
+- the *third* value is the *reconstruction* of the integration bound $x$ dependent on the *length* $n$ of the *vector* of function values $length([...,f_xx[i],...])$ and step length $\Delta x$ 
+
+$length([...,f_x[i],...]) \cdot \Delta x = n\Delta x \mapsto x$
+
+The *approximation* of the antiderivative is:
+
+$F(x) = F(a) + \int_a^x f(x') dx' \approx c + \Delta x \sum_{i=1}^n [...,f_x[i],...].$
 "
 
 # ╔═╡ f0ef09b2-285c-4d79-af72-66b239e237b6
-antiDerivative(
-#   +-----+--------------------------------------------- vector of function values 
-#   |     |
-#   v     v
-	fs::Vector{Float64}, Δx::Float64; c::Float64=0.0)::Tuple{Float64, Float64} =
-	myIntegral(fs, Δx, c = c)[1], myIntegral(fs, Δx,  c = c)[2]   # ==> (F(x), x)
+function antiDerivative(   # ----------------------------- 2nd method
+#   +----------------------------------------------------- vector of function values
+#   |                    +-------------------------------- #intervals
+#   |                    |         +---------------------- lower limit
+#   |                    |         |           +---------- upper limit
+#   |                    |         |           |
+#   v                    v         v           v  
+	fs::Vector{Float64}, n::Int64, a::Float64, x::Float64; c::Float64=0.0)::Tuple{Float64, Float64, Float64} 
+	myIntegral(fs, n, a, x, c = c)
+end # unction antiDerivative
+
+# ╔═╡ a29a57ad-58ce-4843-8708-1a543c2f73ba
+md"
+---
+###### 3rd Method of Function Antiderivative
+"
+
+# ╔═╡ e8f49745-f685-4b77-bc5f-26c9accf812b
+function antiDerivative(   # ----------------------------- 3rd method
+#   +----------------------------------------------------- vector of function values
+#   |                    +-------------------------------- step width
+#   |                    |              +----------------- index of upper limit
+#   |                    |              |           
+#   v                    v              v           
+	fs::Vector{Float64}, Δx::Float64, ntemp::Int64; c::Float64=0.0)::Tuple{Float64, Float64, Float64} 
+	myIntegral(fs, Δx, ntemp, c = c)
+end # function antiDerivative
 
 # ╔═╡ ff5cafdd-63f7-4b38-9a79-c9364b31fafc
 md"
 ---
-###### 3.2.2 Function $accelerationFromJerk\ F_a(t)$
-###### 1. *Method*: $F_a(t)=acceleration(t)$ with Function Parameter $f_j(x)=jerk(t)$
+###### 3.2.2 *Parallelized* Numerical Antiderivatives of  *Scotch-Yoke-Oscillator*
+---
+###### 3.2.2.1 *Acceleration* from *Jerk* in *Scotch-Yoke-Oscillator*
+###### 1st *Method*: $F_a(t)=acceleration(t)$ with Function Parameter $f_j(t)=jerk(t)$
 
-$F_a(t) = a(t) = \int_0^t f_j(t') dt' \approx c + \Delta t \sum_{i=1}^t f_j(t_i)\;;\; t_i \le t$
+$F_a(t) = a(t) = a(0) + \int_0^t f_j(t') dt' \approx c + \Delta t \sum_{i=1}^t f_j(t_i)\;;\; t_i \le t$
 
 "
 
 # ╔═╡ b14d25e2-6c7c-4303-812e-f0a6e60454c2
 # for continuous function jerkf
-accelerationFromJerk(
-	jerkf::Function, Δt::Float64, a::Float64, t::Float64; c=0.0)::Float64 = 
-	antiDerivative(jerkf, Δt, a, t, c = c)     
+function accelerationFromJerk(
+	jerkf::Function, n::Int64, a::Float64, t::Float64; c::Float64=0.0)::Tuple{Float64, Float64, Float64} 
+	antiDerivative(jerkf, n, a, t, c = c)  
+end # function accelerationFromJerk
 
 # ╔═╡ 4f67e713-a943-45ec-9311-466dbbd39cbd
 md"
-###### 2. Method: $F(x)$ with *Vector* of Discretized *Function* Values Parameter
+---
+###### 3rd Method: $F(x)$ with *Vector* Parameter of Discretized *Function* Values
 
-$F_a(t) = a(t) = a(0) + \int_0^t f_j(t') dt' \approx c + \Delta t \sum_{i=1}^n [...,f_j[i],...]$
+$F_a(t) = a(t) = a(0) + \int_0^τ f_j(τ') dτ' \approx c + \Delta t \sum_{i=1}^n [...,f_j[i],...]$
+
+where: 
+
+$f_j[i] = f_j(τ_i),$
+
+$a + \frac{\Delta τ}{2} \le j_i \le b - \frac{\Delta τ}{2},$ 
+
+$τ_{i+1} = x_i + \Delta τ.$
+
 "
 
 # ╔═╡ eb8bc22e-01ca-4d16-ada3-21e41040b714
 # for vector jerkV of discretisized function values jerkf
-accelerationFromJerk(
-	jerkV::Vector{Float64}, Δt::Float64; c::Float64=0.0)::Tuple{Float64, Float64} = 
-	antiDerivative(jerkV, Δt, c = c)
+function accelerationFromJerk(
+	jerkV::Vector{Float64}, Δτ::Float64, ntemp::Int64; c::Float64=0.0)::Tuple{Float64, Float64, Float64} 
+	antiDerivative(jerkV, Δτ, ntemp, c = c)
+end # function accelerationFromJerk
 
 # ╔═╡ fbe09885-e8d0-42a0-b322-17c222e12a51
 md"
 ---
-###### 3.2.3 Function $velocityFromAcceleration$
-###### 1. *Method*: $F_v(x)=velocity(t)$ with Function Parameter $f_a(x)=acceleration(t)$
+###### 3.2.2.2 *Velocity* from *Acceleration* in *Scotch-Yoke-Oscillator*
+
+###### 1st *Method*: $F(x)=velocity(t)$ with Function Parameter $f(x)=acceleration(t)$
 
 $F_v(t) = v(t) = v(0) + \int_0^t f_a(t') dt' \approx c + \Delta t \sum_{i=1}^t f_a(t_i)\;;\; t_i \le t$
+
 "
 
 # ╔═╡ 4849625e-8faf-41d8-a850-ba193a3738e2
-# for continuous function acc
-#                                +-------------------------------- lower limit a
-#                                |           +-------------------- upper limit b = t 
-#                                |           |
-velocityFromAcceleration(  #     v           v
-	accf::Function, Δt::Float64, a::Float64, t::Float64; c::Float64=0.0)::Float64 = 
-	antiDerivative(accf, Δt, a, t, c = c)
+# for continuous function acc    # ------------------------------- 1st method
+function velocityFromAcceleration(
+#                             +----------------------------------- lower limit a
+#                             |           +----------------------- upper limit b = t 
+#                             |           |
+#                             v           v
+	accf::Function, n::Int64, a::Float64, t::Float64; c::Float64=0.0)::Tuple{Float64, Float64, Float64}  
+	antiDerivative(accf, n, a, t, c = c)
+end # function velocityFromAcceleration
 
 # ╔═╡ a23d81c6-d121-4a11-bd26-998f451e9083
 md"
-###### 2. Method: $F(x)$ with *Vector* of Discretized *Function* Values Parameter
+---
+###### 3rd Method: $F(x)$ with *Vector* of Discretized *Function* Values Parameter
 
-$F_v(t) = v(t) = v(0) + \int_0^t f_a(t') dt' \approx c + \Delta t \sum_{i=1}^n [...,f_a[i],...]$
+$F_v(τ) = v(τ) = v(0) + \int_0^τ f_a(τ') dτ' \approx c + Δτ \sum_{i=1}^n [...,f_a[i],...]$
+
+where: 
+
+$f_a[i] = f_a(τ_i),$
+
+$a + \frac{Δτ}{2} \le x_i \le b - \frac{Δτ}{2},$ 
+
+$a_{i+1} = a_i + Δτ$
 "
 
 # ╔═╡ 10cef37f-5d01-4fd2-bd45-d546e30938a8
 # for vector accv of discretisized function values acc
-velocityFromAcceleration(accV::Vector{Float64}, Δt::Float64; c::Float64=0.0)::Tuple{Float64, Float64} = 
-	antiDerivative(accV, Δt, c = c)
+function velocityFromAcceleration(  # ------------------------------- 3rd method
+	accV::Vector{Float64}, Δτ::Float64, ntemp::Int64; c::Float64=0.0)::Tuple{Float64, Float64, Float64} 
+	antiDerivative(accV, Δτ, ntemp, c = c)
+end # function velocityFromAcceleration
 
 # ╔═╡ 0e6bbcb4-97e0-4939-b556-114e066e0c11
 md"
 ---
-###### 3.2.4 Function $positionFromVelocity$
-###### 1. *Method* of Function Antiderivative $F_x(t)$ with *Continuous* Function Parameter $f_x(t)$
+###### 3.2.2.3 *Position* from *Velocity* in *Scotch-Yoke-Oscillator*
 
-$F_x(t) = x(t) = x(0) + \int_0^t f_v(t') dt' \approx c + \Delta t \sum_{i=1}^t f_v(t_i)\;;\; t_i \le t$
+###### 1st *Method* of Function Antiderivative $F_x(t)$ with *Continuous* Function Parameter $f_x(t)$
+
+$F_x(τ) = x(τ) = x(0) + \int_0^τ f_v(τ') dτ' \approx c + Δτ \sum_{i=1}^τ f_v(τ_i)\;;\; τ_i \le τ$
+
 "
 
 # ╔═╡ a34f0bbc-7328-44b3-b6b4-442e4261b5f7
 # for continuous function vel
-positionFromVelocity(
-	velf::Function, Δt::Float64, a::Float64, t::Float64; c::Float64=0.0)::Float64 = 
-	antiDerivative(velf, Δt, a, t, c = c)
+function positionFromVelocity(       # ------------------------------- 1st method
+	velf::Function, n::Int64, a::Float64, t::Float64; c::Float64=0.0)::Tuple{Float64, Float64, Float64} 
+	antiDerivative(velf, n, a, t, c = c)
+end # function positionFromVelocity
 
 # ╔═╡ de6a7137-edb2-4258-b706-f9d61b6c8d37
 md"
-###### 2. Method of Function Antiderivative $F(x)$ with *Vector* of Discretized *Function* Values 
+---
+###### 3rd Method of Function Antiderivative $F(x)$ with *Vector* of Discretized *Function* Values 
 
-$F_x(t) = x(t) = \int_0^t f_v(t') dt' \approx c + \Delta t \sum_{i=1}^n [...,f_v[i],...]$
+$F_x(τ) = x(τ) = \int_0^τ f_v(τ') dτ' \approx c + Δτ \sum_{i=1}^n [...,f_v[i],...]$
+
+where: 
+
+$f_v[i] = f_v(τ_i),$
+
+$a + \frac{Δτ}{2} \le τ_i \le b - \frac{Δτ}{2},$ 
+
+$v_{i+1} = v_i + Δτ$
 
 "
 
 # ╔═╡ a5e5423b-d311-4d44-b9fa-eff2a1eee2ff
 # for vector velV of discretisized function values vel
-positionFromVelocity(velV::Vector{Float64}, Δt::Float64; c::Float64=0.0)::Tuple{Float64, Float64} = 
-	antiDerivative(velV, Δt, c = c)
+function positionFromVelocity(         # ------------------------------- 3rd method
+	velV::Vector{Float64}, Δt::Float64, ntemp::Int64; c::Float64=0.0)::Tuple{Float64, Float64, Float64} 
+	antiDerivative(velV, Δt, ntemp, c = c)
+end # function positionFromVelocity
 
 # ╔═╡ 83ceafd9-20e5-4329-a3ce-f6c757355986
 md"
 ---
-###### 3.2.5 *Parallel* Antiderivatives with *Vector* Arguments
+###### 3.2.3 The Totality of *Parallelized* Numerical *AntiDerivatives* of *Scotch-Yoke-Oscillator (SYO)*
 "
 
 # ╔═╡ 30ffe340-1193-42b7-80db-4d0b69495516
-let Δτ      =  1.0E-3                         # should not be smaller than 1.0E-4 !
+let nIntvs  =  10^3                           # number of intervals
 	τUpLim  =  2.0pi                          # upper integration limit τ
-	τs      =  [τ for τ  in 0.0:Δτ:τUpLim]    # τUpLim/Δτ = n integration step points
+	Δτ      =  abs(0.0-τUpLim)/nIntvs
+	τs      =  [τ for τ in 0.0+Δτ/2:Δτ:τUpLim-Δτ/2] 
 	jerk(τ) =  sin(τ)                         # x'''(τ) = jerk in Scotch-Yoke-Oscill.
 	acc(τ)  = -cos(τ)                         # acceleration
+	Fas(τ)  =  acc(τ)                         # acceleration
 	vel(τ)  = -sin(τ)                         # velocity
 	pos(τ)  =  cos(τ)                         # position 
+	fjs     =  [jerk(τ) for τ in τs]          # vector of function values f(τi)
+	fas     =  [acc(τ) for τ in τs]           # vector of function values f(τi)
+	fvs     =  [vel(τ) for τ in τs]           # vector of function values f(τi)
+	fxs     =  [pos(τ) for τ in τs]           # vector of function values f(τi)
+	nfs     =  length(fjs)
 	#--------------------------------------------------------------------------------
-	# Fvs = antiderivative from vector of function values f(t)
-	Favs = 
+	# Fs = antiderivative from continuous function f(t)
+	#                             +---------------------------------- function (!)
+	#                             |
+	#                             v
+	Fa  = [accelerationFromJerk(jerk, nIntvs, -1.55, τ, c=0.0)[1] for τ in τs]
+	Fv  = [velocityFromAcceleration(acc, nIntvs, 0.0, τ, c=0.0)[1] for τ in τs]
+	Fx  = [positionFromVelocity(vel, nIntvs, 0.0, τ, c=1.0)[1] for τ in τs]
+	#--------------------------------------------------------------------------------
+	# Fvs = antiderivative from vector of function values fs
+	Fav = 
 		[accelerationFromJerk(
-	#           +----------------------------+--------------+------------ vector (!)
-	#           |                            |              |
-	#           v                            v              v
-				[jerk(τ) for τ in 0.0:Δτ:τlim], Δτ, c=-1.0)[1] for τlim in τs]
+	#            +------------------------------------------------------ vector (!)
+	#            |                                    
+	#            v                                     
+				fjs, Δτ, ntemp, c=-1.0)[1] for ntemp in 1:nfs]
 	#-----------------------------------------------------------------------------
-	Fvelvs = 
+	Fvv = 
 		[velocityFromAcceleration(
-	#           +---------------------------+-------------+-------------- vector (!)
-	#           |                           |             |
-	#           v                           v             v
-				[acc(τ) for τ in 0.0:Δτ:τlim], Δτ, c=0.0)[1] for τlim in τs]
+	#            +------------------------------------------------------ vector (!)
+	#            |                                    
+	#            v                                
+				fas, Δτ, ntemp, c=0.0)[1] for ntemp in 1:nfs]
 	#-----------------------------------------------------------------------------
-	Fposvs = 
+	Fxv = 
 		[positionFromVelocity(
-	#           +---------------------------+-------------+-------------- vector (!)
-	#           |                           |             |
-	#           v                           v             v
-				[vel(τ) for τ in 0.0:Δτ:τlim], Δτ, c=1.0)[1] for τlim in τs]
+	#            +------------------------------------------------------ vector (!)
+	#            |                                   
+	#            v                                  
+			 	fvs, Δτ, ntemp, c=1.0)[1] for ntemp in 1:nfs]
 	#--------------------------------------------------------------------------------
-	plot(xlimits=[-0.02, 10.02], ylimits=[-1.52, 1.56], title=L"Parallel\ Antiderivatives\ of\ Scotch-Yoke-Oscillator", titlefontsize=12, xlabel=L"τ", ylabel=L"Fs(τ), Fvs(τ), Ts(τ)") 
+	plot(xlimits=[-0.02, 10.52], ylimits=[-1.12, 1.26], title=L"The\ Totality\ of\ Numerical\ Antiderivatives\ of\ SYO", titlefontsize=12, xlabel=L"τ", ylabel=L"F(τ), Fv(τ)") 
 	#--------------------------------------------------------------------------------
-	plot!(τs, τ->jerk(τ), lw=1.5, color=:red, label=L"theoretical\ j(τ)")
+	plot!(τs, jerk, lw=1.0, color=:red, label=L"theoretical\ j(τ)")
+	plot!(τs, τ->acc(τ),  lw=1.0, color=:green, label=L"theoretical\ a(t)")
+	plot!(τs, τ->vel(τ),  lw=1.0, color=:orange, label=L"theoretical\ v(t)")
+	plot!(τs, τ->pos(τ),  lw=1.0, color=:blue, label=L"theoretical\ x(t)")
 	#--------------------------------------------------------------------------------
-	plot!(τs, Favs, lw=1.5, linestyle=:dashdot, color=:green, label=L"F_a(τ) \approx c + \Delta x \sum_{i=0}^n f_j[i]")
-	plot!(τs, Fvelvs, lw=1.5, linestyle=:dashdot, color=:orange, label=L"F_v(τ) \approx c + \Delta x \sum_{i=0}^n f_a[i]")
-	plot!(τs, Fposvs, lw=1.5, linestyle=:dashdot, color=:blue, label=L"F_x(τ) \approx c + \Delta x \sum_{i=0}^n f_v[i]")
+	plot!(τs, Fa, lw=3.0, linestyle=:dot, color=:green, label=L"F_a(τ) \approx \int_0^τ f_j(τ') dτ'")
+	plot!(τs, Fav, lw=2.0, linestyle=:dashdot, color=:green, label=L"F_a(τ) \approx c + \Delta x \sum_{i=1}^n f_j[i]")
+	plot!(τs, Fv, lw=3.0, linestyle=:dot, color=:orange, label=L"F_v(τ) \approx \int_0^τ f_a(τ') dτ'")
+	plot!(τs, Fvv, lw=2.0, linestyle=:dashdot, color=:orange, label=L"F_v(τ) \approx c + \Delta x \sum_{i=1}^n f_a[i]")
+	plot!(τs, Fx, lw=3.0, linestyle=:dot, color=:cornflowerblue, label=L"F_x(τ) \approx \int_0^τ f_v(τ) dτ")
+	plot!(τs, Fxv, lw=2.0, linestyle=:dashdot, color=:cornflowerblue, label=L"F_x(τ) \approx c + \Delta x \sum_{i=1}^n f_v[i]")
 	#-------------------------------------------------------------------------------
 end # let
 
 # ╔═╡ 5cf4b041-70c4-4753-882f-384463c7405a
 md"
 ---
-###### 3.3 *Higher-Order (= Iterated)* Antiderivatives with *Vector* Arguments
-Here, starting with $f_j(τ)=j(τ)$ we compute all *higher-order* or *iterated* antiderivatives $F_a(τ), F_v(τ), F_x(τ)$. 
+###### 3.3 The Totality of *Iterated* Numerical *AntiDerivatives* of *Scotch-Yoke-Oscillator (SYO)*
+Here, starting with $f_j(τ)=j(τ)$ we compute all *higher-order* or *iterated* antiderivatives $F_a(τ), F_v(τ), F_x(τ)$ in a *cascade*-like style. All but the first antiderivative have *vector* arguments instead of a *functional* argument.
 "
 
 # ╔═╡ e26273ab-388a-4371-8c4d-b37b18157432
-let Δτ      =  1.0E-3                         # should not be smaller than 1.0E-4 !
+let nIntvs  =  10^3                           # number of intervals
 	τUpLim  =  2.0pi                          # upper integration limit τ
-	τs      =  [τ for τ  in 0.0:Δτ:τUpLim]    # τUpLim/Δτ = n integration step points
+	Δτ      =  abs(0.0-τUpLim)/nIntvs
+	τs      =  [τ for τ in 0.0+Δτ/2:Δτ:τUpLim-Δτ/2] 
 	jerk(τ) =  sin(τ)                         # x'''(τ) = jerk in Scotch-Yoke-Oscill.
 	acc(τ)  = -cos(τ)                         # acceleration
+	Fas(τ)  =  acc(τ)                         # acceleration
 	vel(τ)  = -sin(τ)                         # velocity
 	pos(τ)  =  cos(τ)                         # position 
+	fjs     =  [jerk(τ) for τ in τs]          # vector of function values f(τi)
+	fas     =  [acc(τ) for τ in τs]           # vector of function values f(τi)
+	fvs     =  [vel(τ) for τ in τs]           # vector of function values f(τi)
+	fxs     =  [pos(τ) for τ in τs]           # vector of function values f(τi)
+	nfs     =  length(fjs)
 	#--------------------------------------------------------------------------------
-	# F..vs = antiderivative from vector of function values f(t)
-	Favs = 
+	# Fvs = antiderivative from vector of function values fs
+	Fav = 
 		[accelerationFromJerk(
-	#           +----------------------------+--------------+------------ vector (!)
-	#           |                            |              |
-	#           v                            v              v
-				[jerk(τ) for τ in 0.0:Δτ:τlim], Δτ, c=-1.0)[1] for τlim in τs]
+	#            +------------------------------------------------------ vector (!)
+	#            |                                    
+	#            v                                     
+				fjs, Δτ, ntemp, c=-1.0)[1] for ntemp in 1:nfs]
 	#-----------------------------------------------------------------------------
-	Fvelvs = 
+	Fvv = 
 		[velocityFromAcceleration(
-	#           +--------------------+---------------------------------- vector (!)
-	#           |                    |          
-	#           |     +----------------------- vector of antiderivatives from above
-	#           |     |              |
-	#           v     v              v
-				[Favs[j] for j in 1:i], Δτ, c=0.0)[1] for i in 1:length(τs)]
+	#            +------------------------------------------------------ vector (!)
+	#            |                                    
+	#            v                                
+				Fav, Δτ, ntemp, c=0.0)[1] for ntemp in 1:nfs]
 	#-----------------------------------------------------------------------------
-	Fposvs = 
+	Fxv = 
 		[positionFromVelocity(
-	#           +----------------------+-------------------------------- vector (!)
-	#           |                      |          
-	#           |       +-------------------- vector of antiderivatives from above
-	#           |       |              |
-	#           v       v              v
-				[Fvelvs[j] for j in 1:i], Δτ, c=1.0)[1] for i in 1:length(τs)]
+	#            +------------------------------------------------------ vector (!)
+	#            |                                   
+	#            v                                  
+			 	fvs, Δτ, ntemp, c=1.0)[1] for ntemp in 1:nfs]
 	#--------------------------------------------------------------------------------
-	plot(xlimits=[-0.02, 10.02], ylimits=[-1.52, 1.56], title=L"Serial\ Antiderivatives\ of\ Scotch-Yoke-Oscillator", titlefontsize=12, xlabel=L"τ", ylabel=L"Fs(τ), Fvs(τ), Ts(τ)") 
+	plot(xlimits=[-0.02, 10.52], ylimits=[-1.12, 1.26], title=L"Iterated\ Antiderivatives\ of\ Scotch-Yoke-Oscillator", titlefontsize=12, xlabel=L"τ", ylabel=L"Fs(τ), Fsv(τ)") 
 	#--------------------------------------------------------------------------------
-	plot!(τs, τ->jerk(τ), lw=1.5, color=:red, label=L"theoretical\ j(τ)")
+	plot!(τs, jerk, lw=1.0, color=:red, label=L"theoretical\ j(τ)")
+	plot!(τs, acc,  lw=1.0, color=:green, label=L"theoretical\ a(t)")
+	plot!(τs, vel,  lw=1.0, color=:orange, label=L"theoretical\ v(t)")
+	plot!(τs, pos,  lw=1.0, color=:blue, label=L"theoretical\ x(t)")
 	#--------------------------------------------------------------------------------
-	plot!(τs, Favs, lw=1.5, linestyle=:dashdot, color=:green, label=L"F_a(τ) \approx  c +\Delta x \sum_{i=0}^n f_j[i]")
-	plot!(τs, Fvelvs, lw=1.5, linestyle=:dashdot, color=:orange, label=L"F_v(τ) \approx c + \Delta x \sum_{i=0}^n f_a[i]")
-	plot!(τs, Fposvs, lw=1.5, linestyle=:dashdot, color=:blue, label=L"F_x(τ) \approx c + \Delta x \sum_{i=0}^n f_v[i]")
+	plot!(τs, Fav, lw=3.0, linestyle=:dashdot, color=:green, label=L"F_a(τ) \approx  c +\Delta x \sum_{i=0}^n f_j[i]")
+	plot!(τs, Fvv, lw=3.0, linestyle=:dashdot, color=:orange, label=L"F_v(τ) \approx c + \Delta x \sum_{i=0}^n F_a[i]")
+	plot!(τs, Fxv, lw=3.0, linestyle=:dashdot, color=:blue, label=L"F_x(τ) \approx c + \Delta x \sum_{i=0}^n F_v[i]")
 	#-------------------------------------------------------------------------------
 end # let
 
@@ -333,55 +550,52 @@ Then also with code of package [*QuadGK.jl*](https://juliapackages.com/p/quadgk)
 
 # ╔═╡ 7903f5f0-c098-450d-be16-e598813820a3
 let Δτ = 1.0E-2
-	# f(x) = x^2
-	ω       = 1.0
-	# τ       = ω*t;  0 ≤ t ≤ 2π 
+	τUpLim  =  2.0pi
+	τs      =  [τ for τ in 0.0+Δτ/2:Δτ:τUpLim-Δτ/2] 
 	jerk(τ) =  sin(τ)
 	acc(τ)  = -cos(τ) # acceleration
 	vel(τ)  = -sin(τ) # velocity
 	pos(τ)  =  cos(τ) # position 
-	Fa(τ)   =  quadgk(jerk, -1.5, τ)[1]
+	Fa(τ)   =  quadgk(jerk, -1.55, τ)[1]
 	Fv(τ)   =  quadgk(acc,  -0.0, τ)[1]
-	Fx(τ)   =  quadgk(vel,   1.5, τ)[1]
+	Fx(τ)   =  quadgk(vel,   1.55, τ)[1]
 	#------------------------------------------------------------------------------
-	plot(xlimits=[-0.02, 8.62], ylimits=[-1.52, 1.56], title=L"QuadGK:Scotch-Yoke-Osc.\ (normalized, parallel)")
+	plot(xlimits=[-0.02, 10.52], ylimits=[-1.12, 1.26], title=L"QuadGK:Scotch-Yoke-Osc.\ (normalized, parallel)")
 	#------------------------------------------------------------------------------
-	plot!([τ for τ in 0:Δτ:2π], τ->jerk(τ), lw=1.5, color=:red, label=L"j(τ)")
+	plot!(τs, jerk, lw=1.0, color=:red, label=L"theoretical\ j(τ)")
+	plot!(τs, acc,  lw=1.0, color=:green, label=L"theoretical\ a(t)")
+	plot!(τs, vel,  lw=1.0, color=:orange, label=L"theoretical\ v(t)")
+	plot!(τs, pos,  lw=1.0, color=:blue, label=L"theoretical\ x(t)")
 	#------------------------------------------------------------------------------
-	plot!([τ for τ in 0:Δτ:2π], τ->Fa(τ), linestyle=:dashdot, lw=2, color=:green, label=L"F_a(τ)")
-	plot!([τ for τ in 0:Δτ:2π], τ->acc(τ), lw=1.5, color=:green, label=L"f_a(τ)=a(τ)")
+	plot!([τ for τ in 0:Δτ:2π], Fa, linestyle=:dashdot, lw=2, color=:green, label=L"F_a(τ) \approx  c +\Delta x \sum_{i=0}^n f_j[i]")
+	plot!([τ for τ in 0:Δτ:2π], Fv, linestyle=:dashdot, lw=2, color=:orange, label=L"F_v(τ) \approx c + \Delta x \sum_{i=0}^n f_a[i]")
+	plot!([τ for τ in 0:Δτ:2π], Fx, linestyle=:dashdot, lw=2, color=:blue, label=L"F_x(τ) \approx c + \Delta x \sum_{i=0}^n f_v[i]")
 	#------------------------------------------------------------------------------
-	plot!([τ for τ in 0:Δτ:2π], τ->Fv(τ), linestyle=:dashdot, lw=2, color=:orange, label=L"F_v(τ)")
-	plot!([τ for τ in 0:Δτ:2π], τ->vel(τ), lw=1.5, color=:orange, label=L"f_v(τ)=v(τ)")
-	#------------------------------------------------------------------------------
-	plot!([τ for τ in 0:Δτ:2π], τ->Fx(τ), linestyle=:dashdot, lw=2, color=:blue,label=L"F_x(τ)")
-	plot!([τ for τ in 0:Δτ:2π], τ->pos(τ), lw=1.5, color=:blue,label=L"f_x(τ)=x(τ)")
 end # let 
 
 # ╔═╡ 975a8a2b-1dc6-4360-95f6-daf1d471b316
-let Δτ      = 1.0E-2
-	ω       = 1.0
-	# τ     = ω*t;  0 ≤ t ≤ 2π 
+let Δτ      =  1.0E-2
+	τUpLim  =  2.0pi
+	τs      =  [τ for τ in 0.0+Δτ/2:Δτ:τUpLim-Δτ/2] 
 	jerk(τ) =  sin(τ)
 	acc(τ)  = -cos(τ) # acceleration
 	vel(τ)  = -sin(τ) # velocity
 	pos(τ)  =  cos(τ) # position 
-	Fa(τ)   =  quadgk(jerk, -1.5, τ)[1]
-	Fv(τ)   =  quadgk(Fa,  -0.0, τ)[1]
-	Fx(τ)   =  quadgk(Fv,   1.5, τ)[1]
+	Fa(τ)   =  quadgk(jerk, -1.55, τ)[1]
+	Fv(τ)   =  quadgk(Fa,   -0.0, τ)[1]
+	Fx(τ)   =  quadgk(Fv,    1.6, τ)[1]
 	#------------------------------------------------------------------------------
-	plot(xlimits=[-0.02, 8.62], ylimits=[-1.52, 1.56], title=L"QuadGK:Scotch-Yoke-Oscillator\ (normalized, iterated)")
+	plot(xlimits=[-0.02, 10.52], ylimits=[-1.12, 1.26], title=L"QuadGK:Scotch-Yoke-Oscillator\ (normalized, iterated)")
 	#------------------------------------------------------------------------------
-	plot!([τ for τ in 0:Δτ:2π], τ->jerk(τ), lw=1.5, color=:red, label=L"f_j(τ)=j(τ)")
+	plot!(τs, jerk, lw=1.0, color=:red, label=L"theoretical\ j(τ)")
+	plot!(τs, acc,  lw=1.0, color=:green, label=L"theoretical\ a(t)")
+	plot!(τs, vel,  lw=1.0, color=:orange, label=L"theoretical\ v(t)")
+	plot!(τs, pos,  lw=1.0, color=:blue, label=L"theoretical\ x(t)")
 	#------------------------------------------------------------------------------
 	plot!([τ for τ in 0:Δτ:2π], τ->Fa(τ), linestyle=:dashdot, lw=2, color=:green, label=L"F_a(τ)=a(τ)")
-	plot!([τ for τ in 0:Δτ:2π], τ->acc(τ), lw=1.5, color=:green, label=L"a(τ)")
+	plot!([τ for τ in 0:Δτ:2π], τ->Fv(τ), linestyle=:dashdot, lw=2, color=:orange, label=L"F_v(τ) \approx c + \Delta x \sum_{i=0}^n F_a[i]")
+	plot!([τ for τ in 0:Δτ:2π], τ->Fx(τ), linestyle=:dashdot, lw=2, color=:blue, label=L"F_x(τ) \approx c + \Delta x \sum_{i=0}^n F_v[i]")
 	#------------------------------------------------------------------------------
-	plot!([τ for τ in 0:Δτ:2π], τ->Fv(τ), linestyle=:dashdot, lw=2, color=:orange, label=L"F_v(τ)=v(τ)")
-	plot!([τ for τ in 0:Δτ:2π], τ->vel(τ), lw=1.5, color=:orange, label=L"v(τ)")
-	#------------------------------------------------------------------------------
-	plot!([τ for τ in 0:Δτ:2π], τ->Fx(τ), linestyle=:dashdot, lw=2, color=:blue,label=L"F_x(τ)=x(τ)")
-	plot!([τ for τ in 0:Δτ:2π], τ->pos(τ), lw=1.5, color=:blue,label=L"x(τ)")
 end # let 
 
 # ╔═╡ 7a8e9aaa-0fdb-43d0-841b-bdad8c1a6eea
@@ -1682,14 +1896,21 @@ version = "1.13.0+0"
 # ╠═1776cec5-ea66-418d-8903-d7af5a2a1c61
 # ╟─c86315a7-72ce-4633-b094-d3fd684b7cfc
 # ╟─602a632e-c190-47a5-b9a3-e04057f02e37
+# ╟─68178cf6-f516-4fe2-a002-e704ba116eb7
 # ╠═2b98eb0a-ff15-4a94-8c23-8c154905cc02
 # ╟─431c33a7-cdbe-4d64-8edd-b9962d83ec69
-# ╠═a8623a1b-4865-4264-9cbb-80a686798b4b
+# ╟─f6711618-992e-4864-a577-cfd4d372db36
+# ╟─a8623a1b-4865-4264-9cbb-80a686798b4b
+# ╟─a1916494-9b0f-4b03-a7c6-711185703859
+# ╟─7980a71e-18b5-4159-bf42-bd204e2dd5c1
+# ╠═22cbe868-6318-435b-94d6-1d002688bce8
 # ╟─a64a655d-e31d-4fb9-bdb0-1fe8b9f6a434
 # ╟─80d36f05-8dd4-4c5b-b54e-d695b709532b
 # ╠═db44b28c-9d51-49d3-a7a3-3f665e98fcb9
 # ╟─d0df5abd-47bb-4d84-ab99-18061471c981
 # ╠═f0ef09b2-285c-4d79-af72-66b239e237b6
+# ╟─a29a57ad-58ce-4843-8708-1a543c2f73ba
+# ╠═e8f49745-f685-4b77-bc5f-26c9accf812b
 # ╟─ff5cafdd-63f7-4b38-9a79-c9364b31fafc
 # ╠═b14d25e2-6c7c-4303-812e-f0a6e60454c2
 # ╟─4f67e713-a943-45ec-9311-466dbbd39cbd
@@ -1697,7 +1918,7 @@ version = "1.13.0+0"
 # ╟─fbe09885-e8d0-42a0-b322-17c222e12a51
 # ╠═4849625e-8faf-41d8-a850-ba193a3738e2
 # ╟─a23d81c6-d121-4a11-bd26-998f451e9083
-# ╠═10cef37f-5d01-4fd2-bd45-d546e30938a8
+# ╟─10cef37f-5d01-4fd2-bd45-d546e30938a8
 # ╟─0e6bbcb4-97e0-4939-b556-114e066e0c11
 # ╠═a34f0bbc-7328-44b3-b6b4-442e4261b5f7
 # ╟─de6a7137-edb2-4258-b706-f9d61b6c8d37
