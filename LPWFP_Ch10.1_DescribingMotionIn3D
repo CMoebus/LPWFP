@@ -20,9 +20,9 @@ end # begin
 # ╔═╡ 90404cf0-f3a2-11f0-ac93-036842358215
 md"
 ====================================================================================
-#### LPWFP\_Ch10.1\_Describing Motion in 3D: Vector Addition
+#### LPWFP\_Ch10.1\_Describing Motion in 3D: *The Geometric Principle*
 ##### file: LPWFP\_Ch10.1\_DescribingMotionIn3D
-##### code: Julia/Pluto (1.12.4/0.20.21) by PCM *** 2026/01/19 ***
+##### code: Julia/Pluto (1.12.4/0.20.21) by PCM *** 2026/01/22 ***
 
 ====================================================================================
 "
@@ -31,6 +31,8 @@ md"
 md"
 ---
 ##### 0. Introduction
+What is the *Geometric Principle* ? According to the *Geometric Principle, the laws of physics must all be expressible as geometric (coordinate-independent and reference-frame-independent) relationships between geometric objects (scalars, vectors, tensors, ...) that represent physical entities.* (Thorne & Blandford, 2017, p.1)
+Walck did provide no code for his vector graphics. We wanted to generate our own figures. So we had to write Julia code for plotting vectors in *Plots.jl*. We have to generate all concepts in a *coordinate-bound* manner. However, we try to hide *numerics* in order to maintain the *illusion* of *coordinate-free* operations.
 "
 
 # ╔═╡ 15595170-3aad-4cd9-b98b-3be8832abd57
@@ -49,42 +51,64 @@ md"
 md"
 ---
 ##### 3. Code
-"
 
-# ╔═╡ 7d52fbaa-255e-4712-8e76-a8ad50b35c66
-md"
----
-###### 3.1 Geometric Addition of Vector Addition
-(cf. Walck, 2022, p.132f)
+Here we plot *geometric* objects like *vectors* and *operation results* like *vector addition, scalar multiplication, vector subtraction, dot* and *cross products*, and the *derivative* of a *vector-valued* function of a real number. 
+
 "
 
 # ╔═╡ 2cf4c1b0-dad6-47f8-ada4-d3889ca8e00c
 md"
 ---
 ###### 3.1 Plot of Vectors
+A *geometric vector* is a directed straight line *connecting* two *points* $P$ and $Q$. $P$ is the *tail* and $Q$ the head of the *arrow* (= *vector*).
 "
 
 # ╔═╡ 6dd80eaa-d4bf-429c-ba13-01dab755fa3d
-[(2.0, 0.0), (0.0, 4.0)]         # tail, point
+pa = (2.0, 0.0); qa = (0.0, 4.0)        # point a = (pa, qa) = (tail(a), head(a))
+
+# ╔═╡ bef02f8a-5a30-494d-8532-88a080e00abb
+pb = (0.0, 2.0); qb = (4.0, 6.0)        # point b = (pb, qb) = (tail(b), head(b))
+
+# ╔═╡ 95af88ac-42cd-4ee1-ad5c-76171346b2ed
+md"
+###### Constructor $makeVector(tail::Tuple, head::Tuple)$
+"
 
 # ╔═╡ 06969c15-6c4c-4c55-8841-776cb8e13f21
 function makeVector(
 	tail::Tuple{Float64, Float64}, 
-	point::Tuple{Float64, Float64})::Vector{Tuple{Float64, Float64}} 
-	[tail, point]
+	head::Tuple{Float64, Float64})::Vector{Tuple{Float64, Float64}} 
+	[tail, head]
 end # function makeVector
 
 # ╔═╡ ce01f38d-2371-4a01-b28b-c5d3b2033e3b
-a = makeVector((2.0, 0.0), (0.0, 4.0))
+a = makeVector(pa, qa)
+
+# ╔═╡ 27adc1b5-f0f5-458d-9830-e3aec1fbbf1d
+md"
+###### Selectors $tail(v::Vector)::Tuple, head(v::Vector)::Tuple$
+"
+
+# ╔═╡ 18e1a9c6-6ff7-4c83-ab0e-5eb95e2ec87e
+tail(v::Vector)::Tuple = v[1]
+
+# ╔═╡ d9643760-7a2d-4b66-9570-07d3850611ff
+head(v::Vector)::Tuple = v[2]
+
+# ╔═╡ 6825d256-d674-4a33-a6c6-cf7e72431a8f
+tail(a), head(a)
 
 # ╔═╡ 0e530078-ed9b-42d3-94ba-6211dcc4495e
-b  = makeVector((0.0, 2.0), (4.0, 6.0))
+b = makeVector(pb, qb)
+
+# ╔═╡ 57781aab-1837-4b4e-b607-1737f9937b8d
+tail(b), head(b)
 
 # ╔═╡ 35edc98c-4d5d-4f9a-b24c-239ff74ec603
-function plot2DVectors(v1, v2; title="")
-	plot(title=title, xlims=(-0.5, 9.0), ylims=(-0.5, 9.0), aspect_ratio=:equal)
-	plot!(v1, lw=2, arrow=:filled, color=:red, label=L"v1")
-	plot!(v2, lw=2, arrow=:filled, color=:blue, label=L"v2") 
+function plot2DVectors(v1, v2; title="", xlims=(-0.5, 8.0), ylims=(-0.5, 8.0))
+	plot(title=title, xlims=xlims, ylims=ylims, aspect_ratio=:equal)
+	plot!(v1, lw=2, arrow=:filled, color=:red, label=L"v_1")
+	plot!(v2, lw=2, arrow=:filled, color=:blue, label=L"v_2") 
 end # function plot2DVectors
 
 # ╔═╡ c6a4ec9a-a24b-4379-95dd-f262b4c9eb4e
@@ -93,7 +117,11 @@ plot2DVectors(a, b, title=L"Vectors\ v_1=a, v_2=b")
 # ╔═╡ c7e62857-b504-488f-af80-5a0b2f958dad
 md"
 ---
-###### 3.2 Shift of 2nd Vector $v_2$ into Origin $v'_2: v_2\mapsto v'_2$
+###### 3.2 Shift Vector $v_2$ into Origin: $v_2 \mapsto v'_2$ 
+
+*Geometric* vectors $v_1, v_2$ can only be added when the *tail* of $v_2$ meets the head of $v_1$. To that end $v_2$ has to be *shifted parallel* in *2D* so that both vectors $v_1, v''_2$ are *aligned*. Geometrically alignment can be achieved directly in *one* step by shifting $v_2 \mapsto v''_2$.
+
+*Numerically* we have to add an *intermediate* step $v'_2$: $v_2 \mapsto v'_2 \mapsto v''_2$. Before we can align $v_1$ and $v''_2$ we have to shift $v_2 \mapsto v'_2$. This is a parallel *shift* of $v_2$ so that the *tail* of $v'_2$ meets the *origin*. Only then the coordinates of the *head* of $v_1$ are *added* to the coordinates of *origin vector* $v'_2$ to obtain the aligned vector $v''_2$.
 "
 
 # ╔═╡ 0cc112d7-db2c-4df9-af9a-0baeac7a8af1
@@ -105,8 +133,8 @@ end # function subtractTuple
 subtractTuple(a[2], b[1]), subtractTuple(a[2], b[2])
 
 # ╔═╡ 5968a03f-a094-442b-9569-b8ea572386cf
-function shiftIntoOrigin(v2::Vector)::Vector
-	[subtractTuple(v2[1], v2[1]), subtractTuple(v2[2], v2[1])]
+function shiftIntoOrigin(v::Vector)::Vector
+	[subtractTuple(v[1], v[1]), subtractTuple(v[2], v[1])]
 end # function shiftIntoOrigin
 
 # ╔═╡ b0d1ca5e-76c3-4ba6-9865-8eb7b177f77c
@@ -115,20 +143,22 @@ shiftIntoOrigin(b)
 # ╔═╡ 6fa0adf0-a49d-4780-8d68-327ff7daaf90
 function plot2DShiftedVectors(v1, v2; title=title)
 	plot(title=title, xlims=(-0.5, 9.0), ylims=(-0.5, 9.0), aspect_ratio=:equal)
-	plot!(v1, lw=2, arrow=:filled, color=:red, label=L"v1")
-	plot!(v2, lw=2, arrow=:filled, color=:blue, label=L"v2") 
+	plot!(v1, lw=2, arrow=:filled, color=:red, label=L"v_1")
+	plot!(v2, lw=2, arrow=:filled, color=:blue, label=L"v_2") 
 	plot!(shiftIntoOrigin(v2), lw=3, arrow=:filled, ls=:dashdot, color=:blue, label=L"v_2 \mapsto v'_2")
 end # function plot2DVectors
 
 # ╔═╡ 925ec26e-7593-4026-86ab-517a99977908
-plot2DShiftedVectors(a, b, title=L"Vectors\ v_1, v_2\ and\ shifted\ into\ origin\ v_2 \mapsto v'_2")
+plot2DShiftedVectors(a, b, title=L"Vectors\ v_1, v_2\ and\ v_2\ shifted\ into\ origin:\ v_2 \mapsto v'_2")
 
 # ╔═╡ d30d1716-591b-40bc-9f7f-95e44b5ce067
 md"
 ---
-###### 3.3 Vector Alignment $v'_2 \mapsto v''_2$
+###### 3.3 Vector Alignment $v_2 \mapsto v'_2 \mapsto v''_2$ so that $tail(v''_2)\ meets\ head(v_1)$ 
 
-Before two vectors can be *added* they first must be *aligned* (= *shifted*) so that the second vector $v_2$ starts where the first vector $v_1$ ends. 
+Before two *geometric* vectors can be *added* they first must be *aligned* (= *shifted parallel*) so that $tail(v''_2)$ meets $head(v_1)$. 
+
+*Numerically* we add the coordinates of $head(v_1)$ to the coordinates of the origin vector* $v'_2$. As a *numerical* result we get the aligned vector $v''_2$. When being plotted the two vectors are also *geometrically aligned*. The *aligned* $v''_2$ is result of two mappings $v_2 \mapsto v'_2 \mapsto v''_2$.
 "
 
 # ╔═╡ 877fe903-dfe2-447f-b0c2-455637ea184a
@@ -146,34 +176,35 @@ shiftIntoOrigin(b)[2]
 addTuple(a[2], shiftIntoOrigin(b)[2])
 
 # ╔═╡ dd48e126-00c3-4a23-9aca-88660f708857
-function align(v1::Vector, v2::Vector)::Vector
+function alignHeadToTail(v1::Vector, v2::Vector)::Vector
 	[(addTuple(v1[2], shiftIntoOrigin(v2)[1])), 
 	 (addTuple(v1[2], shiftIntoOrigin(v2)[2]))]
-end # function align
+end # function alignHeadToTail
 
 # ╔═╡ 57b280de-82c3-4df8-b13e-305d41c0d98e
-align(a, b)
+alignHeadToTail(a, b)
 
 # ╔═╡ 8843b258-20dd-45b0-8bed-5dc6bad497aa
-function plot2DVectorAlign(v1, v2; title="")
+function plot2DVectorAlignHeadToTail(v1, v2; title="")
 	plot(title=title, xlims=(-0.5, 9.0), ylims=(-0.5, 9.0), aspect_ratio=:equal)
-	plot!(v1, lw=2, arrow=:filled, color=:red, label=L"v1")
-	plot!(v2, lw=2, arrow=:filled, color=:blue, label=L"v2") 
-	plot!(align(v1, v2), lw=3, linestyle=:dashdot, color=:blue, arrow=:filled, label=L"v'_2 \rightarrow v''_2")
-end # function plot2DVectorAlign
+	plot!(v1, lw=2, arrow=:filled, color=:red, label=L"v_1")
+	plot!(v2, lw=2, arrow=:filled, color=:blue, label=L"v_2") 
+	plot!(alignHeadToTail(v1, v2), lw=3, linestyle=:dashdot, color=:blue, arrow=:filled, label=L"v'_2 \rightarrow v''_2")
+end # function plot2DVectorAlignHeadToTail
 
 # ╔═╡ 12e9c0d4-f223-424d-9ebf-f57938804fc7
-plot2DVectorAlign(a, b, title=L"Aligning\ Vector\ v'_2 \mapsto v''_2")
+plot2DVectorAlignHeadToTail(a, b, title=L"Aligning\ vectors\ v_1, v_2\ head\ v_1\ to\ tail\ v''_2:\ v'_2 \mapsto v''_2")
 
-# ╔═╡ 09e75646-7a7f-44b6-a279-c441cd847da5
+# ╔═╡ 7d52fbaa-255e-4712-8e76-a8ad50b35c66
 md"
 ---
-###### 3.4 Vector addition $v_1, v_2 \mapsto v_1 + v''_2$
+###### 3.4 Geometric *Addition* of Vectors $(v_1, v_2) \mapsto v_1 + v''_2 = v_{(tail(v_1), head(v''_2)}$
+(cf. Walck, 2022, p.132f)
 "
 
 # ╔═╡ c02c18fb-be5e-4af1-b6de-c8df369fe82c
 function add(v1::Vector, v2::Vector)::Vector
-	v1v2 = align(v1, v2)
+	v1v2 = alignHeadToTail(v1, v2)
 	[v1[1], v1v2[2]]
 end # function aline
 
@@ -181,19 +212,130 @@ end # function aline
 add(a, b)
 
 # ╔═╡ 9b1f5dd6-a8c3-4166-8abf-741c51f8711c
-function plot2DVectorAdd(v1, v2; title="")
-	plot(title=title, xlims=(-0.5, 10.0), ylims=(-0.5, 10.0), aspect_ratio=:equal)
-	plot!(v1, lw=2, arrow=:filled, color=:red, label=L"v1")
-	plot!(v2, lw=2, arrow=:filled, color=:blue, label=L"v2") 
-	plot!(align(v1, v2), lw=3, linestyle=:dashdot, color=:blue, arrow=:filled, label=L"v_2 \mapsto v''_2")
+function plot2DVectorAdd(v1, v2;  xlims=(-0.5, 10.0), ylims=(-0.5, 10.0), title="")
+	plot(title=title, xlims=xlims, ylims=ylims, aspect_ratio=:equal)
+	plot!(v1, lw=2, arrow=:filled, color=:red, label=L"v_1")
+	plot!(v2, lw=2, arrow=:filled, color=:blue, label=L"v_2") 
+	plot!(alignHeadToTail(v1, v2), lw=3, linestyle=:dashdot, color=:blue, arrow=:filled, label=L"v_2 \mapsto v''_2")
 	plot!(add(v1, v2), lw=3, linestyle=:dashdot, color=:green, arrow=:filled, label=L"v_1 + v''_2")
 end # function plot2DVectorAdd
 
 # ╔═╡ dba07423-63ee-48fd-947a-f0cc11f6ab0e
-plot2DVectorAdd(a, b, title=L"Vector\ Addition\ v1 + v2")
+plot2DVectorAdd(a, b, title=L"Vector\ Addition\ (a, b) \mapsto a + b'' = v_{(tail(a), head(b'')}")
 
 # ╔═╡ ee50ff82-4c76-4540-8cdd-be6f3077ce31
-plot2DVectorAdd(b, a, title=L"Vector\ Addition\ v1 + v2")
+plot2DVectorAdd(b, a, title=L"Vector\ Addition\ (b, a) \mapsto b + a'' = v_{(tail(b), head(a'')}")
+
+# ╔═╡ a13832d7-63b8-48b8-add3-b4f6e62cae2f
+md"
+---
+###### 3.5 Geometric *Scaling* a Vector
+(cf. Walck, 2022, p.132f)
+"
+
+# ╔═╡ e169b867-5b62-461b-95cc-00dc67d34230
+function scale(v::Vector, s::Number)
+	Δx = head(v)[1] - tail(v)[1]
+	Δy = head(v)[2] - tail(v)[2] 
+	#--------------------------------------------------
+	magnitude(v) = sqrt(Δx^2 + Δy^2)
+	direction(v) = atan(Δy, Δx)
+	makeHeadScaled(v, xScaled, yScaled) = 
+		(tail(v)[1] + xScaled, tail(v)[2] + yScaled)
+	#--------------------------------------------------
+	r  = magnitude(v)
+	θ  = direction(v)
+	xScaled = r*cos(θ)*s
+	yScaled = r*sin(θ)*s
+	[tail(v), makeHeadScaled(v, xScaled, yScaled)]
+end # function scale
+
+# ╔═╡ cb79ad72-e57a-4de6-9312-ab08a853d4a3
+a
+
+# ╔═╡ 619657ec-2c6f-488a-ae2f-6c0ab3030aa6
+asc = scale(a, 2.5)
+
+# ╔═╡ cefd9ce9-3ea4-4285-8505-d13e56e742ec
+plot2DVectors(a, scale(a, 0.5), xlims=(-0.5, 7.0), ylims=(-0.5, 7.0), title=L"Vectors\ v_1=a, v_2=scale(a, 0.5)")
+
+# ╔═╡ b3485120-35fc-4a39-b7bc-00b98419ba15
+plot2DVectors(b, scale(b, .8), xlims=(-0.5, 7.0), ylims=(-0.5, 7.0), title=L"Vectors\ v_1=b, v_2=scale(b, .8)")
+
+# ╔═╡ 50bba93b-9053-43a4-895d-af54535bac39
+plot2DVectors(a, scale(a, -1.5), xlims=(-7.0, 7.0), ylims=(-7.0, 7.0), title=L"Vectors\ v_1=a, v_2=scale(a, -1.5)")
+
+# ╔═╡ f1d702b7-e11e-4458-a825-9ba939828513
+plot2DVectors(b, scale(b, -1.5), xlims=(-7.0, 7.0), ylims=(-7.0, 7.0), title=L"Vectors\ v_1=b, v_2=scale(b, -1.5)")
+
+# ╔═╡ c8fae775-1c57-46ad-9c67-1d1d1bf0e720
+md"
+---
+###### 3.6 Geometric Vector Subtraction: $a - b = a + b''$
+(cf. Walck, 2022, p.133)
+
+*Geometric vector subtraction* is defined *to be the vector that points from the tip (= head) of the first (= $v_1$) to the tip (= head) of the second (= $v_2$) when two vectors are placed tail-to-tail* (Walck, 2022, p.133)
+
+We can get $v_1 - v_2$ by using *addition*. We add the *reversed* $v_2$ to $v_1$:
+
+$v_1 - v_2 = v1 + (- v_2).$
+
+First we *reverse* $b$
+
+$reverse: b \mapsto reverse(b) = b'$.
+
+Then we *shift* $b'$ to get $b''$ so that $a$ and $b''$ meet *tail-to-tail*:
+
+$alignTailToTail: (a, b') \mapsto (a, b'').$
+
+Now, we can geometrically *add* $a + b''$ which results in a vector which is $a - b$:
+
+$a + b'' = a - b.$ 
+
+"
+
+# ╔═╡ 99efd93f-2514-490c-8945-2c49a69a7f8a
+plot2DVectors(a, b, xlims=(-6.0, 8.0), ylims=(-6.0, 8.0), title=L"Vectors\ v_1=a, v_2=b")
+
+# ╔═╡ 366ac44f-e093-46e5-be93-279b0f94ee14
+function reverse(v::Vector)::Vector
+	[head(v), tail(v)]
+end # function reverse
+
+# ╔═╡ b8eba7eb-7c41-4203-b1ef-dc821bb40547
+plot2DVectors(a, reverse(b),  xlims=(-6.0, 8.0), ylims=(-6.0, 8.0), title=L"Vectors\ v_1=a, v_2=reverse(b)=b'=-b")
+
+# ╔═╡ 26ade910-75d9-4243-b3ac-8608cb4d916c
+function alignTailToTail(v1::Vector, v2::Vector)::Vector
+	[(addTuple(v1[1], shiftIntoOrigin(v2)[1])), 
+	 (addTuple(v1[1], shiftIntoOrigin(v2)[2]))]
+end # function alignTailToTail
+
+# ╔═╡ ec04e128-5f8c-45ed-95cb-962df9fff54b
+plot2DVectors(a, alignTailToTail(a, shiftIntoOrigin(reverse(b))), xlims=(-6.0, 8.0), ylims=(-6.0, 8.0),title=L"Aligned\ Vectors\ v_1=a, v_2=b''=-b")
+
+# ╔═╡ e6d7e858-88bc-442f-bde1-8144c29cdf41
+add(a, alignTailToTail(a, shiftIntoOrigin(reverse(b))))
+
+# ╔═╡ 74975d62-9307-4dc1-9caa-aa0d8716c6ba
+function plot2DVectorSubtract(v1, v2;  xlims=(-0.5, 10.0), ylims=(-0.5, 10.0), title="")
+	#-------------------------------------------------------------------------------
+	v2Rev        = reverse(v2)
+	v2Aligned    = alignTailToTail(v1, v2)
+	v2RevAligned = alignTailToTail(v1, reverse(v2))
+	v1Minv2      = add(v1, alignTailToTail(v1, reverse(v2)))
+	#-------------------------------------------------------------------------------
+	plot(title=title, xlims=xlims, ylims=ylims, aspect_ratio=:equal)
+	plot!(v1, lw=2, arrow=:filled, color=:red, label=L"v_1")
+	plot!(v2, lw=2, arrow=:filled, color=:blue, label=L"v_2") 
+	plot!(v2Aligned, lw=2, arrow=:filled, color=:blue, linestyle=:dot, label=L"v_2_{Aligned}")
+	plot!(v2RevAligned, lw=3, arrow=:filled, color=:blue, linestyle=:dashdot, label=L"v_2_{Reversed \mapsto Aligned}")
+	plot!(v1Minv2, lw=3, arrow=:filled, color=:green, ls=:dashdot, label=L"v_1-v_2")
+	plot!(alignHeadToTail(v2Aligned, v1Minv2), lw=3, arrow=:filled, color=:green, ls=:dashdot, label=L"v_1-v_2")
+end # function plot2DVectorSubtract
+
+# ╔═╡ 4409d212-de54-49b8-930d-082cdc284175
+plot2DVectorSubtract(a, b, xlims=(-7.0, 7.0), ylims=(-7.0, 7.0), title=L"Subtraction\ (a, b) \mapsto a +(- b'') \mapsto a - b = v_{(head(b), head(a))}")
 
 # ╔═╡ 2853352d-8b28-40e1-a503-eb3a36655de9
 md"
@@ -206,6 +348,7 @@ md"
 ---
 ##### 5. References
 
+- **Thorne, K. & Blandford, R.**; *Modern Classical Physics: Optics, Fluids, Plasmas, Elasicity, Relativity, and Statistical Physics*, Princeton: Princeton University Press, 2017
 - **Walck, Sc. N.**; *Learn Physics with Functional Programming*, San Francisco: No Starch Press, 2023, ISBN 978-1-7185-0166-9
 "
 
@@ -1463,20 +1606,26 @@ version = "1.13.0+0"
 # ╟─caf03f5b-666d-41b9-b0eb-6ce5511d04f0
 # ╠═878ecf5c-dfb7-4387-9372-c9d158b061c6
 # ╟─e6b0f2f4-676b-431e-b744-b4783cc76e40
-# ╟─7d52fbaa-255e-4712-8e76-a8ad50b35c66
 # ╟─2cf4c1b0-dad6-47f8-ada4-d3889ca8e00c
 # ╠═6dd80eaa-d4bf-429c-ba13-01dab755fa3d
+# ╠═bef02f8a-5a30-494d-8532-88a080e00abb
+# ╟─95af88ac-42cd-4ee1-ad5c-76171346b2ed
 # ╠═06969c15-6c4c-4c55-8841-776cb8e13f21
 # ╠═ce01f38d-2371-4a01-b28b-c5d3b2033e3b
+# ╟─27adc1b5-f0f5-458d-9830-e3aec1fbbf1d
+# ╠═18e1a9c6-6ff7-4c83-ab0e-5eb95e2ec87e
+# ╠═d9643760-7a2d-4b66-9570-07d3850611ff
+# ╠═6825d256-d674-4a33-a6c6-cf7e72431a8f
 # ╠═0e530078-ed9b-42d3-94ba-6211dcc4495e
-# ╠═35edc98c-4d5d-4f9a-b24c-239ff74ec603
+# ╠═57781aab-1837-4b4e-b607-1737f9937b8d
+# ╟─35edc98c-4d5d-4f9a-b24c-239ff74ec603
 # ╠═c6a4ec9a-a24b-4379-95dd-f262b4c9eb4e
 # ╟─c7e62857-b504-488f-af80-5a0b2f958dad
 # ╠═0cc112d7-db2c-4df9-af9a-0baeac7a8af1
 # ╠═4e3224b3-08c6-466a-89a2-e8256725fa7b
 # ╠═5968a03f-a094-442b-9569-b8ea572386cf
 # ╠═b0d1ca5e-76c3-4ba6-9865-8eb7b177f77c
-# ╠═6fa0adf0-a49d-4780-8d68-327ff7daaf90
+# ╟─6fa0adf0-a49d-4780-8d68-327ff7daaf90
 # ╠═925ec26e-7593-4026-86ab-517a99977908
 # ╟─d30d1716-591b-40bc-9f7f-95e44b5ce067
 # ╠═877fe903-dfe2-447f-b0c2-455637ea184a
@@ -1485,14 +1634,31 @@ version = "1.13.0+0"
 # ╠═9dace190-f753-4592-9028-a4175defc1a6
 # ╠═dd48e126-00c3-4a23-9aca-88660f708857
 # ╠═57b280de-82c3-4df8-b13e-305d41c0d98e
-# ╠═8843b258-20dd-45b0-8bed-5dc6bad497aa
+# ╟─8843b258-20dd-45b0-8bed-5dc6bad497aa
 # ╠═12e9c0d4-f223-424d-9ebf-f57938804fc7
-# ╟─09e75646-7a7f-44b6-a279-c441cd847da5
+# ╟─7d52fbaa-255e-4712-8e76-a8ad50b35c66
 # ╠═c02c18fb-be5e-4af1-b6de-c8df369fe82c
 # ╠═5cc50c6e-60a2-4d0e-9dee-c3ca4ef017ce
-# ╠═9b1f5dd6-a8c3-4166-8abf-741c51f8711c
+# ╟─9b1f5dd6-a8c3-4166-8abf-741c51f8711c
 # ╠═dba07423-63ee-48fd-947a-f0cc11f6ab0e
 # ╠═ee50ff82-4c76-4540-8cdd-be6f3077ce31
+# ╟─a13832d7-63b8-48b8-add3-b4f6e62cae2f
+# ╠═e169b867-5b62-461b-95cc-00dc67d34230
+# ╠═cb79ad72-e57a-4de6-9312-ab08a853d4a3
+# ╠═619657ec-2c6f-488a-ae2f-6c0ab3030aa6
+# ╠═cefd9ce9-3ea4-4285-8505-d13e56e742ec
+# ╠═b3485120-35fc-4a39-b7bc-00b98419ba15
+# ╠═50bba93b-9053-43a4-895d-af54535bac39
+# ╠═f1d702b7-e11e-4458-a825-9ba939828513
+# ╟─c8fae775-1c57-46ad-9c67-1d1d1bf0e720
+# ╠═99efd93f-2514-490c-8945-2c49a69a7f8a
+# ╠═366ac44f-e093-46e5-be93-279b0f94ee14
+# ╠═b8eba7eb-7c41-4203-b1ef-dc821bb40547
+# ╠═26ade910-75d9-4243-b3ac-8608cb4d916c
+# ╠═ec04e128-5f8c-45ed-95cb-962df9fff54b
+# ╠═e6d7e858-88bc-442f-bde1-8144c29cdf41
+# ╟─74975d62-9307-4dc1-9caa-aa0d8716c6ba
+# ╠═4409d212-de54-49b8-930d-082cdc284175
 # ╟─2853352d-8b28-40e1-a503-eb3a36655de9
 # ╟─bbf29e00-f756-4ad2-89e3-f85af3993035
 # ╟─dcd13bf7-b38a-491b-a738-d74d4c288c9f
