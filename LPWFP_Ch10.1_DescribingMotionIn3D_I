@@ -22,7 +22,7 @@ md"
 ====================================================================================
 #### LPWFP\_Ch10.1\_Describing Motion in 3D: *The Geometric Principle I*
 ##### file: LPWFP\_Ch10.1\_DescribingMotionIn3D\_I
-##### code: Julia/Pluto (1.12.4/0.20.21) by PCM *** 2026/01/27 ***
+##### code: Julia/Pluto (1.12.4/0.20.21) by PCM *** 2026/01/29 ***
 
 ====================================================================================
 "
@@ -33,7 +33,8 @@ md"
 ##### 0. Introduction
 What is the *Geometric Principle* ? According to the *Geometric Principle, the laws of physics must all be expressible as geometric (coordinate-independent and reference-frame-independent) relationships between geometric objects (scalars, vectors, tensors, ...) that represent physical entities.* (Thorne & Blandford, 2017, p.1)
 
-Walck did provide *no* code for the *geometric* aspects of vector graphics. We wanted to generate our own figures. So we had to write Julia code for plotting vectors in *Plots.jl*. We have to generate all concepts in a *coordinate-bound* manner. However, we try to hide *numerics* in order to maintain the *illusion* of *coordinate-free* operations.
+Walck provided only graphics but *no* code for the *geometric* aspects of vector *objects* and *operations*. Since we wanted to create our own illustrations we had to write Julia code for plotting vectors (e.g. in *Plots.jl*). *Numerical* plotting routines expect all concepts in a *coordinate-bound* form. However, we try to hide *numerics* in order to maintain the *illusion* of *coordinate-free* operations.
+
 "
 
 # ╔═╡ 15595170-3aad-4cd9-b98b-3be8832abd57
@@ -53,24 +54,30 @@ md"
 ---
 ##### 3. Code
 
-Here we plot *geometric* objects like *vectors* and *operation results* like *vector addition, scalar multiplication, vector subtraction, dot* and *cross products*, and the *derivative* of a *vector-valued* function of a real number. 
+Here we plot *geometric* objects like *vectors* and *operations* like *vector addition, scalar multiplication, vector subtraction, dot* and *cross products*, and the *derivative* of a *vector-valued* function of a real number. 
 
+"
+
+# ╔═╡ 083a291d-3deb-403e-b1bc-1a78063ed549
+md"
+---
+###### 3.1 *Methods* of Plot-*Function*
 "
 
 # ╔═╡ 313cde79-40e8-4317-b969-e3510965227c
 # 1st method
 #------------------------------------------------------------------------------
-function plot2DVectors(v1, v2; title="", xlims=(-0.5, 8.0), ylims=(-0.5, 8.0), lineStyle1=:solid, lineStyle2=:solid, linewidth1=1, linewidth2=1, color1=:auto, color2=:auto, v1Label=L"v_1", v2Label=L"v_2")
-	plot(title=title, xlims=xlims, ylims=ylims, aspect_ratio=:equal)
-	plot!(v1, arrow=:filled, ls=lineStyle1, lw=linewidth1, color=color1, label="$v1Label")
-	plot!(v2, arrow=:filled, ls=lineStyle2, lw=linewidth2, color=color2, label="$v2Label") 
+function plot2DVectors(v1, v2; title="", xlims=(-0.5, 8.0), ylims=(-0.5, 8.0), lineStyle1=:solid, lineStyle2=:solid, lineWidth1=1, lineWidth2=1, color1=:auto, color2=:auto, v1Label=L"v_1", v2Label=L"v_2", titlefontsize=12)
+	plot(title=title, titlefontsize=titlefontsize, xlims=xlims, ylims=ylims, aspect_ratio=:equal)
+	plot!(v1, arrow=:filled, ls=lineStyle1, lw=lineWidth1, color=color1, label="$v1Label")
+	plot!(v2, arrow=:filled, ls=lineStyle2, lw=lineWidth2, color=color2, label="$v2Label") 
 end # function plot2DVectors
 
 # ╔═╡ c645ea73-2dcd-4e5b-be25-f5b9b079cad3
 # 2nd method
 #------------------------------------------------------------------------------
-function plot2DVectors(v1, v2, v3; title="", xlims=(-0.5, 8.0), ylims=(-0.5, 8.0), lineStyle1=:solid, lineStyle2=:solid, lineStyle3=:solid, lineWidth1=1, lineWidth2=1, lineWidth3=2, color1=:auto, color2=:auto,  color3=:auto, v1Label=L"v_1", v2Label=L"v_2", v3Label=L"v_3")
-	plot(title=title, xlims=xlims, ylims=ylims, aspect_ratio=:equal)
+function plot2DVectors(v1, v2, v3; title="", xlims=(-0.5, 8.0), ylims=(-0.5, 8.0), lineStyle1=:solid, lineStyle2=:solid, lineStyle3=:solid, lineWidth1=1, lineWidth2=1, lineWidth3=2, color1=:auto, color2=:auto,  color3=:auto, v1Label=L"v_1", v2Label=L"v_2", v3Label=L"v_3", titlefontsize=12)
+	plot(title=title, titlefontsize=titlefontsize, xlims=xlims, ylims=ylims, aspect_ratio=:equal)
 	plot!(v1, arrow=:filled, ls=lineStyle1, lw=lineWidth1, color=color1, label="$v1Label")
 	plot!(v2, arrow=:filled, ls=lineStyle2, lw=lineWidth2, color=color2, label="$v2Label") 
 	plot!(v3, arrow=:filled, ls=lineStyle3, lw=lineWidth3, color=color3,label="$v3Label") 
@@ -79,8 +86,8 @@ end # function plot2DVectors
 # ╔═╡ b1c286d7-893d-43b6-8cdb-9875c13d35bb
 # 3rd method
 #------------------------------------------------------------------------------
-function plot2DVectors(v1, v2, v3, v4; title="", xlims=(-0.5, 8.0), ylims=(-0.5, 8.0), lineStyle1=:solid, lineStyle2=:solid, lineStyle3=:solid, lineStyle4=:solid, lineWidth1=1, lineWidth2=1, lineWidth3=2, lineWidth4=2, color1=:auto, color2=:auto,  color3=:auto, color4=:auto, v1Label=L"v_1", v2Label=L"v_2", v3Label=L"v_3", v4Label=L"v_4")
-	plot(title=title, xlims=xlims, ylims=ylims, aspect_ratio=:equal)
+function plot2DVectors(v1, v2, v3, v4; title="", xlims=(-0.5, 8.0), ylims=(-0.5, 8.0), lineStyle1=:solid, lineStyle2=:solid, lineStyle3=:solid, lineStyle4=:solid, lineWidth1=1, lineWidth2=1, lineWidth3=2, lineWidth4=2, color1=:auto, color2=:auto,  color3=:auto, color4=:auto, v1Label=L"v_1", v2Label=L"v_2", v3Label=L"v_3", v4Label=L"v_4", titlefontsize=12)
+	plot(title=title, titlefontsize=titlefontsize, xlims=xlims, ylims=ylims, aspect_ratio=:equal)
 	plot!(v1, arrow=:filled, ls=lineStyle1, lw=lineWidth1, color=color1, label="$v1Label")
 	plot!(v2, arrow=:filled, ls=lineStyle2, lw=lineWidth2, color=color2, label="$v2Label") 
 	plot!(v3, arrow=:filled, ls=lineStyle3, lw=lineWidth3, color=color3,label="$v3Label") 
@@ -90,20 +97,34 @@ end # function plot2DVectors
 # ╔═╡ 6676d293-b73d-484c-8b3f-1d7a74455300
 # 4th method
 #------------------------------------------------------------------------------
-function plot2DVectors(v1, v2, v3, v4, v5; title="", xlims=(-0.5, 8.0), ylims=(-0.5, 8.0), lineStyle1=:solid, lineStyle2=:solid, lineStyle3=:solid, lineStyle4=:solid, lineStyle5=:solid, lineWidth1=1, lineWidth2=1, lineWidth3=2, lineWidth4=2, lineWidth5=3, color1=:auto, color2=:auto,  color3=:auto, color4=:auto, color5=:auto, v1Label=L"v_1", v2Label=L"v_2", v3Label=L"v_3", v4Label=L"v_4", v5Label=L"v_5")
-	plot(title=title, xlims=xlims, ylims=ylims, aspect_ratio=:equal)
+function plot2DVectors(v1, v2, v3, v4, v5; title="", xlims=(-0.5, 8.0), ylims=(-0.5, 8.0), lineStyle1=:solid, lineStyle2=:solid, lineStyle3=:solid, lineStyle4=:solid, lineStyle5=:solid, lineWidth1=1, lineWidth2=1, lineWidth3=2, lineWidth4=2, lineWidth5=3, color1=:auto, color2=:auto,  color3=:auto, color4=:auto, color5=:auto, v1Label=L"v_1", v2Label=L"v_2", v3Label=L"v_3", v4Label=L"v_4", v5Label=L"v_5", titlefontsize=12)
+	plot(title=title, titlefontsize=titlefontsize, xlims=xlims, ylims=ylims, aspect_ratio=:equal)
 	plot!(v1, arrow=:filled, ls=lineStyle1, lw=lineWidth1, color=color1, label="$v1Label")
 	plot!(v2, arrow=:filled, ls=lineStyle2, lw=lineWidth2, color=color2, label="$v2Label") 
 	plot!(v3, arrow=:filled, ls=lineStyle3, lw=lineWidth3, color=color3,label="$v3Label") 
 	plot!(v4, arrow=:filled, ls=lineStyle4, lw=lineWidth4, color=color4,label="$v4Label") 
-	plot!(v5, arrow=:filled, ls=lineStyle5, lw=lineWidth5, color=color5, label="$v5Label") 
+	plot!(v5, arrow=:filled, ls=lineStyle5, lw=lineWidth5, 
+	color=color5, label="$v5Label") 
 end # function plot2DVectors
 
 # ╔═╡ 2cf4c1b0-dad6-47f8-ada4-d3889ca8e00c
 md"
 ---
-###### 3.1 Plot of Vectors
-A *geometric vector* is a directed straight line *connecting* two *points* $P$ and $Q$. $P$ is the *tail* and $Q$ the head of the *arrow* (= *vector*).
+###### 3.2 Spacetime, Scalars, Points, Vectors
+(cf. Thorne & Blandford, 2017, ch. 1.2)
+
+*Spacetime* is composed of the familiar 3D Euclidean space (*3-space*) and a universal time *t*. *Points* (= *locations*) in *3-space* are denoted as $\mathcal P$ and $\mathcal Q$. *Points* and *3-space* require *no* coordinates for their definition (Thorne & Blandford, 2017, p.8).
+
+A *scalar* is a single *number*. A *vector* in *3-space* is a *directed straight line segment* connecting *points* $P$ and $Q$. $P$ is the *tail* and $Q$ the *head* of the *arrow* (= *vector*). This kind of *vector* is sometimes denoted as $\Delta \mathbf v = \Delta \mathbf v_{(\mathcal P, \mathcal Q)}$. (Thorne & Blandford, 2017, p.8), Equivalently, the vector $\Delta \mathbf v$ can be defined as a *direction* $\theta$ at $\mathcal P$ and a *scalar* the vector's *length* $|\Delta \mathbf v|$:  $\Delta \mathbf v _{(\mathcal \theta, |\Delta \mathbf x|)}$.
+Sometimes a point $\mathcal O$ is selected as *origin* and other points $\mathcal P$ and $\mathcal Q$ are used as *heads* or *tips* for the definition of *vectors*:
+
+$\mathbf v_{\mathcal P}=\Delta \mathbf v (\mathcal O, \mathcal P), \mathbf v_{\mathcal Q}=\Delta \mathbf v (\mathcal O, \mathcal Q).$
+"
+
+# ╔═╡ 83738700-6b9e-4911-9662-293a8f0cbceb
+md"
+---
+###### *Points* $\mathcal P_a, Q_a, P_b, Q_b$ in *2-space*
 "
 
 # ╔═╡ 6dd80eaa-d4bf-429c-ba13-01dab755fa3d
@@ -114,7 +135,8 @@ pb = (0.0, 2.0); qb = (4.0, 6.0)        # point b = (pb, qb) = (tail(b), head(b)
 
 # ╔═╡ 95af88ac-42cd-4ee1-ad5c-76171346b2ed
 md"
-###### Constructor $makeVector(tail::Tuple, head::Tuple)$
+---
+###### Vector *Constructor* $makeVector(tail::Tuple, head::Tuple)$ in *2-space*
 "
 
 # ╔═╡ 06969c15-6c4c-4c55-8841-776cb8e13f21
@@ -125,10 +147,11 @@ function makeVector(
 end # function makeVector
 
 # ╔═╡ ce01f38d-2371-4a01-b28b-c5d3b2033e3b
-a = makeVector(pa, qa)
+Δa = makeVector(pa, qa)
 
 # ╔═╡ 27adc1b5-f0f5-458d-9830-e3aec1fbbf1d
 md"
+---
 ###### Selectors $tail(v::Vector)::Tuple, head(v::Vector)::Tuple$
 "
 
@@ -139,25 +162,34 @@ tail(v::Vector)::Tuple = v[1]
 head(v::Vector)::Tuple = v[2]
 
 # ╔═╡ 6825d256-d674-4a33-a6c6-cf7e72431a8f
-tail(a), head(a)
+tail(Δa), head(Δa)
 
 # ╔═╡ 0e530078-ed9b-42d3-94ba-6211dcc4495e
-b = makeVector(pb, qb)
+Δb = makeVector(pb, qb)
 
 # ╔═╡ 57781aab-1837-4b4e-b607-1737f9937b8d
-tail(b), head(b)
+tail(Δb), head(Δb)
 
 # ╔═╡ c6a4ec9a-a24b-4379-95dd-f262b4c9eb4e
-plot2DVectors(a, b, title=L"Vectors\ v_1=a, v_2=b", xlims=(-4.0, 10.0), ylims=(-1.0, 10.0), v1Label=L"v_1=a", v2Label=L"v_2=b")
+plot2DVectors(
+	Δa, 
+	Δb, 
+	title      = L"Vectors\ Δv_1=Δa, Δv_2=Δb", 
+	xlims      = (-2.0, 10.0), ylims=(-1.0, 10.0), 
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	v1Label    = L"Δv_1=Δa", 
+	v2Label    = L"Δv_2=Δb")
 
 # ╔═╡ c7e62857-b504-488f-af80-5a0b2f958dad
 md"
 ---
-###### 3.2 Shift Vector $v_2$ into Origin: $v_2 \mapsto v'_2$ 
+###### 3.3 *Translation*: Shift Vector $Δ\mathbf v_2$ into Origin: $Δ\mathbf v_2 \mapsto \mathbf v_2$ 
 
-*Geometric* vectors $v_1, v_2$ can only be added when the *tail* of $v_2$ meets the head of $v_1$. To that end $v_2$ has to be *shifted parallel* in *2D* so that both vectors $v_1, v''_2$ are *aligned*. Geometrically alignment can be achieved directly in *one* step by shifting $v_2 \mapsto v''_2$.
+*Geometric* vectors $Δ\mathbf v_1, Δ\mathbf v_2$ can be more easy added when the *tail* of $Δ\mathbf v_2$ meets the head of $Δ\mathbf v_1$. 
 
-*Numerically* we have to add an *intermediate* step $v'_2$: $v_2 \mapsto v'_2 \mapsto v''_2$. Before we can align $v_1$ and $v''_2$ we have to shift $v_2 \mapsto v'_2$. This is a parallel *shift* of $v_2$ so that the *tail* of $v'_2$ meets the *origin*. Only then the coordinates of the *head* of $v_1$ are *added* to the coordinates of *origin vector* $v'_2$ to obtain the aligned vector $v''_2$.
+To that end it is helpful to make a step in between. We *shift* $Δ\mathbf v_2$ *parallel* into the origin $\mathcal O = (0.0, 0.0)$ so that $Δ\mathbf v_2$ becomes an origin vector $\mathbf v_2$. Now, both vectors $Δ\mathbf v_1, \mathbf v_2$ can be easily *numerically* *aligned*. *Geometrically* this alignment can be made directly in *one* step by shifting $Δ\mathbf v_2$ so that both vectors meet $head(Δ \mathbf v_1)-to-tail(Δ \mathbf v_2)$.
+
 "
 
 # ╔═╡ 0cc112d7-db2c-4df9-af9a-0baeac7a8af1
@@ -166,7 +198,7 @@ function subtractTuple(t1::Tuple, t2::Tuple)::Tuple
 end # function subtractTuple
 
 # ╔═╡ 4e3224b3-08c6-466a-89a2-e8256725fa7b
-subtractTuple(a[2], b[1]), subtractTuple(a[2], b[2])
+subtractTuple(Δa[2], Δb[1]), subtractTuple(Δa[2], Δb[2])
 
 # ╔═╡ 5968a03f-a094-442b-9569-b8ea572386cf
 function shiftIntoOrigin(v::Vector)::Vector
@@ -174,19 +206,34 @@ function shiftIntoOrigin(v::Vector)::Vector
 end # function shiftIntoOrigin
 
 # ╔═╡ b0d1ca5e-76c3-4ba6-9865-8eb7b177f77c
-shiftIntoOrigin(b)
+b = shiftIntoOrigin(Δb)
 
 # ╔═╡ 9c089135-5f2b-457e-8319-cc278ddf8555
-plot2DVectors(a, b, shiftIntoOrigin(b), title=L"v_1=a, v_2=b\ and\ v_3=b'\ (= b\ shifted\ into\ origin)", xlims=(-4.0, 10.0), ylims=(-1.0, 10.0), color2=:red, color3=:red, lineStyle3=:dashdot, lineWidth3=1.0, v1Label=L"v_1=a", v2Label=L"v_2=b", v3Label=L"v_3=b'\ (=b\ shifted\ into\ origin)")
+plot2DVectors(
+	Δa, 
+	Δb, 
+	b, 
+	title      = L"Δv_1=Δa, Δv_2=Δb\ and\ v_3=b\ (=Δb\ shifted\ into\ origin)", 
+	xlims      = (-4.0, 10.0), ylims=(-1.0, 10.0), 
+	color2     =:red, 
+	color3     =:red, 
+	lineStyle3 =:dashdot, 
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	lineWidth3 = 1.0, 
+	v1Label    = L"v_1=Δa", 
+	v2Label    = L"v_2=Δb", 
+	v3Label    = L"v_3=b\ \ (= Δb\ shifted\ into\ origin)"
+)
 
 # ╔═╡ d30d1716-591b-40bc-9f7f-95e44b5ce067
 md"
 ---
-###### 3.3 Vector Alignment $v_2 \mapsto v'_2 \mapsto v''_2$ so that $tail(v''_2)\ meets\ head(v_1)$ 
+###### 3.4 *Translation*: Vector Alignment $Δ \mathbf v_2 \mapsto \mathbf v_2 \mapsto \Delta \mathbf v'_2$ so that $tail(Δ \mathbf v'_2)\ meets\ head(Δ \mathbf v_1)$ 
 
-Before two *geometric* vectors can be *added* they first must be *aligned* (= *shifted parallel*) so that $tail(v''_2)$ meets $head(v_1)$. 
+Before two *geometric* vectors can *added* comfortably they should be *aligned* (= *shifted parallel*) so that $tail(Δ \mathbf v'_2)$ meets $head(Δ \mathbf v_1)$. 
 
-*Numerically* we add the coordinates of $head(v_1)$ to the coordinates of the origin vector* $v'_2$. As a *numerical* result we get the aligned vector $v''_2$. When being plotted the two vectors are also *geometrically aligned*. The *aligned* $v''_2$ is result of two mappings $v_2 \mapsto v'_2 \mapsto v''_2$.
+*Numerically* we add the coordinates of $head(Δ \mathbf v_1)$ to the coordinates of the *origin vector* $\mathbf v_2$. As a *numerical* result we get the aligned vector $Δ \mathbf v'_2$. When being plotted the two vectors are also *geometrically aligned*. The *aligned* $Δ \mathbf v'_2$ is result of two mappings $Δ \mathbf v_2 \mapsto \mathbf v_2 \mapsto Δ \mathbf v'_2$.
 "
 
 # ╔═╡ 877fe903-dfe2-447f-b0c2-455637ea184a
@@ -195,13 +242,19 @@ function addTuple(t1::Tuple, t2::Tuple)::Tuple
 end # function addTuple
 
 # ╔═╡ cba00aec-790d-45a4-aec1-3fd2f711bc11
-addTuple(a[2], b[1]), addTuple(a[2], b[2])
+addTuple(Δa[2], Δb[1]), addTuple(Δa[2], Δb[2])
+
+# ╔═╡ d542e296-fd2d-4ff2-9aa6-9c9fd0f2bbc3
+Δb
+
+# ╔═╡ 7a53052e-bd55-407e-9800-c0380fbf5b5d
+shiftIntoOrigin(Δb)
 
 # ╔═╡ 195d2258-6a32-442a-8b42-8bee762e21b2
-shiftIntoOrigin(b)[2]
+shiftIntoOrigin(Δb)[2]
 
 # ╔═╡ 9dace190-f753-4592-9028-a4175defc1a6
-addTuple(a[2], shiftIntoOrigin(b)[2])
+addTuple(Δa[2], shiftIntoOrigin(Δb)[2])
 
 # ╔═╡ dd48e126-00c3-4a23-9aca-88660f708857
 function alignHeadToTail(v1::Vector, v2::Vector)::Vector
@@ -210,32 +263,34 @@ function alignHeadToTail(v1::Vector, v2::Vector)::Vector
 end # function alignHeadToTail
 
 # ╔═╡ 57b280de-82c3-4df8-b13e-305d41c0d98e
-alignHeadToTail(a, b)
+alignHeadToTail(Δa, Δb)
 
 # ╔═╡ ed4b01ef-db8c-49dd-ab3b-eeb5bc4caa21
 plot2DVectors(
-	a, 
-	b, 
-	shiftIntoOrigin(b), 
-	alignHeadToTail(a, b), 
-	title=L"v_1=a, v_2=b, v_3=b', v_4=b''\ (=head(a)-to-tail(b''))", 
-	xlims=(-4.0, 10.0), ylims=(-1.0, 13.0),
-	color2=:red, 
-	color3=:red, 
-	color4=:red, 
-	lineStyle3=:dashdot, 
-	lineStyle4=:dashdot, 
-	lineWidth3=1.5, 
-	lineWidth4=2.0,
-	v1Label=L"v_1=a", 
-	v2Label=L"v_2=b", 
-	v3Label=L"v_3=b'\ (b\ shifted\ into\ origin)", 
-	v4Label=L"v_4=b''\ (=head(a)-to-tail(b'')\ aligned)")
+	Δa, 
+	Δb, 
+	b,                                                # b = shiftIntoOrigin(Δb), 
+	alignHeadToTail(Δa, b), 
+	title      = L"Δv_1=Δa, Δv_2=Δb, v_3=b, Δv_4=Δb'\ (=head(Δa)ToTail(b))", 
+	xlims      = (-4.0, 15.0), ylims=(-1.0, 13.0),
+	color2     = :red, 
+	color3     = :red, 
+	color4     = :red, 
+	lineStyle3 = :dashdot, 
+	lineStyle4 = :dashdot, 
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	lineWidth3 = 1.0, 
+	lineWidth4 = 3.5,
+	v1Label    = L"Δv_1=Δa", 
+	v2Label    = L"Δv_2=Δb", 
+	v3Label    = L"v_3=b\ \ (=Δb\ shifted\ into\ origin)", 
+	v4Label    = L"Δv_4=Δb'\ (= head(Δa)-to-tail(Δb')\ aligned)")
 
 # ╔═╡ 7d52fbaa-255e-4712-8e76-a8ad50b35c66
 md"
 ---
-###### 3.4 Geometric *Addition* of Vectors $(v_1, v_2) \mapsto v_1 + v''_2 = v_{(tail(v_1), head(v''_2)}$
+###### 3.5 Geometric *Addition* of Vectors $(Δv_1, Δv_2) \mapsto Δv_1 + Δv_2 = v_{(tail(Δv_1), head(Δv'_2)}$
 (cf. Walck, 2022, p.132f)
 "
 
@@ -246,64 +301,103 @@ function add(v1::Vector, v2::Vector)::Vector
 end # function aline
 
 # ╔═╡ 5cc50c6e-60a2-4d0e-9dee-c3ca4ef017ce
-add(a, b)
+add(Δa, Δb)
 
 # ╔═╡ aac75a8b-cc33-4096-9434-1bd82a852a44
 plot2DVectors(
-	a, 
-	b, 
-	shiftIntoOrigin(b), 
-	alignHeadToTail(a, b), 
-	add(a, b),
-	title=L"Vector\ addition:\ (a, b) \mapsto a + b'' = v_{(tail(a), head(b'')}",
-	xlims=(-4.0, 10.0), ylims=(-1.0, 13.0),
-	color2=:red, 
-	color3=:red, 
-	color4=:red, 
-	color5=:green, 
-	lineStyle3=:dashdot, 
-	lineStyle4=:dashdot, 
-	lineStyle5=:dashdot, 
-	lineWidth3=1.5, 
-	lineWidth4=2.0,
-	lineWidth5=2.5,
-	v1Label=L"v_1=a", 
-	v2Label=L"v_2=b", 
-	v3Label=L"v_3=b'\ (b\ shifted\ into\ origin)", 
-	v4Label=L"v_4=b''\ (=head(a)-to-tail(b'')\ aligned)",
-	v5Label=L"v_4=a+b''= a+b = v_{(tail(a), head(b'')}"
+	Δa, 
+	Δb, 
+	b,                                        # b = shiftIntoOrigin(Δb), 
+	alignHeadToTail(Δa, b),                 
+	add(Δa, alignHeadToTail(Δa, b)),
+	title = 
+		L"Addition:\ (Δa, Δb) \mapsto Δa + Δb' = Δv_{(tail(Δa), head(Δb')}",
+	xlims      = (-4.0, 15.0), ylims=(-1.0, 13.0),
+	color2     = :red, 
+	color3     = :red, 
+	color4     = :red, 
+	color5     = :green, 
+	lineStyle3 = :dashdot, 
+	lineStyle4 = :dashdot, 
+	lineStyle5 = :dashdot, 
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	lineWidth3 = 1.0, 
+	lineWidth4 = 3.5,
+	lineWidth5 = 3.5,
+	v1Label    = L"Δv_1=Δa", 
+	v2Label    = L"Δv_2=Δb", 
+	v3Label    = L"v_3=b\ (= Δb\ shifted\ into\ origin)", 
+	v4Label    = L"Δv_4=Δb'\ (=head(Δa)-to-tail(Δb')\ aligned)",
+	v5Label    = L"Δv_5=Δa+Δb' = Δa+Δb = Δv_{(tail(Δa), head(Δb')}"
 )
+
+# ╔═╡ 8dd1f914-b3ae-4e80-966a-f2a860ee3d4f
+a = shiftIntoOrigin(Δa)
 
 # ╔═╡ 6e49dca9-23b9-495e-aca9-247d78dd2d78
 plot2DVectors(
-	b, 
-	a, 
-	shiftIntoOrigin(a), 
-	alignHeadToTail(b, a), 
-	add(b, a),
-	title=L"Vector\ addition:\ (b, a) \mapsto b + a'' = v_{(tail(b), head(a'')}",
-	xlims=(-4.0, 10.0), ylims=(-1.0, 15.0),
-	color2=:red, 
-	color3=:red, 
-	color4=:red, 
-	color5=:green, 
-	lineStyle3=:dashdot, 
-	lineStyle4=:dashdot, 
-	lineStyle5=:dashdot, 
-	lineWidth3=1.5, 
-	lineWidth4=2.0,
-	lineWidth5=2.5,
-	v1Label=L"v_1=b", 
-	v2Label=L"v_2=a", 
-	v3Label=L"v_3=a'\ (a\ shifted\ into\ origin)", 
-	v4Label=L"v_4=a''\ (=head(b)-to-tail(a'')\ aligned)",
-	v5Label=L"v_4=b+a''= b+a = v_{(tail(b), head(a'')}"
+	Δb, 
+	Δa, 
+	a,                                        # a = shiftIntoOrigin(Δa), 
+	alignHeadToTail(Δb, a),                 
+	add(Δb, alignHeadToTail(Δb, a)),
+	title=L"Vector\ addition:\ (Δb, Δa) \mapsto Δb + Δa' = v_{(tail(Δb), head(Δa')}",
+	xlims      = (-4.0, 15.0), ylims=(-1.0, 15.0),
+	color2     = :red, 
+	color3     = :red, 
+	color4     = :red, 
+	color5     = :green, 
+	lineStyle3 = :dashdot, 
+	lineStyle4 = :dashdot, 
+	lineStyle5 = :dashdot, 
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	lineWidth3 = 1.0, 
+	lineWidth4 = 3.5,
+	lineWidth5 = 3.5,
+	v1Label    = L"Δv_1=Δb", 
+	v2Label    = L"Δv_2=Δa", 
+	v3Label    = L"v_3=a\ (= Δa\ shifted\ into\ origin)", 
+	v4Label    = L"v_4=Δa'\ (=head(Δb)-to-tail(Δa')\ aligned)",
+	v5Label    = L"v_5=Δb+Δa' = Δb+Δa = Δv_{(tail(Δb), head(Δa')}"
+)
+
+# ╔═╡ b3fdcef5-d0bf-4f0d-99e2-53c87b5432a9
+md"
+---
+###### Summary: Geometric Vector *Addition*
+Here we summarize the *input* (vectors *a, b*) and the *output* (vector *a+b*) of the addition operation. As *geometric* vectors are coordinate- and basis-*free* the *addidition* result vector *a+b* can be shifted to *any* place in 2D. We shifted *a+b* e.g. into the origin (see below).
+
+"
+
+# ╔═╡ d4e214eb-6893-4480-a0c3-3b3c962fa617
+plot2DVectors(
+	Δa, 
+	Δb, 
+	add(Δa, Δb),
+	shiftIntoOrigin(add(Δa, Δb)),
+	title      = L"Vector\ addition:\ (Δa, Δb) \mapsto Δa + Δb",
+	xlims      = (-4.0, 10.0), ylims=(-1.0, 15.0),
+	color2     = :red, 
+	color3     = :green, 
+	color4     = :green, 
+	lineStyle3 = :dashdot, 
+	lineStyle4 = :dashdot, 
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	lineWidth3 = 1.0, 
+	lineWidth4 = 3.5,
+	v1Label    = L"Δv_1=a", 
+	v2Label    = L"Δv_2=b", 
+	v3Label    = L"Δv_3=Δa+Δb",
+	v4Label    = L"v_4=(Δa+Δb)'\ (= origin\ vector)"
 )
 
 # ╔═╡ a13832d7-63b8-48b8-add3-b4f6e62cae2f
 md"
 ---
-###### 3.5 Geometric *Scaling* a Vector
+###### 3.6 Geometric *Scaling* a Vector
 (cf. Walck, 2022, p.132f)
 "
 
@@ -325,48 +419,80 @@ function scale(v::Vector, s::Number)
 end # function scale
 
 # ╔═╡ cb79ad72-e57a-4de6-9312-ab08a853d4a3
-a
+	Δa
 
 # ╔═╡ 619657ec-2c6f-488a-ae2f-6c0ab3030aa6
-asc = scale(a, 2.5)
+Δasc = scale(Δa, 2.5)
 
 # ╔═╡ b3485120-35fc-4a39-b7bc-00b98419ba15
-plot2DVectors(b, scale(b, .3), title=L"Vectors\ v_1=a, v_2=a'\ where: a'=0.3a", xlims=(-8.0, 8.0), ylims=(-8.0, 10.0), v1Label=L"v_1=a", v2Label=L"v_2=a'=0.3a")
+plot2DVectors(
+	Δb, 
+	scale(Δb, .3), 
+	title=L"Vectors\ Δv_1=Δa, Δv_2=Δa'\ where: Δa'=0.3Δa", 
+	xlims=(-8.0, 8.0), ylims=(-8.0, 10.0), 	
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	v1Label=L"Δv_1=Δa", 
+	v2Label=L"Δv_2=a'=0.3Δa")
 
 # ╔═╡ 50bba93b-9053-43a4-895d-af54535bac39
-plot2DVectors(a, scale(a, -1.3), title=L"Vectors\ v_1=a, v_2=a'\ where: a'= -1.3a", xlims=(-8.0, 8.0), ylims=(-8.0, 10.0), v1Label=L"v_1=a", v2Label=L"v_2=a'=-1.3a")
+plot2DVectors(
+	Δa, 
+	scale(Δa, -1.3), 
+	title=L"Vectors\ Δv_1=Δa, Δv_2=Δa'\ where: Δa'= -1.3Δa", 
+	xlims=(-8.0, 8.0), ylims=(-8.0, 10.0), 
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	v1Label=L"Δv_1=Δa", 
+	v2Label=L"Δv_2=a'=-1.3Δa")
 
 # ╔═╡ f1d702b7-e11e-4458-a825-9ba939828513
-plot2DVectors(b, scale(b, -1.3), title=L"Vectors\ v_1=b, v_2=b'\ where: b'=-1.5b", xlims=(-8.0, 8.0), ylims=(-8.0, 10.0), v1Label=L"v_1=b", v2Label=L"v_2=b'=-1.2b")
+plot2DVectors(
+	Δb, 
+	scale(Δb, -1.3), 
+	title=L"Vectors\ Δv_1=b, Δv_2=b'\ where: Δb'=-1.5Δb", 
+	xlims=(-8.0, 8.0), ylims=(-8.0, 10.0), 
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	v1Label=L"Δv_1=Δb", 
+	v2Label=L"Δv_2=b'=-1.2Δb")
 
 # ╔═╡ c8fae775-1c57-46ad-9c67-1d1d1bf0e720
 md"
 ---
-###### 3.6 Geometric Vector Subtraction: $a - b = a + b''$
+###### 3.7 Geometric Vector *Subtraction*: $Δa - Δb = Δa + (-Δb)$
 (cf. Walck, 2022, p.133)
 
-*Geometric vector subtraction* is defined *to be the vector that points from the tip (= head) of the first (= $v_1$) to the tip (= head) of the second (= $v_2$) when two vectors are placed tail-to-tail* (Walck, 2022, p.133)
+*Geometric vector subtraction* is defined *to be the vector that points from the tip (= head) of the first (= $Δv_1$) to the tip (= head) of the second (= $Δv_2$) when two vectors are placed tail-to-tail* (Walck, 2022, p.133).
 
-We can get $v_1 - v_2$ by using *addition*. We add the *reversed* $v_2$ to $v_1$:
+We can get $Δv_1 - Δv_2$ by using *addition*. We add the *reversed* or negatively scaled* $Δv_2$ to $Δv_1$:
 
-$v_1 - v_2 = v1 + (- v_2).$
+$Δv_1 - Δv_2 = Δv1 + (- Δv_2).$
 
-First we *reverse* $b$
+First we *reverse* $Δb$ or *scale $scale(Δb, -1.0)$:
 
-$reverse: b \mapsto reverse(b) = b'$.
+$reverse: Δb \mapsto reverse(Δb) = Δb'$.
 
-Then we *shift* $b'$ to get $b''$ so that $a$ and $b''$ meet *tail-to-tail*:
+Then we *shift* $Δb'$ to get $b'$ so that $Δa$ and $b'$ meet *tail-to-tail*:
 
-$alignTailToTail: (a, b') \mapsto (a, b'').$
+$alignTailToTail: (Δa, b') \mapsto Δv_{(head(Δa), tail(Δb'))}.$
 
-Now, we can geometrically *add* $a + b''$ which results in a vector which is $a - b$:
+Now, we can geometrically *add* $Δa + Δv_{(head(Δa), tail(Δb'))}$ which results in a vector which is $Δa - Δb$:
 
-$a - b = a + b''.$ 
+$Δa - Δb = Δa + (-Δb').$ 
 
 "
 
 # ╔═╡ 99efd93f-2514-490c-8945-2c49a69a7f8a
-plot2DVectors(a, b, xlims=(-6.0, 8.0), ylims=(-6.0, 10.0), title=L"Vectors\ v_1=a, v_2=b")
+plot2DVectors(
+	Δa, 
+	Δb, 
+	xlims=(-6.0, 8.0), ylims=(-6.0, 10.0), 
+	title=L"Vectors\ v_1=a, v_2=b",
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	v1Label    = L"Δv_1=Δb", 
+	v2Label    = L"Δv_2=Δb'=-1.2Δb")
 
 # ╔═╡ 366ac44f-e093-46e5-be93-279b0f94ee14
 function reverse(v::Vector)::Vector
@@ -375,17 +501,19 @@ end # function reverse
 
 # ╔═╡ 957d245e-7733-4914-a22d-4e36c92baa2f
 plot2DVectors(
-	a, 
-	b, 
-	scale(b, -1.0),  
-	xlims=(-6.0, 8.0), ylims=(-6.0, 10.0), 
-	title=L"Vectors\ v_1=a, v_2=b, v_3=b'=scale(b,-1.0)=-b", 
-	lineStyle3=:dashdot,
-	lineWidth3=1.5,
-	color3=:magenta,
-	v1Label=L"v_1=a", 
-	v2Label=L"v_2=b", 
-	v3Label=L"v_3=b'=-b")
+	Δa, 
+	Δb, 
+	scale(Δb, -1.0),  
+	title      = L"Δv_1=Δa, Δv_2=Δb, Δv_3=Δb'=scale(Δb,-1.0)", 
+	xlims      = (-6.0, 8.0), ylims=(-6.0, 10.0), 
+	lineStyle3 = :dashdot,
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	lineWidth3 = 1.0, 
+	color3     = :magenta,
+	v1Label    = L"Δv_1=Δa", 
+	v2Label    = L"Δv_2=Δb", 
+	v3Label    = L"Δv_3=Δb'=-Δb")
 
 # ╔═╡ 26ade910-75d9-4243-b3ac-8608cb4d916c
 function alignTailToTail(v1::Vector, v2::Vector)::Vector
@@ -395,68 +523,112 @@ end # function alignTailToTail
 
 # ╔═╡ f6ecab4a-9d37-4c17-aa42-9dd54665ec23
 plot2DVectors(
-	a, 
-	b, 
-	scale(b, -1.0),  
-	alignTailToTail(a, scale(b, -1.0)),
+	Δa, 
+	Δb, 
+	scale(Δb, -1.0),  
+	alignTailToTail(Δa, scale(Δb, -1.0)),
 	xlims=(-6.0, 8.0), ylims=(-6.0, 10.0), 
-	title=L"Vectors\ v_1=a, v_2=b, v_3=b', v_4=tail-to-tail\ aligned", 
+	title=L"Δv_{1,2}=Δa,b, Δv_3=-Δb, Δv_4=-Δb'(= tail-to-tail\ aligned", 
 	lineStyle3=:dashdot,
 	lineStyle4=:dashdot,
-	lineWidth3=1.5,
-	lineWidth4=2.0,
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	lineWidth3 = 1.0, 
+	lineWidth4 = 3.5,
 	color3=:magenta,
-	color4=:blue,
-	v1Label=L"v_1=a", 
-	v2Label=L"v_2=b", 
-	v3Label=L"v_3=b'=-b",
-	v4Label=L"v_4=b'' (tail-to-tail\ aligned)"
+	color4=:magenta,
+	v1Label=L"Δv_1=Δa", 
+	v2Label=L"Δv_2=Δb", 
+	v3Label=L"Δv_3=-Δb=Δb'",
+	v4Label=L"Δv_4=Δb'' (tail-to-tail\ aligned)"
 )
 
 # ╔═╡ 073cb826-efd8-4e9c-b49b-03952d581f77
 plot2DVectors(
-	a, 
-	b, 
-	alignTailToTail(a, scale(b, -1.0)),
-	add(a, alignTailToTail(a, scale(b, -1.0))), 
+	Δa, 
+	Δb, 
+	alignTailToTail(Δa, scale(Δb, -1.0)),
+	add(Δa, alignTailToTail(Δa, scale(Δb, -1.0))), 
 	xlims=(-6.0, 8.0), ylims=(-6.0, 10.0), 
-	title=L"v_1=a, v_2=b, v_3=b', v_4=a+b''=a+(-b)=a-b", 
+	title=L"Δv_1=Δa, Δv_2=Δb, Δv_3=Δb', Δv_4=Δa+(-Δb')=Δa-Δb", 
+	titlefontsize=11,
 	lineStyle3=:dashdot,
 	lineStyle4=:dashdot,
-	lineWidth3=2.0,
-	lineWidth4=2.5,
-	color3=:magenta,
-	color4=:green,
-	v1Label=L"v_1=a", 
-	v2Label=L"v_2=b", 
-	v3Label=L"v_3=b'' (tail-to-tail\ aligned)",
-	v4Label=L"v_4=a+b''=a+(-b)=a-b"
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	lineWidth3 = 1.0, 
+	lineWidth4 = 3.5,
+	color3     = :magenta,
+	color4     = :green,
+	v1Label    = L"Δv_1=Δa", 
+	v2Label    = L"Δv_2=Δb", 
+	v3Label    = L"Δv_3=-Δb'\ (tail-to-tail\ aligned)",
+	v4Label    = L"Δv_4=Δa+(-Δb')=Δa-Δb"
 )
 
 # ╔═╡ 5debc0ef-83fb-4c6a-a4dd-e6ac0d2ed4e0
 plot2DVectors(
-	a, 
-	b, 
-	alignTailToTail(a, b),
-	makeVector(head(alignTailToTail(a, b)), head(a)),
+	Δa, 
+	Δb, 
+	alignTailToTail(Δa, Δb),
+	makeVector(head(alignTailToTail(Δa, Δb)), head(Δa)),
 	xlims=(-2.0, 8.0), ylims=(-2.0, 10.0), 
-	title=L"v_1=a, v_2=b, v_3=b', v_4=a-b''=a-b, v(head(b''), head(a))", 
+	title=L"Δv_1=Δa, Δv_2=Δb, Δv_3=Δb', Δv_4=Δa-Δb''=v(head(Δb'), head(Δa))",
 	lineStyle3=:dashdot,
 	lineStyle4=:dashdot,
-	lineWidth3=2.0,
-	lineWidth4=2.5,
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	lineWidth3 = 1.0, 
+	lineWidth4 = 3.5,
 	color3=:magenta,
 	color4=:green,
-	v1Label=L"v_1=a", 
-	v2Label=L"v_2=b", 
-	v3Label=L"v_3=b'' (tail-to-tail\ aligned)",
-	v4Label=L"v_4=v(head(b''), head(a))=a-b"
+	v1Label=L"Δv_1=Δa", 
+	v2Label=L"Δv_2=Δb", 
+	v3Label=L"Δv_3=Δb' (tail-to-tail\ aligned)",
+	v4Label=L"Δv_4=Δv(head(Δb'), head(Δa))=Δa-Δb"
+)
+
+# ╔═╡ 646ef3c1-7276-41ad-97ea-dda7a4346b02
+md"
+---
+###### Summary: Geometric Vector *Subtraction*
+Here we summarize the *input* (vectors *Δa, Δb*) and the *output* (vector *Δa-Δb*) of the *subtraction* operation. As *geometric* vectors are coordinate- and basis-*free* the *subtraction* result vector *Δa-Δb* can be shifted to *any* place in 2D. We shifted *Δa-Δb* e.g. into the origin (see below).
+
+"
+
+# ╔═╡ 926b7eff-8264-40e1-a07b-e46b6c8b4bdc
+plot2DVectors(
+	Δa, 
+	Δb, 
+	alignTailToTail(Δa, Δb),
+	makeVector(head(alignTailToTail(Δa, Δb)), head(Δa)),
+	shiftIntoOrigin(makeVector(head(alignTailToTail(Δa, Δb)), head(Δa))),
+	xlims=(-8.0, 8.0), ylims=(-2.0, 10.0), 
+	title=L"Δv_1=Δa, Δv_2=Δb, Δv_3=Δb', Δv_4=Δa-Δb', v_5=Δa-Δb'\ (shifted\ into\ origin)", 
+	titlefontsize=10,
+	lineStyle3 = :dashdot,
+	lineStyle4 = :dashdot,
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	lineWidth3 = 1.0, 
+	lineWidth4 = 3.5,
+	lineWidth5 = 3.5,
+	color3     = :magenta,
+	color4     = :green,
+	color5     = :green,
+	v1Label=L"Δv_1=Δa", 
+	v2Label=L"Δv_2=Δb", 
+	v3Label=L"Δv_3=Δb'\ (tail-to-tail\ aligned)",
+	v4Label=L"Δv_4=Δv(head(Δb'), head(Δa))=Δa-Δb",
+	v5Label    = L"v_5=Δa-Δb\ (shifted\ into\ origin)"
 )
 
 # ╔═╡ 2853352d-8b28-40e1-a503-eb3a36655de9
 md"
 ---
 ##### 4. Summary
+*Geometric* vectors can be positioned in *any* place of 2D-space. For the operations *scale, addition, subtraction* it is sometimes helpful (but *not* necessary) to align the operands *head-to-tail* (*addition*) or *tail-to-tail* (*subtraction*).
+
 To visualize *geometric* operations of *scalars* and *vectors* with $Plots.jl$ we had to use their *algebraic* counterparts of objects and operations. Otherwise we had to use a *graphic* drawing tool where we could move *geometric* objects *directly* to visualize geometric *objetcs* and *operations*.
 "
 
@@ -1723,11 +1895,13 @@ version = "1.13.0+0"
 # ╟─caf03f5b-666d-41b9-b0eb-6ce5511d04f0
 # ╠═878ecf5c-dfb7-4387-9372-c9d158b061c6
 # ╟─e6b0f2f4-676b-431e-b744-b4783cc76e40
+# ╟─083a291d-3deb-403e-b1bc-1a78063ed549
 # ╠═313cde79-40e8-4317-b969-e3510965227c
 # ╠═c645ea73-2dcd-4e5b-be25-f5b9b079cad3
 # ╠═b1c286d7-893d-43b6-8cdb-9875c13d35bb
 # ╠═6676d293-b73d-484c-8b3f-1d7a74455300
 # ╟─2cf4c1b0-dad6-47f8-ada4-d3889ca8e00c
+# ╟─83738700-6b9e-4911-9662-293a8f0cbceb
 # ╠═6dd80eaa-d4bf-429c-ba13-01dab755fa3d
 # ╠═bef02f8a-5a30-494d-8532-88a080e00abb
 # ╟─95af88ac-42cd-4ee1-ad5c-76171346b2ed
@@ -1749,6 +1923,8 @@ version = "1.13.0+0"
 # ╟─d30d1716-591b-40bc-9f7f-95e44b5ce067
 # ╠═877fe903-dfe2-447f-b0c2-455637ea184a
 # ╠═cba00aec-790d-45a4-aec1-3fd2f711bc11
+# ╠═d542e296-fd2d-4ff2-9aa6-9c9fd0f2bbc3
+# ╠═7a53052e-bd55-407e-9800-c0380fbf5b5d
 # ╠═195d2258-6a32-442a-8b42-8bee762e21b2
 # ╠═9dace190-f753-4592-9028-a4175defc1a6
 # ╠═dd48e126-00c3-4a23-9aca-88660f708857
@@ -1758,7 +1934,10 @@ version = "1.13.0+0"
 # ╠═c02c18fb-be5e-4af1-b6de-c8df369fe82c
 # ╠═5cc50c6e-60a2-4d0e-9dee-c3ca4ef017ce
 # ╠═aac75a8b-cc33-4096-9434-1bd82a852a44
+# ╠═8dd1f914-b3ae-4e80-966a-f2a860ee3d4f
 # ╠═6e49dca9-23b9-495e-aca9-247d78dd2d78
+# ╟─b3fdcef5-d0bf-4f0d-99e2-53c87b5432a9
+# ╠═d4e214eb-6893-4480-a0c3-3b3c962fa617
 # ╟─a13832d7-63b8-48b8-add3-b4f6e62cae2f
 # ╠═e169b867-5b62-461b-95cc-00dc67d34230
 # ╠═cb79ad72-e57a-4de6-9312-ab08a853d4a3
@@ -1774,6 +1953,8 @@ version = "1.13.0+0"
 # ╠═f6ecab4a-9d37-4c17-aa42-9dd54665ec23
 # ╠═073cb826-efd8-4e9c-b49b-03952d581f77
 # ╠═5debc0ef-83fb-4c6a-a4dd-e6ac0d2ed4e0
+# ╟─646ef3c1-7276-41ad-97ea-dda7a4346b02
+# ╠═926b7eff-8264-40e1-a07b-e46b6c8b4bdc
 # ╟─2853352d-8b28-40e1-a503-eb3a36655de9
 # ╟─bbf29e00-f756-4ad2-89e3-f85af3993035
 # ╟─dcd13bf7-b38a-491b-a738-d74d4c288c9f
