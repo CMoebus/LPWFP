@@ -22,7 +22,7 @@ md"
 ====================================================================================
 #### LPWFP\_Ch10.1\_Describing Motion in 3D: *The Geometric Principle I*
 ##### file: LPWFP\_Ch10.1\_DescribingMotionIn3D\_I
-##### code: Julia/Pluto (1.12.4/0.20.21) by PCM *** 2026/01/29 ***
+##### code: Julia/Pluto (1.12.4/0.20.21) by PCM *** 2026/01/30 ***
 
 ====================================================================================
 "
@@ -366,38 +366,70 @@ plot2DVectors(
 # ╔═╡ b3fdcef5-d0bf-4f0d-99e2-53c87b5432a9
 md"
 ---
-###### Summary: Geometric Vector *Addition*
-Here we summarize the *input* (vectors *a, b*) and the *output* (vector *a+b*) of the addition operation. As *geometric* vectors are coordinate- and basis-*free* the *addidition* result vector *a+b* can be shifted to *any* place in 2D. We shifted *a+b* e.g. into the origin (see below).
+###### 3.6 Geometric Vector *Addition* with Origin Vectors: $Δ\mathbf v_1 + Δ\mathbf v_2 = \mathbf v_1 + \mathbf v_2$
+Vectors $Δv$ can be shifted in *2-space* as long as *direction* $\theta$ and *length $|\Delta \mathbf v|$ are left unchanged. 
+
+When $Δ\mathbf a, Δ\mathbf b$ are shifted into the *origin* $\mathcal O$ we get vectors $\mathbf a, \mathbf b$ which have a simplied *algebraic* representation of $Q_a, Q_b$ as simple *row* or *column* array vectors. Because $\mathcal O = \mathcal P_a = \mathcal P_b$ we need *no* algebraic representation of $tail(a) = \mathcal P_a, tail(b) = \mathcal P_b$. 
+
+Despite the *addition* operation changes from $Δa + Δb$ to $a + b$ the result vector of this additon is identical. 
 
 "
 
 # ╔═╡ d4e214eb-6893-4480-a0c3-3b3c962fa617
 plot2DVectors(
 	Δa, 
-	Δb, 
+	Δb,
 	add(Δa, Δb),
-	shiftIntoOrigin(add(Δa, Δb)),
-	title      = L"Vector\ addition:\ (Δa, Δb) \mapsto Δa + Δb",
-	xlims      = (-4.0, 10.0), ylims=(-1.0, 15.0),
+	add(shiftIntoOrigin(Δa), shiftIntoOrigin(Δb)),
+	title      = L"Identical\ Direction\ and\ Length\ of\ Operation:\ Δa+Δb = a+b",
+	xlims      = (-4.0, 12.0), ylims=(-1.0, 12.0),
 	color2     = :red, 
 	color3     = :green, 
-	color4     = :green, 
+	color4     = :magenta, 
 	lineStyle3 = :dashdot, 
 	lineStyle4 = :dashdot, 
-	lineWidth1 = 2.5,
-	lineWidth2 = 2.5,
-	lineWidth3 = 1.0, 
-	lineWidth4 = 3.5,
-	v1Label    = L"Δv_1=a", 
-	v2Label    = L"Δv_2=b", 
+	lineWidth1 = 1.5,
+	lineWidth2 = 1.5,
+	lineWidth3 = 3.5, 
+	lineWidth4 = 2.5,
+	v1Label    = L"Δv_1=Δa", 
+	v2Label    = L"Δv_2=Δb", 
 	v3Label    = L"Δv_3=Δa+Δb",
-	v4Label    = L"v_4=(Δa+Δb)'\ (= origin\ vector)"
+	v4Label    = L"Δv_4=a+b \ (origin\ vectors)"
+)
+
+# ╔═╡ 7b20e0e1-7ff4-45e9-bb3a-24a2e13d5bb3
+Δa, a
+
+# ╔═╡ 63858085-df5f-4f65-9c8d-1fd54221ee9d
+Δb, b
+
+# ╔═╡ 1012bae9-e4e3-4cf3-8a24-2eea91b8803a
+plot2DVectors(
+	Δa, 
+	Δb,
+	add(a, b),                                    # origin vectors v =, b
+	makeVector((0.0, 0.0), addTuple(head(a),head(b))),
+	title      = L"Geometric\ Representation\ of\ Algebraic\ Addition:\ a+b = Q_a + Q_b",
+	xlims      = (-4.0, 12.0), ylims=(-1.0, 12.0),
+	color3     = :green, 
+	color4     = :magenta, 
+	lineStyle3 = :dash, 
+	lineStyle4 = :dashdot, 
+	lineWidth1 = 1.5,
+	lineWidth2 = 1.5,
+	lineWidth3 = 3.5, 
+	lineWidth4 = 2.5,
+	v1Label    = L"Δv_1=Δa",
+	v2Label    = L"Δv_1=Δb", 
+	v3Label    = L"v_3=a+b", 
+	v4Label    = L"v_4=a+b=Q_a+Q_b\ (=algebraic\ construction)",
 )
 
 # ╔═╡ a13832d7-63b8-48b8-add3-b4f6e62cae2f
 md"
 ---
-###### 3.6 Geometric *Scaling* a Vector
+###### 3.7 Geometric *Scaling* a Vector
 (cf. Walck, 2022, p.132f)
 "
 
@@ -460,7 +492,7 @@ plot2DVectors(
 # ╔═╡ c8fae775-1c57-46ad-9c67-1d1d1bf0e720
 md"
 ---
-###### 3.7 Geometric Vector *Subtraction*: $Δa - Δb = Δa + (-Δb)$
+###### 3.8 Geometric Vector *Subtraction*: $Δa - Δb = Δa + (-Δb)$
 (cf. Walck, 2022, p.133)
 
 *Geometric vector subtraction* is defined *to be the vector that points from the tip (= head) of the first (= $Δv_1$) to the tip (= head) of the second (= $Δv_2$) when two vectors are placed tail-to-tail* (Walck, 2022, p.133).
@@ -487,7 +519,7 @@ $Δa - Δb = Δa + (-Δb').$
 plot2DVectors(
 	Δa, 
 	Δb, 
-	xlims=(-6.0, 8.0), ylims=(-6.0, 10.0), 
+	xlims=(-6.0, 8.0), ylims=(-3.0, 10.0), 
 	title=L"Vectors\ v_1=a, v_2=b",
 	lineWidth1 = 2.5,
 	lineWidth2 = 2.5,
@@ -505,7 +537,7 @@ plot2DVectors(
 	Δb, 
 	scale(Δb, -1.0),  
 	title      = L"Δv_1=Δa, Δv_2=Δb, Δv_3=Δb'=scale(Δb,-1.0)", 
-	xlims      = (-6.0, 8.0), ylims=(-6.0, 10.0), 
+	xlims      = (-6.0, 10.0), ylims=(-6.0, 10.0), 
 	lineStyle3 = :dashdot,
 	lineWidth1 = 2.5,
 	lineWidth2 = 2.5,
@@ -527,7 +559,7 @@ plot2DVectors(
 	Δb, 
 	scale(Δb, -1.0),  
 	alignTailToTail(Δa, scale(Δb, -1.0)),
-	xlims=(-6.0, 8.0), ylims=(-6.0, 10.0), 
+	xlims=(-6.0, 10.0), ylims=(-6.0, 10.0), 
 	title=L"Δv_{1,2}=Δa,b, Δv_3=-Δb, Δv_4=-Δb'(= tail-to-tail\ aligned", 
 	lineStyle3=:dashdot,
 	lineStyle4=:dashdot,
@@ -549,7 +581,7 @@ plot2DVectors(
 	Δb, 
 	alignTailToTail(Δa, scale(Δb, -1.0)),
 	add(Δa, alignTailToTail(Δa, scale(Δb, -1.0))), 
-	xlims=(-6.0, 8.0), ylims=(-6.0, 10.0), 
+	xlims=(-6.0, 10.0), ylims=(-6.0, 10.0), 
 	title=L"Δv_1=Δa, Δv_2=Δb, Δv_3=Δb', Δv_4=Δa+(-Δb')=Δa-Δb", 
 	titlefontsize=11,
 	lineStyle3=:dashdot,
@@ -572,7 +604,7 @@ plot2DVectors(
 	Δb, 
 	alignTailToTail(Δa, Δb),
 	makeVector(head(alignTailToTail(Δa, Δb)), head(Δa)),
-	xlims=(-2.0, 8.0), ylims=(-2.0, 10.0), 
+	xlims=(-2.0, 10.0), ylims=(-2.0, 10.0), 
 	title=L"Δv_1=Δa, Δv_2=Δb, Δv_3=Δb', Δv_4=Δa-Δb''=v(head(Δb'), head(Δa))",
 	lineStyle3=:dashdot,
 	lineStyle4=:dashdot,
@@ -591,36 +623,59 @@ plot2DVectors(
 # ╔═╡ 646ef3c1-7276-41ad-97ea-dda7a4346b02
 md"
 ---
-###### Summary: Geometric Vector *Subtraction*
-Here we summarize the *input* (vectors *Δa, Δb*) and the *output* (vector *Δa-Δb*) of the *subtraction* operation. As *geometric* vectors are coordinate- and basis-*free* the *subtraction* result vector *Δa-Δb* can be shifted to *any* place in 2D. We shifted *Δa-Δb* e.g. into the origin (see below).
+###### 3.9 Geometric Vector *Subtraction* with Origin Vectors: $Δ\mathbf v_1 - Δ\mathbf v_2 = \mathbf v_1 - \mathbf v_2$
+
+Vectors $Δv$ can be shifted in *2-space* as long as *direction* $\theta$ and *length $|\Delta \mathbf v|$ are left unchanged. 
+
+When $Δ\mathbf a, Δ\mathbf b$ are shifted into the *origin* $\mathcal O$ we get vectors $\mathbf a, \mathbf b$ which have a simplied *algebraic* representation of $Q_a, Q_b$ as simple *row* or *column* array vectors. Because $\mathcal O = \mathcal P_a = \mathcal P_b$ we need *no* algebraic representation of $tail(a) = \mathcal P_a, tail(b) = \mathcal P_b$. 
+
+Despite the *subtraction* operation changes from $Δa - Δb$ to $a - b$ the result vector of this subtraction is identical. 
 
 "
 
 # ╔═╡ 926b7eff-8264-40e1-a07b-e46b6c8b4bdc
 plot2DVectors(
 	Δa, 
-	Δb, 
-	alignTailToTail(Δa, Δb),
-	makeVector(head(alignTailToTail(Δa, Δb)), head(Δa)),
-	shiftIntoOrigin(makeVector(head(alignTailToTail(Δa, Δb)), head(Δa))),
-	xlims=(-8.0, 8.0), ylims=(-2.0, 10.0), 
-	title=L"Δv_1=Δa, Δv_2=Δb, Δv_3=Δb', Δv_4=Δa-Δb', v_5=Δa-Δb'\ (shifted\ into\ origin)", 
-	titlefontsize=10,
-	lineStyle3 = :dashdot,
-	lineStyle4 = :dashdot,
-	lineWidth1 = 2.5,
-	lineWidth2 = 2.5,
-	lineWidth3 = 1.0, 
-	lineWidth4 = 3.5,
-	lineWidth5 = 3.5,
-	color3     = :magenta,
-	color4     = :green,
-	color5     = :green,
-	v1Label=L"Δv_1=Δa", 
-	v2Label=L"Δv_2=Δb", 
-	v3Label=L"Δv_3=Δb'\ (tail-to-tail\ aligned)",
-	v4Label=L"Δv_4=Δv(head(Δb'), head(Δa))=Δa-Δb",
-	v5Label    = L"v_5=Δa-Δb\ (shifted\ into\ origin)"
+	Δb,
+	add(Δa, scale(Δb, -1.0)),
+	add(shiftIntoOrigin(Δa), scale(shiftIntoOrigin(Δb), -1.0)),
+	title      = L"Identical\ Direction\ and\ Length\ of\ Operation:\ Δa+Δb = a+b",
+	xlims      = (-8.0, 12.0), ylims=(-1.0, 12.0),
+	color2     = :red, 
+	color3     = :green, 
+	color4     = :magenta, 
+	lineStyle3 = :dashdot, 
+	lineStyle4 = :dashdot, 
+	lineWidth1 = 1.5,
+	lineWidth2 = 1.5,
+	lineWidth3 = 3.5, 
+	lineWidth4 = 2.5,
+	v1Label    = L"Δv_1=Δa", 
+	v2Label    = L"Δv_2=Δb", 
+	v3Label    = L"Δv_3=Δa-Δb",
+	v4Label    = L"Δv_4=a-b \ (origin\ vectors)"
+)
+
+# ╔═╡ ac851fc0-701d-4a27-8f91-efc68ac72416
+plot2DVectors(
+	Δa, 
+	Δb,
+	add(a, b),                                    # origin vectors v =, b
+	makeVector((0.0, 0.0), subtractTuple(head(a),head(b))),
+	title      = L"Geometric\ Representation\ of\ Algebraic\ Subtraction:\ a-b = Q_a - Q_b",
+	xlims      = (-8.0, 12.0), ylims=(-1.0, 12.0),
+	color3     = :green, 
+	color4     = :magenta, 
+	lineStyle3 = :dash, 
+	lineStyle4 = :dashdot, 
+	lineWidth1 = 1.5,
+	lineWidth2 = 1.5,
+	lineWidth3 = 3.5, 
+	lineWidth4 = 2.5,
+	v1Label    = L"Δv_1=Δa",
+	v2Label    = L"Δv_1=Δb", 
+	v3Label    = L"v_3=a-b", 
+	v4Label    = L"v_4=a-b=Q_a-Q_b\ (=algebraic\ construction)",
 )
 
 # ╔═╡ 2853352d-8b28-40e1-a503-eb3a36655de9
@@ -630,6 +685,8 @@ md"
 *Geometric* vectors can be positioned in *any* place of 2D-space. For the operations *scale, addition, subtraction* it is sometimes helpful (but *not* necessary) to align the operands *head-to-tail* (*addition*) or *tail-to-tail* (*subtraction*).
 
 To visualize *geometric* operations of *scalars* and *vectors* with $Plots.jl$ we had to use their *algebraic* counterparts of objects and operations. Otherwise we had to use a *graphic* drawing tool where we could move *geometric* objects *directly* to visualize geometric *objetcs* and *operations*.
+
+*Geometric* vectors with *tail positions* in a *freely chosen* origin $\mathcal O$ can be represented *algebraically* as simple *column* or *row* array vectors.
 "
 
 # ╔═╡ bbf29e00-f756-4ad2-89e3-f85af3993035
@@ -1938,6 +1995,9 @@ version = "1.13.0+0"
 # ╠═6e49dca9-23b9-495e-aca9-247d78dd2d78
 # ╟─b3fdcef5-d0bf-4f0d-99e2-53c87b5432a9
 # ╠═d4e214eb-6893-4480-a0c3-3b3c962fa617
+# ╠═7b20e0e1-7ff4-45e9-bb3a-24a2e13d5bb3
+# ╠═63858085-df5f-4f65-9c8d-1fd54221ee9d
+# ╠═1012bae9-e4e3-4cf3-8a24-2eea91b8803a
 # ╟─a13832d7-63b8-48b8-add3-b4f6e62cae2f
 # ╠═e169b867-5b62-461b-95cc-00dc67d34230
 # ╠═cb79ad72-e57a-4de6-9312-ab08a853d4a3
@@ -1955,6 +2015,7 @@ version = "1.13.0+0"
 # ╠═5debc0ef-83fb-4c6a-a4dd-e6ac0d2ed4e0
 # ╟─646ef3c1-7276-41ad-97ea-dda7a4346b02
 # ╠═926b7eff-8264-40e1-a07b-e46b6c8b4bdc
+# ╠═ac851fc0-701d-4a27-8f91-efc68ac72416
 # ╟─2853352d-8b28-40e1-a503-eb3a36655de9
 # ╟─bbf29e00-f756-4ad2-89e3-f85af3993035
 # ╟─dcd13bf7-b38a-491b-a738-d74d4c288c9f
