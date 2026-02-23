@@ -11,6 +11,7 @@ begin
 	using GLMakie
 	using Random
 	using LinearAlgebra
+	using Statistics
 	using LaTeXStrings
 	using Pkg
 	#--------------------------------------------------------------------
@@ -20,6 +21,7 @@ begin
 	println("pkgversion(GLMakie)        = ", pkgversion(GLMakie))
 	println("pkgversion(Random)         = ", pkgversion(Random))
 	println("pkgversion(LinearAlgebra)  = ", pkgversion(LinearAlgebra))
+	println("pkgversion(Statistics)     = ", pkgversion(Statistics))
 	println("pkgversion(LaTeXStrings)   = ", pkgversion(LaTeXStrings))
 	println("pkgversion(Pkg)            = ", pkgversion(Pkg))
 end # begin
@@ -29,7 +31,7 @@ md"
 ====================================================================================
 #### LPWFP\_Ch10.2\_Describing Motion in 3D: *The Geometric Principle II*
 ##### file: LPWFP\_Ch10.2\_DescribingMotionIn3D\_II
-##### code: Julia/Pluto (1.12.5/0.20.21) by PCM *** 2026/02/13 ***
+##### code: Julia/Pluto (1.12.5/0.20.21) by PCM *** 2026/02/23 ***
 
 ====================================================================================
 "
@@ -38,6 +40,22 @@ md"
 md"
 ---
 ###### 0. Introduction
+Here we deal with the *geometric* version of the [*dot* or *scalar product*](https://en.wikipedia.org/wiki/Dot_product) of *vectors* $\vec{v}_1, \vec{v}_2$:
+
+$\vec{v}_1 \cdot \vec{v}_2 = |\vec{v}_1| |\vec{v}_2| - 2\ cos\ \theta$
+
+where:
+
+$\theta = \angle \vec{v}_1, \vec{v}_2.$
+
+The *dot product* is used as a *measure of similarity* between the two vectors $\vec{v}_1, \vec{v}_2$. Especially in *statistics* the $cos\ \theta$ is a measure of *similarity* between two *data* vectors $\vec{v}_1, \vec{v}_2$ representing *variables* in a $\mathbb R^n$ space of $n$ *observations*. The coefficient $cos\ \theta$ is identical to [*Pearson's product-moment correlation coefficient*](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient):
+
+$cos\ \theta = r(\vec{v}_1, \vec{v}_2)$
+
+where:
+
+$\vec{v}_1, \vec{v}_2$ are *data* vectors with *deviation* or *standardized deviation* components.
+
 "
 
 # ╔═╡ 5aa387bc-feae-4588-8b81-32f4772f42b3
@@ -56,7 +74,7 @@ md"
 md"
 ---
 ###### 3. Code
-Here we plot *geometric* objects like *vectors* (in the form of *arrows*) and *operations* (like *vector addition, scalar multiplication, vector subtraction, dot* and *cross products*), and the *derivative* of a *vector-valued* function of a real number. 
+Here we plot *geometric* *objects* like *vectors* (in the form of *arrows*) and *operations* (like vector *addition*, scalar-vector *multiplication*, vector *subtraction*, and *dot products*) in a *geometric* scenery. Both plot programs accept *algebraic* input and generate *geometric* output.
 "
 
 # ╔═╡ fbc6c430-cc36-43dc-81c6-13aff4ddccd1
@@ -163,38 +181,56 @@ md"
 ###### 3.2 *Spacetime, Scalars, Points, Vectors*
 (cf. Thorne & Blandford, 2017, ch. 1.2)
 
-*Spacetime* is composed of the familiar 3D Euclidean space (*3-space*) and a universal time *t*. *Points* (= *locations*) in *3-space* are denoted as $\mathcal P$ and $\mathcal Q$. *Points* and *3-space* require *no* coordinates for their definition (Thorne & Blandford, 2017, p.8).
+*Spacetime* is composed of the familiar 3D Euclidean space (*3-space*) and a universal time *t*. 
 
-A *scalar* is a single *number*. A *vector* in *3-space* is a *directed straight line segment* connecting *points* $P$ and $Q$. $P$ is the *tail* and $Q$ the *head* of the *arrow* (= *vector*). This kind of *vector* is sometimes denoted as $\Delta \mathbf v = \Delta \mathbf v_{(\mathcal P, \mathcal Q)}$. (Thorne & Blandford, 2017, p.8), 
+*Points* (= *locations*) in *3-space* are denoted as $\mathcal P$ and $\mathcal Q$. *Points* and *3-space* require *no* coordinates for their definition (Thorne & Blandford, 2017, p.8).
 
-Equivalently, the *vector* $\Delta \mathbf v$ can be defined as a *direction* $\theta$ at $\mathcal P$ and a *scalar* the vector's *length* $|\Delta \mathbf v|$: 
+A *scalar* is a single *number*. A *vector* $\vec{v}$ in *3-space* is a *directed straight line segment* connecting *points* $P$ and $Q$. $P$ is the *tail* and $Q$ the *head* (= *tip*) of the *arrow* (= *vector*). This kind of *vector* is sometimes denoted as $\Delta \mathbf v = \Delta \mathbf v_{(\mathcal P, \mathcal Q)}$. (Thorne & Blandford, 2017, p.8), 
+
+Equivalently, the *vector* $\vec{v} = \Delta \mathbf v$ can be defined by a *direction* $\theta$ at $\mathcal P$ and a *scalar* the vector's *length* $|\Delta \mathbf v|$: 
 $\Delta \mathbf v = \Delta \mathbf v _{(\mathcal \theta, |\Delta \mathbf x|)}$.
 
-Often a point $\mathcal O$ is selected as *origin* and is used as a *tail* $\mathcal P = \mathcal O$ in the definition of a *vector*:
+Often a point $\mathcal O$ is selected as *origin*. The *vector* is then shifted into the origin *without* changing its direction:
 
-$\mathbf v_{\mathcal Q} := \Delta \mathbf v _{(\mathcal P = \mathcal O, \mathcal Q)}$
+$\vec{v} = \mathbf v = \mathbf v_{\mathcal O, \mathcal Q-P} := \Delta \mathbf v _{(\mathcal P-P, \mathcal Q-P)}$
 "
 
 # ╔═╡ 133cb2aa-58fe-403d-a73c-774402259c06
 md"
 ---
-###### 3.2.1 *Algebraic* Representation of *Points* $\mathcal P_a, Q_a, P_b, Q_b$ and *Vectors* $Δ\mathbf v_{\mathcal P, \mathcal Q}$ in *2D/3D-space* for $Plots.jl$
+###### 3.2.1 *Algebraic* Representation of *Points* $\mathcal P_a, Q_a, P_b, Q_b$ and *Vectors* $Δ\mathbf v_{\mathcal P, \mathcal Q}$
 
-A *geometric vector* is a *directed straight line* connecting two *points* $P$ and $Q$. $P$ is the *tail* and $Q$ the head of the *arrow* (= *vector*).
+While the *geometric* view of *vectors* is beneficial for the cognitive understanding of the user, the *algebraic* view is necessary for generating input for standard plot routines such as $Plots.jl$ and $Makie.jl$.
 
-The *algebraic* representations of *points* $\mathcal P$ and $\mathcal Q$ suitable for $Plots.jl$ are:
+A *geometric vector* is a *directed straight line* connecting two *points* $P$ and $Q$. $P$ is the *tail* and $Q$ the *head* (= *tip*) of the *arrow* (= *vector*).
 
-$\mathcal P := (x_{\mathcal P} \in\mathbb R,\ y_{\mathcal P} \in\mathbb R),\; \mathcal Q := (x_{\mathcal Q} \in\mathbb R,\ y_{\mathcal Q} \in\mathbb R)$
+The *algebraic* representations of 
 
-of *vector* $Δ\mathbf v_{\mathcal P, \mathcal Q}$:
+- *points* $\mathcal P$ and $\mathcal Q$ suitable for e.g. $Plots.jl$ are:
 
-$Δ\mathbf v_{\mathcal P, \mathcal Q} :=  [\mathcal P, \mathcal Q] = [(x_{\mathcal P} \in\mathbb R,\ y_{\mathcal P} \in\mathbb R),(x_{\mathcal Q} \in\mathbb R,\ y_{\mathcal Q} \in\mathbb R)] =$
-$= [tail(Δ\mathbf v_{\mathcal P, \mathcal Q}), head(Δ\mathbf v_{\mathcal P, \mathcal Q})]$
+$\mathcal P := (x_1,...,x_i \in\mathbb R^n,...,x_n),$
+$\mathcal Q := (x_1,...,x_i \in\mathbb R^n,...,x_n)$
 
-of *vector* $\mathbf v_{\mathcal Q}$:
+- *vectors* $\vec{v} = Δ\mathbf v_{\mathcal P, \mathcal Q}$ are:
 
-$\mathbf v_{\mathcal Q} :=  [\mathcal O, \mathcal Q] = [(0.0,...,0.0), (x_{\mathcal Q} \in\mathbb R,\ y_{\mathcal Q} \in\mathbb R)] =$
-$= [tail(\mathbf v_{\mathcal Q}), head(\mathbf v_{\mathcal Q})].$
+$\vec{v} = Δ\mathbf v_{\mathcal P, \mathcal Q} := [tail(Δ\mathbf v_{\mathcal P, \mathcal Q}), head(Δ\mathbf v_{\mathcal P, \mathcal Q})]$
+
+- and of *vector* $\vec{v} = \mathbf v_{\mathcal Q}$ are:
+
+$\vec{v} = \mathbf v :=  [\mathcal O, \mathcal Q] = [tail(\mathbf v_{\mathcal Q}), head(\mathbf v_{\mathcal Q})]$
+
+where:
+
+$(...)\;\;\text{ is a } tuple$
+$[...]\;\;\text{ is an } algebraic\ vector (= array)$
+$tail(\vec{v}) = \vec{v}[1]$
+$head(\vec{v}) = \vec{v}[2]$
+"
+
+# ╔═╡ 47fa25c7-1556-4397-ac7c-6469e7a24044
+md"
+---
+###### Points $\mathcal P, Q$
 "
 
 # ╔═╡ 242a8f5a-d0da-4f78-bde2-18fb55e5f1ac
@@ -206,11 +242,11 @@ pb = (0.0, 2.0); qb = (4.0, 6.0)        # point b = (pb, qb) = (tail(b), head(b)
 # ╔═╡ 5067fb97-4d91-48ca-adaf-4dd7db258ba1
 md"
 ---
-###### 3.2.2 Vector *Constructor* $makeVector(tail::Tuple, head::Tuple)$ in *2D/3D-space*
+###### Vector *Constructor* $makeVector(tail::Tuple, head::Tuple)$
 "
 
 # ╔═╡ fcb32d10-3651-4a96-8492-d84bc7365dc2
-function makeVector(                                                  # in 2D
+function makeVector(                                               
 	tail::NTuple{N, Float64}, 
 	head::NTuple{N, Float64})::Vector{NTuple{N, Float64}} where {N}
 	[tail, head]
@@ -222,13 +258,10 @@ end # function makeVector
 # ╔═╡ 91861825-0f49-41f4-a3c5-14d596599894
 Δb = makeVector(pb, qb)
 
-# ╔═╡ 737ed548-aa29-4c72-bd1a-34fd4adda5c5
-makeVector((1.,2.,3.), (4.,5.,6.))
-
 # ╔═╡ fad59e8a-937f-4517-90ce-444980eda7cb
 md"
 ---
-###### 3.2.3 Selectors $tail(v::Vector)::Tuple, head(::Vector)::Tuple$ in *2D/3D-Space*
+###### Selectors $tail(v::Vector)::Tuple, head(::Vector)::Tuple$
 "
 
 # ╔═╡ 88627bd5-c4ae-4b29-9196-cfcadb461ebf
@@ -242,56 +275,26 @@ head(v::Vector{NTuple{N, Float64}}) where {N} =
 # ╔═╡ 33092cdf-54ca-4dd8-872f-5c0fdfbc47bd
 md"
 ---
-###### 3.2.4 *2D-Plot* of Vectors by $Plots.jl$
+###### 3.2.2 *2D-Plot* of Vectors by $Plots.jl$
 "
 
 # ╔═╡ 7acba5f4-557b-4ecd-bb1a-d816b52b6268
 plot2DVectors(
 	Δa, 
 	Δb, 
-	title      = L"Vectors\ Δv_1=Δa, Δv_2=Δb", 
+	title      = L"Vectors\ \vec{a} = Δa, \vec{b} = Δb", 
 	xlims      = (-1.0, 9.0), ylims=(-1.0, 9.0), 
 	color1     = :cornflowerblue,
 	color2     = :red,
 	lineWidth1 = 2.5,
 	lineWidth2 = 2.5,
-	v1Label    = L"Δv_1=Δa", 
-	v2Label    = L"Δv_2=Δb")
-
-# ╔═╡ 2c337afc-4587-40ed-afb0-4bd39de28aa7
-md"
----
-###### 3.3 Geometric Definition of *Dot Product* $\mathbf \Delta\mathbf v_1 \cdot \mathbf \Delta\mathbf v_2$
-(cf. Walck, 2022, p.134; cf. Thorne & Blandford, 2017, ch. 1.2, p.10)
-
-$\mathbf \Delta\mathbf v_1 \cdot \mathbf \Delta\mathbf v_2 = |\mathbf \Delta\mathbf v_1| |\mathbf \Delta\mathbf v_2|\ cos\ \theta_{\mathbf \Delta\mathbf v_1, \mathbf \Delta\mathbf v_2}$
-
-where:
-
-$\theta_{\mathbf \Delta\mathbf v_1, \mathbf \Delta\mathbf v_2} = \text{ angle between the } \textit{ tail-to-tail } \text{ aligned vectors } \mathbf \Delta\mathbf v_1, \mathbf \Delta\mathbf v_2.$
-
-$-1\le\ cos\ \theta_{\mathbf \Delta\mathbf v_1, \mathbf \Delta\mathbf v_2} = \frac{\mathbf \Delta\mathbf v_1 \cdot \mathbf \Delta\mathbf v_2}{|\mathbf \Delta\mathbf v_1| |\mathbf \Delta\mathbf v_2|} \le +1$
-
-The function value $cos\ \theta_{\mathbf \Delta\mathbf v_1, \mathbf \Delta\mathbf v_2}$ can be interpreted as a *measure of similarity* between vectors $\mathbf \Delta\mathbf v_1, \mathbf \Delta\mathbf v_2$:
-
-$-1\le\ cos\ \theta_{\mathbf \Delta\mathbf v_1, \mathbf \Delta\mathbf v_2} \le +1.$
-
-For appropriately chosen *data* vectors $\mathbf X, \mathbf Y$ function value $cos\ \theta_{\mathbf X, \mathbf Y}$ is identical to [*Pearson's correlation coefficient*](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient) $\rho_{\mathbf X, \mathbf Y}$:
-
-$-1\le\ cos\ \theta_{\mathbf X, \mathbf Y} = \rho_{\mathbf X, \mathbf Y} = \frac{\sigma_{\mathbf X, \mathbf Y}}{\sigma_{\mathbf X, \mathbf Y}} \le +1,$
-
-where:
-
-$\sigma_{\mathbf X, \mathbf Y} = cov_{\mathbf X, \mathbf Y}$
-
-$\sigma_{\mathbf X} = \sqrt{var_{\mathbf X}}.$
-
-"
+	v1Label    = L"\vec{a}=Δa", 
+	v2Label    = L"\vec{b}=Δb")
 
 # ╔═╡ 9c1b04bc-5b64-4ee8-98eb-3979464d90b0
 md"
 ---
-###### 3.3.1 Aligning Vectors *Tail-To-Tail* and *Head-To-Tail* in *2D/3D-Space*
+###### 3.3.1 *Shifting* Into *Origin* and *Aligning* Vectors *Tail-To-Tail* and *Head-To-Tail*
 " 
 
 # ╔═╡ 0708a692-2719-4583-9fec-06e8b1a0b50a
@@ -304,210 +307,497 @@ end # function addTuple
 # ╔═╡ 238f12b0-0bf5-4634-93d8-1784e5e426ee
 addTuple((1.,2.), (4.,5.))
 
-# ╔═╡ e24b5a87-ddb2-47fd-8cf4-71660ad55ea0
-addTuple((1.,2.,3.), (4.,5.,6.))
-
 # ╔═╡ dabdf621-9149-41bf-8df9-c3bf3937ccdf
 function subtractTuple(
 	t1::NTuple{N, Float64}, 
 	t2::NTuple{N, Float64}) where {N}
-	map(-, t1, t2)::NTuple{N, Float64} 
+	map((el1, el2) -> el1 - el2, t1, t2)::NTuple{N, Float64} 
 end # function subtractTuple
 
 # ╔═╡ 3a127471-591b-4e39-8010-a63af771fbc7
-subtractTuple((1.,2.), (4.,5.))
+subtractTuple((1., 2.), (4., 5.))
 
-# ╔═╡ 8a3a9c00-5b33-4f4e-8b8c-dc5bad53b336
-subtractTuple((1.,2.,3.), (4.,5.,6.))
-
-# ╔═╡ b39c65fa-6ea1-4dbc-8a59-d1d2ec49757f
-function shiftIntoOrigin(v::Vector{NTuple{N, Float64}}) where {N}
-	[subtractTuple(v[1], v[1]), subtractTuple(v[2], v[1])]::Vector{NTuple{N, Float64}}
-end # function shiftIntoOrigin
-
-# ╔═╡ 32583cda-66ca-4c6f-a418-cd2b9ac2c786
-function alignTailToTail(v1::Vector{NTuple{N, Float64}}, v2::Vector{NTuple{N, Float64}}) where {N}
-	[(addTuple(v1[1], shiftIntoOrigin(v2)[1])), 
-	 (addTuple(v1[1], shiftIntoOrigin(v2)[2]))]::Vector{NTuple{N, Float64}}
-end # function alignTailToTail
-
-# ╔═╡ 16df17c0-1990-47a9-bb28-8d8d8fe4905d
-function alignHeadToTail(v1::Vector{NTuple{N, Float64}}, v2::Vector{NTuple{N, Float64}}) where {N}
-	[(addTuple(v1[2], shiftIntoOrigin(v2)[1])), 
-	 (addTuple(v1[2], shiftIntoOrigin(v2)[2]))]::Vector{NTuple{N, Float64}}
-end # function alignHeadToTail
-
-# ╔═╡ 11413d83-d2f2-4708-bf98-a76bac27649c
-ΔbAligned = alignTailToTail(Δa, Δb)            # <--- Δb' = tail-to-tail aligned(Δb)
-
-# ╔═╡ f297127a-9ac0-42d0-8a57-e98301256f99
-plot2DVectors(
-	Δa, 
-	Δb, 
-	alignTailToTail(Δa, Δb), 
-	title      = L"Aligned\ Tail-To-Tail\ Δv_1=Δa, Δv_2=Δb, Δv_3=Δb'", 
-	xlims      = (-1.0, 9.0), ylims=(-1.0, 9.0), 
-	color1     = :cornflowerblue,
-	color2     = :red, 
-	color3     = :red, 
-	lineStyle3 = :dashdot, 
-	lineWidth1 = 2.5,
-	lineWidth2 = 2.5,
-	lineWidth3 = 1.0, 
-	v1Label    = L"Δv_1=Δa", 
-	v2Label    = L"Δv_2=Δb", 
-	v3Label    = L"Δv_3=Δb'")
+# ╔═╡ f7543959-318f-44e3-8d0d-6b3ca0cb2fde
+Δa, Δb
 
 # ╔═╡ aa55351a-4405-46b6-943c-28dd55614405
 md"
 ---
-###### 3.3.2 *Length* $|Δ\mathbf v|$ of a Vector $Δ\mathbf v$
+###### 3.3.2 *Length* of a Tuple and $|Δ\mathbf v|$ of a Vector $Δ\mathbf v$
 "
+
+# ╔═╡ 64a613bc-b1e5-48fd-b43d-8b2430942a7e
+Δa, Δb
+
+# ╔═╡ 28e9907b-17ac-48b0-9cca-b69220ec15c9
+function lengthOfTuple(tpl::NTuple{N, Float64}) where {N}
+	sqrt(sum(map(eltpl -> eltpl^2, tpl)))::Float64
+end # function lengthOfTuple
 
 # ╔═╡ cc3a3257-bf4e-4fe0-b2eb-9bd2668fd717
 md"
 ---
-###### 3.3.3 *Angle* $\theta_{Δ\mathbf v_i, Δ\mathbf v_j}$ in *Degrees* and *Radians*
-"
-
-# ╔═╡ 2779de79-478d-4556-b5aa-e01b310e5e0f
-md"
----
-###### 3.3.4 *Geometric* Functions $cos\ \theta_{Δ\mathbf v_i, Δ\mathbf v_j}, sin\ \theta_{Δ\mathbf v_i, Δ\mathbf v_j}$
-"
-
-# ╔═╡ 6c59e451-c426-4fbe-8d04-5701ad0743c4
-md"
----
-###### 3.3.5 *Geometric* *Dot* Product $Δ\mathbf v_i \cdot Δ\mathbf v_j = |Δ\mathbf v_i|\cdot|Δ\mathbf v_j|\cdot cos\ θ_{Δ\mathbf v_i,Δ\mathbf v_j}$
-"
-
-# ╔═╡ 249553d7-727e-47ec-9e38-6fbf6d8f2166
-md"
----
-###### 3.3.6 *Length* of *Projection* of Vector $Δ\mathbf v_i$ on Vector $Δ\mathbf v_j$:  $|Δ\mathbf v_i|\cdot cos\ \theta_{Δ\mathbf v_i,Δ\mathbf v_j}$ 
+###### 3.3.3 Geometric *Addition*, *Scaling*, and *Subtraction* of *Vectors*
 "
 
 # ╔═╡ 96204ac6-491d-4333-b343-8961580f931d
 md"
 ---
-###### 3.3.7 Normalize Vector $Δ\mathbf v \mapsto Δ \mathbf v', \text{ so that } |Δ\mathbf v' | = 1$
+###### 3.3.4 Normalize Vector $Δ\mathbf v \mapsto Δ \mathbf v', \text{ so that } |Δ\mathbf v' | = 1$
 "
 
-# ╔═╡ ecfe3e67-aaff-4aa4-add4-806bed0387a8
+# ╔═╡ 2779de79-478d-4556-b5aa-e01b310e5e0f
 md"
 ---
-###### 3.3.8 *Normalize* and *Align Tail-to-Tail*
+###### 3.3.5 *Geometric* Functions $cos\ \angle(Δ\mathbf v_i, Δ\mathbf v_j), sin\ \angle (Δ\mathbf v_i, Δ\mathbf v_j)$
+
+---
+###### Geometric Function $\cos \angle (\vec {a},\vec {b})$
+
+The [*law of cosines*](https://en.wikipedia.org/wiki/Law_of_cosines) states:
+
+$|\vec {c}|^2 = |\vec {a}|^2 + |\vec {b}|^2 - 2\ |\vec{a}| |\vec {b}| \cos \angle (\vec {a},\vec {b})$
+
+Rearranging terms we get
+
+$\cos \angle (\vec {a},\vec {b}) = \frac{|\vec {a}|^2+|\vec {b}|^2 - |\vec{c}|^2}{2|\vec{a}||\vec{b}|}.$
+
+Because we need only the *length* of vector $\vec{c}$ we can specify this length in *two* alternative ways:
+
+$|\vec{c}| = |\vec{a}-\vec{b}| = |\vec{b}-\vec{a}|$:
+
+$\cos \angle (\vec {a},\vec {b}) = \frac{|\vec {a}|^2+|\vec {b}|^2 - |\vec{a}-\vec{b}|^2}{2|\vec{a}||\vec{b}|} = \frac{|\vec {a}|^2+|\vec {b}|^2 - |\vec{b}-\vec{a}|^2}{2|\vec{a}||\vec{b}|}.$
+
+---
+###### Geometric Function $\sin \angle (\vec {a},\vec {b})$
+
+The other interesting function is $sin\ \angle (\vec {a},\vec {b})$. Using
+
+$(\cos \angle (\vec {a},\vec {b}))^2 + (\sin \angle (\vec {a},\vec {b}))^2 = 1$
+
+we get
+
+$\sin \angle (\vec {a},\vec {b}) = \sqrt{1 - \angle (\vec {a},\vec {b})}.$
+
+"
+
+# ╔═╡ 6c59e451-c426-4fbe-8d04-5701ad0743c4
+md"
+---
+###### 3.3.6 *Geometric* *Dot* Product $Δ\mathbf v_i \cdot Δ\mathbf v_j = |Δ\mathbf v_i|\cdot|Δ\mathbf v_j|\cdot cos\ \angle(Δ\mathbf v_i,Δ\mathbf v_j)$
+"
+
+# ╔═╡ 249553d7-727e-47ec-9e38-6fbf6d8f2166
+md"
+---
+###### 3.3.7 *Length* of *Projection* of Vector $Δ\mathbf v_i$ on Vector $Δ\mathbf v_j$:  $\;|Δ\mathbf v_i|\cdot cos\ \angle(Δ\mathbf v_i,Δ\mathbf v_j)$ 
 "
 
 # ╔═╡ 59e1160e-c740-4889-9cb9-d8ad9103496d
 md"
 ---
-###### 3.3.9 *Projection* of $Δ\mathbf v_1$ on $Δ\mathbf v_2$ and *Perpendicular* Line on $Δ\mathbf v_2$
+###### 3.3.8 *Projection* of $Δ\mathbf v_1$ on $Δ\mathbf v_2$ and *Perpendicular* Line on $Δ\mathbf v_2$
 "
 
 # ╔═╡ 68895197-8e52-423e-ac27-bdc7fa7e4607
 md"
 ---
-###### 3.3.10 From *Dot Product* of Vectors $Δ\mathbf v_i, Δ\mathbf v_j$ to *Area* of $Δ\mathbf v_i, Δ\mathbf v_j$-Enclosed *Parallelogram*
+###### 3.3.9 From *Dot Product* of Vectors $\vec{v}_i, \vec{v}_j$ to *Area* of $\vec{v}_i, \vec{v}_j$ -Enclosed *Parallelogram*
 (cf. Walck, 2022, p.134; cf. Thorne & Blandford, 2017, ch. 1.2, p.10)
 
-Based on the scalar product $|\mathbf v_i||\mathbf v_j|cos\ θ_{\mathbf v_i, \mathbf v_j}$ of two vectors $\mathbf v_i, \mathbf v_j$, we can calculate the *area* of the *parallelogram* spanned by these vectors. To do this, however, we first have to rotate one vector by 90 degrees and only then we can calculate the *dot product* of these two vectors which equals the *area* of the parallelogram.
+Based on the scalar product $|\vec{v}_i||\vec{v}_j|cos\angle(\vec{v}_i, \vec{v}_j)$ of two vectors $\vec{v}_i, \vec{v}_j$, we can calculate the *area* of the *parallelogram* spanned by these vectors. To do this, however, we first have to rotate one vector by 90 degrees and only then we can calculate the *dot product* of these two vectors which equals the *area* of the parallelogram.
 
 *If we first rotate one vector through a right angle in a plane containing the other, and then define the parallelogram, its area is the vector's inner product* (Thorne & Blandford, 2017, p.10)
 
-$|\mathbf v_i||\mathbf v_j|cos\ θ_{\mathbf v_i, \mathbf v_j} \neq |\mathbf v_i||\mathbf v_j|sin\ θ_{\mathbf v_i, \mathbf v_j} = area_{parallelogram}.$
+$|\vec{v}_i||\vec{v}_j|cos\angle(\vec{v}_i, \vec{v}_j) \neq |\vec{v}_i||\vec{v}_j|sin\angle(\vec{v}_i, \vec{v}_j) = area_{parallelogram}.$
 
-To use the formula of the *dot product* to calculate the *area* of the parallelogram we have to look for an *orthogonal* vector $\mathbf v'_i$ of $\mathbf v_{i; i=1,2}$:
+To use the formula of the *dot product* to calculate the *area* of the parallelogram we have to look for an *orthogonal* vector $\vec{v}'_i$ of $\vec{v}_{i; i=1,2}$:
 
-$\mathbf v_i \cdot \mathbf v'_i = 0;\;\; i=1,2$
+$\vec{v}_i \cdot \vec{v}'_i = 0;\;\; i=1,2$
 
-$|\mathbf v_i||\mathbf v'_j|cos\ θ_{\mathbf v_i, \mathbf v'_j} = |\mathbf v_i||\mathbf v_j|sin\ θ_{\mathbf v_i, \mathbf v_j} = area_{parallelogram}$
+$|\vec{v}_i||\vec{v}'_j|cos\angle(\vec{v}_i, \vec{v}'_j) = |\vec{v}_i||\vec{v}_j|sin\angle(\vec{v}_i, \vec{v}_j) = area_{parallelogram}.$
 "
 
 # ╔═╡ 189b025c-2f31-4556-9cc4-b9048f9be7bb
 md"
 ---
-###### 3.3.11 Area of $Δ\mathbf v_i, Δ\mathbf v_j$-Enclosed *Parallelogram*
+###### 3.3.10 Area of $\vec{v}_i, \vec{v}_j$-Enclosed *Parallelogram*
 
-There are two alternatives the determine the *area* of the parallelogram spanned by the two *vectors* $\mathbf v_i, \mathbf v_j$:
+There are two alternatives the determine the *area* of the parallelogram spanned by the two *vectors* $\vec{v}_i, \vec{v}_j$:
 
-$\text{ 1. approach : } area_{\mathbf v_i, \mathbf v_j} = |\mathbf v_j| \cdot sin(\mathbf v_i, \mathbf v_j)$
+$\text{ 1. approach : } area(\vec{v}_i, \vec{v}_j) = |\vec{v}_i||\vec{v}_j|\sin\angle(\vec{v}_i, \vec{v}_j)$
 
-$\text{ 2. approach : }area_{\mathbf v_i, \mathbf v_j} = |Δ\mathbf v'_i||Δ\mathbf v_j|\cdot cos(90-\theta)$
+$\text{ 2. approach : } area(\vec{v}_i, \vec{v}_j) = |\vec{v}'_i||\vec{v}_j|\cos(90-\angle(\vec{v}_i, \vec{v}_j))$
 
 where:
 
-$Δ\mathbf v'_i \cdot Δ\mathbf v_i = 0 \;\;; \text{ orthogonality }$  
+$\vec{v}'_i \cdot \vec{v}_i = 0 \;\;; \text{ orthogonality of } \vec{v}'_i, \vec{v}_i$  
 
 "
 
 # ╔═╡ 57b697ef-0b4a-4fe0-96ad-17eb1496151a
 md"
 ---
-###### *1st* Approach: Area of $Δ\mathbf v_i, Δ\mathbf v_j$-Enclosed *Parallelogram*
+###### 3.3.10.1 *1st* Approach: Area of $Δ\mathbf v_i, Δ\mathbf v_j$-Enclosed *Parallelogram*: $|\vec{v}_i||\vec{v}_j|\sin\angle(\vec{v}_i, \vec{v}_j)$
 "
-
-# ╔═╡ 54592f94-6d0b-40cb-bf5a-7040dd5ea7b1
-a = shiftIntoOrigin(Δa)
-
-# ╔═╡ 5418c8b3-6f81-4eb2-aa7e-81dfed9536c3
-b = shiftIntoOrigin(Δb)
-
-# ╔═╡ a729c953-21a6-440a-ba58-7ac2cd706473
-ΔaShifted = alignHeadToTail(alignTailToTail(Δa, Δb), Δa)
-
-# ╔═╡ bd5ff983-34b3-4f73-af0e-f47bb602eca3
-ΔbAlignedTailToTail = alignTailToTail(Δa, Δb)
-
-# ╔═╡ ed61905f-b379-4dd2-ac53-624c6640b126
-ΔbAlignedHeadToTail = alignHeadToTail(Δa, Δb)
 
 # ╔═╡ 53a69cd3-7a3e-4a31-95f8-1fa80d44ed6d
 md"
 ---
-###### *2nd* Approach: Area of $Δ\mathbf v'_1, Δ\mathbf v_2$-Enclosed *Parallelogram*
+###### 3.3.10.2 *2nd* Approach: Area of $Δ\mathbf v'_1, Δ\mathbf v_2$-Enclosed *Parallelogram*: $|\vec{v}'_i||\vec{v}_j|\cos(90-\angle(\vec{v}_i, \vec{v}_j))$
 
-$\text{orthogonality: }Δ\mathbf v'_1 \cdot Δ\mathbf v_1 = 0$
+$area(\vec{v}_i, \vec{v}_j) = |\vec{v}'_i||\vec{v}_j|\cos(90-\angle(\vec{v}_i, \vec{v}_j))$
+
+where:
+
+$\vec{v}'_i \cdot \vec{v}_i = 0 \;\;; \text{ orthogonality of } \vec{v}'_i, \vec{v}_i$  
+
 "
 
 # ╔═╡ 940248c9-7711-4a66-b5bc-28cb0375b157
 md"
 ---
-###### Orthogonal Vector $Δ\mathbf v'_i$ to $Δ\mathbf v_i$
+###### Orthogonal Vector $\vec{v}'_i$ to $\vec{v}_i$
 "
 
 # ╔═╡ 24210875-d88b-4ffd-a332-4b424c318b8e
 ΔaOrtho = makeVector((0.0, 0.0), (4.0, 2.0))          # Δa' is orthogonal to Δa
 
-# ╔═╡ ab5cb109-c004-4f52-95ab-411b3ecdcccb
-plot2DVectors(
-	Δa,
-	ΔbAlignedTailToTail,
-	alignTailToTail(Δa, ΔaOrtho), 
-	title   = L"Area\ of\ Parallelogram = |Δv'_1||Δv_2|\cdot cos(90-\theta)",
-	xlims   = (-3.0, 9.0), ylims=(-3.0, 9.0), 
-	color1     = :blue, 
-	color2     = :red, 
-	color3     = :blue, 
-	lineStyle3 = :dashdot, 
-	lineWidth1 = 2.5,
-	lineWidth2 = 2.5,
-	lineWidth3 = 1.5, 
-	#lineWidth4 = 2.5,
-	v1Label    = L"Δv_1=Δa", 
-	v2Label    = L"Δv_2=Δb'\ (= aligned\ tail-to-tail)",
-	v3Label    = L"Δv_3=Δa'\ (= orthogonal\ to\ Δa)"
-)
+# ╔═╡ 2c337afc-4587-40ed-afb0-4bd39de28aa7
+md"
+---
+###### 3.3 *Pearson's Correlation Coefficient* $r(\vec{X},\vec{Y})$ as Geometric *Dot Product* of *Variable* Vectors in $\mathbb R^n$-*Observation Space*
+
+The *geometric* (= *coordinate free*) *dot product* is defined (cf. Walck, 2022, p.134; cf. Thorne & Blandford, 2017, ch. 1.2, p.10) as:
+
+$\vec{v}_1 \cdot \vec{v}_2 = |\vec{v}_1| |\vec{v}_2|\ cos\ \angle(\vec{v}_1, \vec{v}_2)$
+
+where:
+
+$cos\ \angle(\vec{v}_1, \vec{v}_2) = \text{ angle between the } \textit{ tail-to-tail } \text{ aligned vectors } \vec{v}_1, \vec{v}_2.$
+
+$-1\le\ cos\ \angle(\vec{v}_1, \vec{v}_2) = \frac{\vec{v}_1 \cdot \vec{v}_2}{|\vec{v}_1| |\vec{v}_2|} \le +1$
+
+The function value $cos\ \angle(\vec{v}_1, \vec{v}_2)$ can be interpreted as a *measure of similarity* between vectors $\vec{v}_1, \vec{v}_2$:
+
+$-1\le \cos\ \angle(\vec{v}_1, \vec{v}_2) \le +1.$
+
+For *deviation* vectors $\mathbf x = \mathbf X - \mathbf 1 \bar x'$ of *data* vectors $\mathbf X, \mathbf Y$ is the function value $cos\ \angle(\vec{v}_1, \vec{v}_2)$ identical to [*Pearson's correlation coefficient*](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient) $\rho_{\mathbf X, \mathbf Y}$:
+
+$-1\le\ cos\ \angle(\vec{v}_1, \vec{v}_2) = \rho_{\mathbf X, \mathbf Y} = \frac{\sigma_{\mathbf X, \mathbf Y}}{\sigma_{\mathbf X} \sigma_{\mathbf Y}} \le +1,$
+
+where:
+
+$\sigma_{\mathbf X, \mathbf Y} = cov_{\mathbf x, \mathbf y}$
+
+$\sigma_{\mathbf X} = \sqrt{var_{\mathbf X}}.$
+
+$\mathbf{\bar a'} \; \text{ is a } row \text{ vector of column means}$
+
+$\mathbf 1  \; \text{ is a } column \text{ vector of N ones}.$
+
+"
+
+# ╔═╡ 6e2dbf9a-3cd4-4359-b7ea-43e79ce88cf9
+md"
+---
+###### 3.3.1 The *Algebraic* Way: From Data Matrix $\mathbf X$ to Correlation Matrix $\mathbf R$
+(Brown, 2014, p.11-14)
+
+- Data Matrix $\mathbf A$
+
+$\begin{array}{c|rrr}
+n & \text{Var } X & \text{Var } Y & \text{Var } Z \\
+\hline
+1 & 1 & 2 &  6 \\
+2 & 4 & 8 & -4 \\
+3 & 5 & 6 &  5 \\
+4 & 4 & 2 &  3 \\
+\hline
+\mathbf{\bar a'} & 3.5 & 4.5 & 2.5 \\
+\hline
+\end{array}$
+"
+
+# ╔═╡ de196c09-18f1-4fde-822e-282de7b0fd53
+X = [1.0, 4.0, 5.0, 4.0]    # A[., 1] col 1 of matrix A in Brown, 2014, p.13
+
+# ╔═╡ 275acb16-1cda-4250-949e-10d7d10638d4
+Y = [2.0, 8.0, 6.0, 2.0]    # A[., 2] col 2 of matrix A in Brown, 2014, p.13
+
+# ╔═╡ 6c0606d9-38e1-47e6-94e0-fa63bacceb19
+Z = [6.0, -4.0, 5.0, 3]     # A[., 2] col 2 of matrix A in Brown, 2014, p.13
+
+# ╔═╡ 57d32314-b960-46d6-a4de-29a07261aa76
+matrixA = hcat(X,Y,Z)
+
+# ╔═╡ 087f91bf-988c-4ed8-b4b7-60c09c3136a6
+meansA = [mean(colA) for colA in eachcol(matrixA)]
+
+# ╔═╡ 7988a8af-544b-4d9e-99c6-0226859d4f8c
+md"
+---
+
+- Matrix $\mathbf{1 \cdot \bar a'}$
+
+$\begin{array}{c|rrr}
+\mathbf{1 \cdot \bar a'} & 3.5 & 4.5 & 2.5 \\
+\hline
+1 & 3.5 & 4.5 & 2.5 \\ 
+1 & 3.5 & 4.5 & 2.5 \\ 
+1 & 3.5 & 4.5 & 2.5 \\ 
+1 & 3.5 & 4.5 & 2.5 \\
+\hline
+\mathbf{\bar a'} & 3.5 & 4.5 & 2.5 \\
+\hline
+\end{array}$
+
+"
+
+# ╔═╡ 49ef0d05-b923-4834-8ed0-042f1ee4483d
+n = size(matrixA, 1)
+
+# ╔═╡ 6da213f1-0e7c-49db-8296-cec89c29fa10
+m = size(matrixA, 2)
+
+# ╔═╡ fac04af1-8f78-4237-bf90-5d103215919e
+matrixMeans = ones(Float64, n) .* meansA'
+
+# ╔═╡ 0d49c7dd-6a2b-40cd-a5fb-cfd9df2dc61d
+md"
+---
+
+- Deviation Matrix $\mathbf D = \mathbf A - \mathbf{1 \cdot \bar a'}$
+
+$\begin{array}{c|rrr}
+\mathbf D & x & y & z \\
+\hline
+1 & -2.5 & -2.5 &  3.5 \\
+2 &  0.5 &  3.5 & -6.5 \\
+3 &  1.5 &  1.5 &  2.5 \\
+4 &  0.5 & -2.5 &  0.5 \\
+\hline
+\mathbf{\bar d'} & 0.0 & 0.0 & 0.0 \\
+\hline
+\end{array}$
+"
+
+# ╔═╡ dd218da5-91c1-4c21-92f4-f1ded5fea2b2
+matrixD = matrixA - matrixMeans
+
+# ╔═╡ d2779d84-733e-43f1-8767-e34593992b35
+md"
+---
+
+- Cross-Deviation Matrix $\mathbf{D'D}$
+
+$\begin{array}{c|rrr}
+\mathbf{D'D} & x & y & z \\
+\hline
+x &   9.0 &   9.0 &  -8.0 \\
+y &   9.0 &  27.0 & -29.0 \\
+z &  -8.0 & -29.0 &  61.0 \\
+\hline
+\end{array}$
+"
+
+# ╔═╡ 8fadd209-e11f-4b40-8d54-713cc2cc02a2
+matrixDD = matrixD' * matrixD 
+
+# ╔═╡ e7aebdd7-cdb3-4c43-ae67-9c9ae02f1e46
+md"
+---
+
+- Covariance Matrix $\mathbf C = \frac{1}{n-1}D'D$
+
+$\begin{array}{c|rrr}
+\mathbf{C} & x & y & z \\
+\hline
+x &  3.0    &  3.0    & -2.6667 \\
+y &  3.0    &  9.0    & -9.6667 \\
+z & -2.6667 & -9.6667 & 20.3333 \\
+\hline
+\end{array}$
+"
+
+# ╔═╡ 4ce91488-0d61-405c-85d9-19b9c1494006
+ matrixC = matrixDD ./ m
+
+# ╔═╡ c70e4112-e04c-49c9-854d-c68ec89a7a04
+md"
+---
+
+- Matrix $\left(diag(\mathbf C)\right)^{-1/2}$
+
+$\begin{array}{c|rrr}
+\left(diag(\mathbf C)\right)^{-1/2} & x & y & z \\
+\hline
+x &  0.57735 & 0.0     & 0.0     \\
+y &  0.0     & 0.33333 & 0.0     \\
+z &  0.0     & 0.0     & 0.22177 \\
+\hline
+\end{array}$
+"
+
+# ╔═╡ 78fe317f-2096-4fa9-bd24-731236e6b67c
+matrixCdiag = 
+	let matrixCdiag = zeros(Float64, size(matrixC, 1), size(matrixC, 1))
+		for i in 1:m
+			matrixCdiag[i, i] = 1.0/sqrt(matrixC[i, i])
+		end # for
+		matrixCdiag
+	end # let
+
+# ╔═╡ fe4fa512-cc65-4fab-b168-572c670057c1
+md"
+---
+
+- Standard Score Matrix $\mathbf Z = \mathbf D \cdot \left(diag(\mathbf C)\right)^{-1/2}$
+
+$\begin{array}{c|rrr}
+\mathbf Z & x & y & z \\
+\hline
+1 & -1.4433 & -0.8333 &  0.7762 \\
+2 &  0.2887 &  1.1666 & -1.4415 \\
+3 &  0.8660 &  0.5000 &  0.5544 \\
+4 &  0.2886 & -0.8333 &  0.1109 \\
+\hline
+\mathbf{\bar z'} & 0.0 & 0.0 & 0.0 \\
+\mathbf s_z & 1.0 & 1.0 & 1.0 \\ 
+\hline
+\end{array}$
+"
+
+# ╔═╡ 8d681800-80c4-46a5-a06f-3eb3dd0530e5
+matrixZ = matrixD * matrixCdiag
+
+# ╔═╡ db2d8318-3047-41cc-a82f-5b7de388da2a
+meansZ = [mean(colZ) for colZ in eachcol(matrixZ)]
+
+# ╔═╡ cf852890-2182-48b5-8348-0de79d9869e4
+stddsZ = [std(colZ) for colZ in eachcol(matrixZ)]
+
+# ╔═╡ 093d099e-6d5b-4a9c-a158-b4a6a9abdf51
+md"
+---
+
+- Correlation Matrix $\mathbf R = \frac{1}{N-1}\mathbf{Z'Z}$
+
+$\begin{array}{c|rrr}
+\mathbf R & x & y & z \\
+\hline
+x &   1.0     &   0.5774 &  -0.3414 \\
+y &   0.5774  &   1.0    &  -0.7146 \\
+z &  -0.3414  &  -0.7146 &   1.0    \\ 
+\hline
+\end{array}$
+
+"
+
+# ╔═╡ cca4c575-05dc-4abb-8da0-c70a56e2feb2
+matrixR = matrixZ' * matrixZ ./ (n-1)
+
+# ╔═╡ 0dc0271b-8eb0-4cdf-bb41-06e5c77ff822
+cor(X, Y)                   # r(a1, a2) = 0.5774 = R(1, 2 ) in Brown, 2014, p.13
+
+# ╔═╡ 0e6ca120-5ec7-4aa5-bfb9-665dc9799bde
+cor(X, Z)                   # r(a1, a3) = -0.3414 = R(1, 3 ) in Brown, 2014, p.13
+
+# ╔═╡ e15ba3b2-82ca-456d-bac3-55c300959850
+cor(Y, Z)                   # r(a2, a3) = -0.7146 = R(2, 3 ) in Brown, 2014, p.13
+
+# ╔═╡ 001a04b1-03e6-49a3-8110-706386709e98
+md"
+---
+###### 3.3.2 The *Geometric* Way: From *Pairs* of Data *Variable* Vectors to *Cosine* (= Correlation) Coefficients
+
+*Vectors* representing *variables* are situated in *n-dimensional* $\mathbb R^n$-*observation* space. Though this space is high-dimensional, the *geometric* version of *correlation* (= *cosine*) is computed only between *pairs* of vectors. Thus the laws of $\mathbb R^2$-dimensional geometry are sufficient because *pairs* of *vectors* are located in this *2-dimensional* subspace.
+
+As results will show *vectors* representing *variables* have to be brought into *deviation* form before the *equivalence* of *cosine* and *correlation* is in effect.
+"
+
+# ╔═╡ 34dbc067-51fd-4ff6-a808-fc56d39ee837
+pX = (0.0, 0.0, 0.0, 0.0); qX = (X[1], X[2], X[3], X[4])              # P_X, Q_X
+
+# ╔═╡ f87e632b-f05f-4bd2-b7b8-25aaa734d0d2
+pY = (0.0, 0.0, 0.0, 0.0); qY = (Y[1], Y[2], Y[3], Y[4])              # P_Y, Q_Y
+
+# ╔═╡ 8ae5d46a-fce3-4f68-9cab-bd93c0f1a37a
+pZ = (0.0, 0.0, 0.0, 0.0); qZ = (Z[1], Z[2], Z[3], Z[4])              # P_Z, Q_Z
+
+# ╔═╡ 8bf168bd-9e94-4349-9e99-f58f70b561d9
+ΔvX = makeVector(pX, qX)                                          # 1st column of A
+
+# ╔═╡ 5576cc56-6a07-4bc0-9c00-6a84b923f926
+ΔvY = makeVector(pY, qY)                                          # 2nd column of A
+
+# ╔═╡ f09c0769-09fa-49d2-8ebb-67d648c1c4e3
+ΔvZ = makeVector(pZ, qZ)                                          # 3rd column of A
+
+# ╔═╡ cfaf437d-f2af-44f9-86ed-de233bafe184
+origin = (0.0, 0.0, 0.0, 0.0)
+
+# ╔═╡ 0c5cce92-a3bc-4990-84e4-abbed98c0dbf
+qdx  = (-2.5, 0.5, 1.5, 0.5)                          # col 1 of deviation matrix D
+
+# ╔═╡ 511a11dc-c5b1-4431-b1b4-1fbeec99150a
+qdy  = (-2.5, 3.5, 1.5, -2.5)                         # col 2 of deviation matrix D
+
+# ╔═╡ a34f7e56-9a7a-4caa-a6bd-1c507238fc13
+qdz  = (3.5, -6.5, 2.5, 0.5)                          # col 3 of deviation matrix D
+
+# ╔═╡ 16423938-4216-42ee-91e5-abb225ef99e6
+dx = makeVector(origin, qdx)
+
+# ╔═╡ 239ccb4f-c7b4-418c-abc9-bbebda828d0a
+dy = makeVector(origin, qdy)
+
+# ╔═╡ b8a6b53b-dbe1-48b0-915a-e0bb140091f9
+dz = makeVector(origin, qdz)
+
+# ╔═╡ 8d51ee20-2840-45d4-bc3e-5a5ca851dee8
+qzx  = (-1.4434, 0.2887, 0.8660, 0.2887)              # col 1 of deviation matrix Z
+
+# ╔═╡ c65e8111-d1d9-4452-866e-bfbd54afb89c
+qzy  = (-0.8333, 1.1667, 0.5000, -0.8333)             # col 2 of deviation matrix Z
+
+# ╔═╡ 77d0b43c-a474-4433-875a-6b74e4544512
+qzz  = (0.7762, -1.4415, 0.5544, 0.1109)              # col 3 of deviation matrix Z
+
+# ╔═╡ 8dc807cc-0661-4926-94ba-c055a16a1f0c
+zx =  makeVector(origin, qzx)
+
+# ╔═╡ 500895f8-322a-43ab-9279-da50b6438693
+zy =  makeVector(origin, qzy)
+
+# ╔═╡ 1f52fef9-2f12-49d9-ba9f-96f7a8a55497
+zz =  makeVector(origin, qzz)
+
+# ╔═╡ 301ff7c4-8dd1-4094-81f4-1c4ca1df2fcd
+md"
+---
+
+- Correlation Matrix $\mathbf R = \frac{1}{N-1}\mathbf{Z'Z}$
+
+$\begin{array}{c|rrr}
+\mathbf R & x & y & z \\
+\hline
+x &   1.0     &   0.5774 &  -0.3414 \\
+y &   0.5774  &   1.0    &  -0.7146 \\
+z &  -0.3414  &  -0.7146 &   1.0    \\ 
+\hline
+\end{array}$
+
+"
 
 # ╔═╡ 84d3085b-64c5-4935-b963-dcc9be50549c
 md"
 ---
-###### 3.4  *Algebraic* Representation of *Points* $\mathcal (P_i, Q_i), (P_j, Q_j), (P_k, Q_k)$ and *Vectors* $Δ\mathbf v_{\mathcal P, \mathcal Q}$ in *3D-space* for $GLMakie.jl$ in *3-space*
+###### 3.4  *Algebraic* Representation of *Points* $\mathcal (P_i, Q_i), (P_j, Q_j), (P_k, Q_k)$ and *Vectors* $Δ\mathbf v_{\mathcal P, \mathcal Q}$ in *3D-space* for $GLMakie.jl$
 
 A *geometric vector* is a *directed straight line* connecting two *points* $P$ and $Q$. $P$ is the *tail* and $Q$ the head of the *arrow* (= *vector*).
 
-Unfortunately, it is not possible to plot *vectors as arrows* in $Plots.jl$. For this we have to switch to $GLMakie.jl$.
+Unfortunately, it is not possible to plot *vectors* as *arrows* with *heads* in $Plots.jl$. For this we have to switch to $GLMakie.jl$.
 
 So we provide the function $vect\_From\_PtoQ\_to\_QminP$ to change representations from $Plots.jl$ to $GLMakie.jl$:
 
@@ -529,6 +819,8 @@ pc = (0.5, 0.5, 0.0); qc = (0.5, 0.5, 1.0)
 # ╔═╡ 9c72d5b5-c77c-494f-b13f-d2e567ec3a62
 md"
 ---
+###### 3.4.1 *3D-Plots* in $Plots.jl$
+
 ###### *Basis* Vectors in 3D for $Plots.jl$
 "
 
@@ -556,14 +848,23 @@ typeof(ec)
 # ╔═╡ a81a4487-a980-4df9-a5cf-5ed28b22787e
 md"
 ---
+###### 3.4.1 *3D-Plots* in $Makie.jl$
+
 ###### A *Pyramid* in 3D by $GLMakie.jl$
 A *geometric vector* is a *directed straight line* connecting two *points* $P$ and $Q$. $P$ is the *tail* and $Q$ the head of the *arrow* (= *vector*) (*Thorne & Blandford, 2017, p.8*).
 
-Unfortunately, it is not possible to plot *vectors as arrows* in $Plots.jl$. For this we have to switch to $GLMakie.jl$. Because the *representation* of *vectors* in $GLMakie.jl$ is different to those expected by $Plots.jl$ we have to provide a function $vect\_From\_PtoQ\_To\_PtoPminQ$. This function compiles $Plots.jl$*-vectors* to $GLMakie.jl$*-vectors*.
+Unfortunately, it is not possible to plot *vectors as arrows* with *heads* in $Plots.jl$. For this we have to switch to $GLMakie.jl$. Because the *representation* of *vectors* in $GLMakie.jl$ is different to those expected by $Plots.jl$ we have to provide a function $vect\_From\_PtoQ\_To\_PtoPminQ$. This function compiles $Plots.jl$*-vectors* to $GLMakie.jl$*-vectors*.
 "
 
 # ╔═╡ 3d91458f-1e14-43b3-9e47-3e7fb5e25da3
 head(v::Vector{Vector{Float64}})::Vector{Float64} = v[2]
+
+# ╔═╡ f181bb7c-ad65-41cc-b78f-fc0d4b29d1db
+lengthOfTuple(head(Δa)), lengthOfTuple(head(Δb))
+
+# ╔═╡ 8ee92488-190f-4b70-bee2-5d84fc876fea
+# 2nd method
+lengthOfTuple(head(ΔvX)), lengthOfTuple(head(ΔvY)), lengthOfTuple(head(ΔvZ)) 
 
 # ╔═╡ 1a99efd8-11ad-4128-b7db-e7d36fdad416
 eiShifted = makeVector(head(ej), (1.0, 1.0, 0.0))
@@ -604,88 +905,309 @@ end # begin
 tail(v::Vector{Vector{Float64}})::Vector{Float64} = v[1]
 
 # ╔═╡ 3679758d-4a29-494c-9fdc-8bd6443c145f
-tail([(1.,2.), (3.,4.)]), head([(1.,2.), (3.,4.)])
+tail(Δa), head(Δa), tail(Δb), head(Δb)
 
-# ╔═╡ a4c2873d-f5c8-4ba4-9c4e-0c74843fbb80
-tail([(1.,2.,3.), (3.,4.,5.)]), head([(1.,2.,3.), (3.,4.,5.)])
+# ╔═╡ b39c65fa-6ea1-4dbc-8a59-d1d2ec49757f
+function shiftVectorIntoOrigin(Δv::Vector{NTuple{N, Float64}}) where {N}
+	[subtractTuple(tail(Δv), tail(Δv)), 
+	 subtractTuple(head(Δv), tail(Δv))]::Vector{NTuple{N, Float64}}
+end # function shiftVectorIntoOrigin
+
+# ╔═╡ 7dd3c170-2736-47d2-bfab-e664beccf990
+shiftVectorIntoOrigin(Δa), shiftVectorIntoOrigin(Δb)
+
+# ╔═╡ 54592f94-6d0b-40cb-bf5a-7040dd5ea7b1
+a = shiftVectorIntoOrigin(Δa)
+
+# ╔═╡ 5418c8b3-6f81-4eb2-aa7e-81dfed9536c3
+b = shiftVectorIntoOrigin(Δb)
+
+# ╔═╡ e5f032c2-4c7a-4d08-b46b-7c627d23cf0c
+x = shiftVectorIntoOrigin(ΔvX)
+
+# ╔═╡ 246c008f-4fc2-4e98-911d-cff5e2a6bde5
+y = shiftVectorIntoOrigin(ΔvY) 
+
+# ╔═╡ a9379c14-b4a8-4744-8132-de7d59e4cfa5
+z = shiftVectorIntoOrigin(ΔvZ)
+
+# ╔═╡ 0cc7d576-749c-4613-8db5-ba51ff5ce0cf
+# unchanged matrix A
+x, y, z
+
+# ╔═╡ 32583cda-66ca-4c6f-a418-cd2b9ac2c786
+function alignVectorsTailToTail(
+	Δv1::Vector{NTuple{N, Float64}}, 
+	Δv2::Vector{NTuple{N, Float64}}) where {N}
+	v2 = shiftVectorIntoOrigin(Δv2)
+	[(addTuple(tail(Δv1), tail(v2))), 
+	 (addTuple(tail(Δv1), head(v2)))]::Vector{NTuple{N, Float64}}
+end # function alignVectorsTailToTail
+
+# ╔═╡ 11413d83-d2f2-4708-bf98-a76bac27649c
+ΔbAligned = alignVectorsTailToTail(Δa, Δb)   # <--- Δb' = tail-to-tail aligned(Δb)
+
+# ╔═╡ f297127a-9ac0-42d0-8a57-e98301256f99
+plot2DVectors(
+	Δa, 
+	Δb, 
+	ΔbAligned,
+	title      = L"Aligned\ Vectors\ Tail-To-Tail:\ \vec{a}=Δa, \vec{b}=Δb, \vec{b}'=Δb'", 
+	xlims      = (-1.0, 9.0), ylims=(-1.0, 9.0), 
+	color1     = :cornflowerblue,
+	color2     = :red, 
+	color3     = :red, 
+	lineStyle3 = :dashdot, 
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	lineWidth3 = 1.0, 
+	v1Label    = L"\vec{a}=Δa", 
+	v2Label    = L"\vec{b}=Δb", 
+	v3Label    = L"\vec{b}'=Δb'\ (= aligned\ Δb)")
+
+# ╔═╡ bd5ff983-34b3-4f73-af0e-f47bb602eca3
+ΔbAlignedTailToTail = alignVectorsTailToTail(Δa, Δb)
+
+# ╔═╡ ab5cb109-c004-4f52-95ab-411b3ecdcccb
+plot2DVectors(
+	Δa,
+	ΔbAlignedTailToTail,
+	alignVectorsTailToTail(Δa, ΔaOrtho), 
+	title   = L"Area\ of\ Parallelogram = |\vec{v}'_1||\vec{v}_2|\cdot cos(90-\angle(\vec{v}'_1, \vec{v}_2))",
+	xlims   = (-3.0, 9.0), ylims=(-3.0, 9.0), 
+	color1     = :blue, 
+	color2     = :red, 
+	color3     = :blue, 
+	lineStyle3 = :dashdot, 
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	lineWidth3 = 1.5, 
+	v1Label    = L"\vec{v}_1=Δa", 
+	v2Label    = L"\vec{v}_2=Δb'\ (= aligned\ tail-to-tail)",
+	v3Label    = L"\vec{v}_3=Δa'\ (= orthogonal\ to\ Δa)"
+)
+
+# ╔═╡ bfd18047-03e1-4722-b566-b5c104e77a9d
+alignVectorsTailToTail(x, y)                                   # 2nd col of A
+
+# ╔═╡ 17c747b9-4290-49fb-b7cf-5a8accf80696
+alignVectorsTailToTail(y, z)                                   # 3rd col of A
+
+# ╔═╡ 16df17c0-1990-47a9-bb28-8d8d8fe4905d
+function alignVectorsHeadToTail(
+	Δv1::Vector{NTuple{N, Float64}}, 
+	Δv2::Vector{NTuple{N, Float64}}) where {N}
+	v2 = shiftVectorIntoOrigin(Δv2)
+	[addTuple(head(Δv1), tail(v2)), 
+	 addTuple(head(Δv1), head(v2))]::Vector{NTuple{N, Float64}}
+end # function alignVectorsHeadToTail
+
+# ╔═╡ a729c953-21a6-440a-ba58-7ac2cd706473
+ΔaShifted = 
+	alignVectorsHeadToTail(alignVectorsTailToTail(Δa, Δb), Δa)
+
+# ╔═╡ ed61905f-b379-4dd2-ac53-624c6640b126
+ΔbAlignedHeadToTail = alignVectorsHeadToTail(Δa, Δb)
+
+# ╔═╡ f0ff3024-e212-4dd7-8916-9d01ea540e10
+# result = from head(x) to head(x + y) 
+alignVectorsHeadToTail(x, y)                 # ==> [(col 1 of A), (col 1+2 of A)]    
+
+# ╔═╡ cbdde630-8076-4fa0-85af-d3df55d29f38
+# from head(y) to head(y + z) 
+alignVectorsHeadToTail(y, z)                 # ==> [(col 2 of A), (col 2+3 of A)]  
 
 # ╔═╡ 842efc55-3f50-4faf-890a-ef21b18bba6b
-function length(v::Vector{NTuple{N, Float64}}) where {N}
-	Δx, Δy = subtractTuple(head(v), tail(v))
-	sqrt(Δx^2 + Δy^2)::Float64
-end # function length
+function lengthOfVector(Δv::Vector{NTuple{N, Float64}}) where {N}
+	hv = head(Δv)
+	tv = tail(Δv)
+	lengthOfTuple(subtractTuple(tv, hv))
+end # function lengthOfVector
 
 # ╔═╡ dd95c185-062c-41d3-8e7b-55805f344588
-length(Δa), length(Δb)
+lengthOfVector(Δa), lengthOfVector(Δb)
 
-# ╔═╡ ec966cf4-5cfd-47e7-90e5-2906df504c4e
-radiansOfVector(v::Vector{NTuple{N, Float64}}) where {N} = 
-	atan(head(v)[2]-tail(v)[2], head(v)[1]-tail(v)[1])::Float64
+# ╔═╡ a64b8211-cc0f-467b-9dec-a91826b892fb
+Δa, lengthOfVector(Δa)
 
-# ╔═╡ 53ee6242-7cd4-410a-8e73-30b7f750f2e5
-radiansOfVector(Δa), radiansOfVector(Δb)
+# ╔═╡ d4c50f76-4184-4705-ba03-8dc08e08e155
+lengthOfVector(ΔbAligned), ΔbAligned
 
-# ╔═╡ 1f5868de-65f0-461b-bf25-57635054c15b
-rad2deg(radiansOfVector(Δa)), rad2deg(radiansOfVector(Δb))
+# ╔═╡ 2f4b239f-fa18-45e6-b3a9-e6fcd0726bf5
+# 1st method
+lengthOfVector(ΔvX), lengthOfVector(ΔvY), lengthOfVector(ΔvZ)         
 
-# ╔═╡ 082f9400-e74b-40cc-8ed5-3722fb542bec
-radiansOfθ(v1, v2) = 
-	abs(radiansOfVector(v1) - radiansOfVector(v2))
+# ╔═╡ 6e7f739d-5e9a-4478-ae4c-1ee85dee988f
+lengthOfVector(ΔvX), lengthOfVector(ΔvY), lengthOfVector(ΔvX) * lengthOfVector(ΔvY)
 
-# ╔═╡ 0b2ac9ad-0931-40d8-9cdb-d254f5ce5c8d
-radiansOfθ(Δa, Δb), rad2deg(radiansOfθ(Δa, Δb))
+# ╔═╡ 31980231-b6e3-429e-81bb-06309c398747
+function addVectors(
+	Δv1::Vector{NTuple{N, Float64}}, 
+	Δv2::Vector{NTuple{N, Float64}}) where {N} 
+	Δv1Δv2 = alignVectorsHeadToTail(Δv1, Δv2)
+	[tail(Δv1), head(Δv1Δv2)]::Vector{NTuple{N, Float64}}
+end # function addVectors
 
-# ╔═╡ c5b82ed1-9809-417e-8ead-d07bc73aba10
-degreeOfθ(v1, v2) = 
-	rad2deg(radiansOfθ(v1, v2))
+# ╔═╡ 4f935ed7-cb25-4254-8030-2376ce60034c
+addVectors(x, y)                           # [(origin),(1st + 2nd col)] of matrix A
 
-# ╔═╡ c35b0a96-fa48-4c4b-b1b7-596c30d3b67f
-radiansOfθ(Δa, Δb), degreeOfθ(Δa, Δb)
+# ╔═╡ e8cbdab0-3b65-4504-bb6a-0a8f48ea7586
+addVectors(x, z)                           # [(origin),(1st + 3rd col)] of matrix A
 
-# ╔═╡ c6d9c0e3-2a4b-4cfc-88ae-d9ee19cacb30
-cos(radiansOfθ(Δa, Δb))                                # <------- cos θ
+# ╔═╡ 848bfa11-6b53-4c59-9ae4-5ec517420544
+addVectors(y, z)                           # [(origin),(2nd + 3rd col)] of matrix A
 
-# ╔═╡ 3437bec7-946b-4e32-9821-822b8a0e1807
-sin(radiansOfθ(Δa, Δb))                                # <------- sin θ
+# ╔═╡ 5c402a7e-2721-47a5-a898-6f33ec39fe12
+function scaleVector(
+	Δv::Vector{NTuple{N, Float64}}, 
+	scaleFactor::Number) where {N}
+	#------------------------------
+	v = shiftVectorIntoOrigin(Δv)
+	makeVector(
+		addTuple(tail(Δv),scaleFactor .* tail(v)), 
+		addTuple(tail(Δv),scaleFactor .* head(v)))
+end # function scale
 
-# ╔═╡ 6a1aa570-a026-4b75-9f54-dd64251f2fbb
-cos(radiansOfθ(Δa, Δb))^2 + sin(radiansOfθ(Δa, Δb))^2  # check
+# ╔═╡ 5d0301bb-58b3-4fee-9957-bebbba5205c9
+scaleVector(Δa, -2.0), lengthOfVector(scaleVector(Δa, -2.0))
 
-# ╔═╡ f9b24010-d609-44f4-b722-ad5c4fac20be
-sinθ(v1, v2) = sin(radiansOfθ(v1, v2)) * length(v1)  
+# ╔═╡ c799d025-d554-4791-9f38-7e5e94cd9d78
+function subtractVectors(
+	Δv1::Vector{NTuple{N, Float64}}, 
+	Δv2::Vector{NTuple{N, Float64}}) where {N}
+	Δv1Δv2 = alignVectorsHeadToTail(Δv1, Δv2)
+	reversed_Δv1Δv2 = scaleVector(Δv1Δv2, -1.0)
+	addVectors(Δv1, reversed_Δv1Δv2)::Vector{NTuple{N, Float64}}
+end # function subtractVectors
+
+# ╔═╡ 9bd5977c-ee01-4fc1-93ba-7f373ee88dcb
+ΔaMinΔbAligned = subtractVectors(Δa, ΔbAligned)
+
+# ╔═╡ f46007da-c360-4134-abd7-231678f0b57a
+plot2DVectors(
+	Δa, 
+	Δb, 
+	ΔbAligned,
+	subtractVectors(Δa, ΔbAligned),
+	alignVectorsHeadToTail(ΔbAligned, subtractVectors(Δa, ΔbAligned)),
+	title      = L"Subtract Aligned\ Vectors\ Tail-To-Tail:\ \vec{a}=Δa, \vec{b}=Δb, \vec{a}-\vec{b}'", 
+	xlims      = (-5.0, 9.0), ylims=(-1.0, 10.0), 
+	color1     = :cornflowerblue,
+	color2     = :red, 
+	color3     = :red, 
+	color4     = :magenta,
+	color5     = :magenta,
+	lineStyle3 = :dashdot, 
+	lineStyle4 = :dashdot, 
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	lineWidth3 = 1.0, 
+	lineWidth4 = 1.0, 
+	lineWidth5 = 2.0, 
+	v1Label    = L"\vec{a}=Δa", 
+	v2Label    = L"\vec{b}=Δb", 
+	v3Label    = L"\vec{b}'=Δb'\ (= aligned\ Δb)",
+    v4Label    = L"\vec{a}-\vec{b}'",
+	v5Label    = L"\vec{a}-\vec{b}'\ (aligned\ head-to-tail)"
+)
+
+# ╔═╡ eedb31ab-3dba-48d1-b1a4-f1d1ecb90cc6
+plot2DVectors(
+	Δa, 
+	Δb, 
+	ΔbAligned,
+	subtractVectors(ΔbAligned, Δa),
+	alignVectorsHeadToTail(Δa, subtractVectors(ΔbAligned, Δa)),
+	title      = L"Subtract Aligned\ Vectors\ Tail-To-Tail:\ \vec{a}=Δa, \vec{b}=Δb, \vec{b}-\vec{a}'", 
+	xlims      = (-5.0, 9.0), ylims=(-1.0, 10.0), 
+	color1     = :cornflowerblue,
+	color2     = :red, 
+	color3     = :red, 
+	color4     = :magenta,
+	color5     = :magenta,
+	lineStyle3 = :dashdot, 
+	lineStyle4 = :dashdot, 
+	lineWidth1 = 2.5,
+	lineWidth2 = 2.5,
+	lineWidth3 = 1.0, 
+	lineWidth4 = 1.0, 
+	lineWidth5 = 2.0, 
+	v1Label    = L"\vec{a}=Δa", 
+	v2Label    = L"\vec{b}=Δb", 
+	v3Label    = L"\vec{b}'=Δb'\ (= aligned\ Δb)",
+    v4Label    = L"\vec{b}-\vec{a}'",
+	v5Label    = L"\vec{b}-\vec{a}'\ (aligned\ head-to-tail)"
+)
+
+# ╔═╡ 1eec322e-1fe2-405e-82cc-5fc1e6e6c8bf
+function myCosθ(
+	Δv1::Vector{NTuple{N, Float64}}, 
+	Δv2::Vector{NTuple{N, Float64}}) where {N}
+	v1           = shiftVectorIntoOrigin(Δv1)
+	v2           = shiftVectorIntoOrigin(Δv2)
+	v1Minv2      = subtractVectors(v1, v2)
+	lenOfv1      = lengthOfVector(v1)
+	lenOfv2      = lengthOfVector(v2)
+	lenOfv1Minv2 = lengthOfVector(v1Minv2)
+	numerator = 
+		lenOfv1^2 + lenOfv2^2 - lenOfv1Minv2^2
+	denominator =
+		2.0 * lenOfv1 * lenOfv2
+	numerator / denominator
+end # function myCosθ
+
+# ╔═╡ 14069f64-c849-4fe6-a1fa-5ffe6edfc8b7
+function mySinθ(
+	Δv1::Vector{NTuple{N, Float64}}, 
+	Δv2::Vector{NTuple{N, Float64}}) where {N}
+	v1           = shiftVectorIntoOrigin(Δv1)
+	v2           = shiftVectorIntoOrigin(Δv2)
+	sqrt(1.0 - myCosθ(v1, v2)^2)
+end # function
+
+# ╔═╡ 69766799-0035-4da2-bcf6-add2f42b29a3
+mySinθ(Δa, Δb)
 
 # ╔═╡ a2e7457c-46ac-4166-b369-2e2f9c53310a
-sinθ(Δa, Δb)
+mySinθ(Δa, Δb)
+
+# ╔═╡ d400f81f-ff6c-41e9-8e8a-87fa5b3d00d8
+mySinθ(Δa, Δb)
+
+# ╔═╡ e24bba27-31ad-4c56-815b-f9caca3dbaef
+mySinθ(Δa, Δb) * lengthOfVector(Δa)
 
 # ╔═╡ d1ec9648-63d0-472e-bbf4-7be1f33857d3
-sinθ(Δa, Δb), sinθ(a, b)                            # angle θ stays constant
+mySinθ(Δa, Δb), mySinθ(a, b)                            # angle θ stays constant
 
 # ╔═╡ 5c17bc29-6472-49e8-95cc-1570668e58d6
-areaParallelogram1(v1, v2) = length(v2) * sinθ(v1, v2)   # area 
+function areaParallelogram1(Δv1, Δv2)
+	(lengthOfVector(Δv1) * lengthOfVector(Δv2) * mySinθ(Δv1, Δv2))   # area 
+end # function areaParallelogram1
 
 # ╔═╡ c8be7752-56d0-4f5c-b665-cb5cf4645b47
-areaParallelogram1(Δa, Δb)                          # area(Δa, Δb) = 24.0
+areaParallelogram1(Δa, Δb)                              # area(Δa, Δb) = 24.0
 
-# ╔═╡ a56e8abd-60b6-435b-b23c-d09e7edd0a84
-function dotProduct(v1::Vector{NTuple{N, Float64}}, v2::Vector{NTuple{N, Float64}}) where {N}
-	length(v1)*length(v2)*cos(radiansOfθ(v1, v2))::Float64
-end # function dotProduct
+# ╔═╡ 832d5ff5-5bfc-4abf-87c9-73fe5dc11d0a
+myCosθ(Δa, Δb)
 
-# ╔═╡ 8f1fbc22-bf19-43cf-b471-7625a2227b0e
-cosθ(v1, v2) = dotProduct(v1, v2) / (length(v1)*length(v2))
+# ╔═╡ 04b8b7c7-b4c1-4fa6-bf59-b9c0b7d6d3f2
+myCosθ(Δa, Δb)^2 + mySinθ(Δa, Δb)^2                    # check
 
 # ╔═╡ a5301af9-9227-4394-ae38-9868e3264098
-cosθ(Δa, Δb)
+myCosθ(Δa, Δb)
+
+# ╔═╡ a56e8abd-60b6-435b-b23c-d09e7edd0a84
+function dotProduct(
+	Δv1::Vector{NTuple{N, Float64}}, 
+	Δv2::Vector{NTuple{N, Float64}}) where {N}
+	v1 = shiftVectorIntoOrigin(Δv1)
+	v2 = shiftVectorIntoOrigin(Δv2)
+	lengthOfVector(v1) * lengthOfVector(v2) * myCosθ(v1, v2)::Float64
+end # function dotProduct
 
 # ╔═╡ 0de786bb-9f19-4925-895e-695171416581
-dotProduct(Δa, Δb)                                   #  <------ dot product
-
-# ╔═╡ 31efcd7a-c4fb-4253-9a6b-5109d51aac89
-projectionV1OnV2(v1::Vector{NTuple{N, Float64}}, v2::Vector{NTuple{N, Float64}}) where {N} =  
-	dotProduct(v1, v2)/length(v2)::Float64           #  <------ projection vi on vj
-
-# ╔═╡ 795ca2a6-d930-45f5-8145-7ef81134b6c2
-projectionV1OnV2(Δa, Δb)
+dotProduct(Δa, Δb), dotProduct(a, b)                        #  <------ dot product
 
 # ╔═╡ 25f7adb2-4952-410b-9802-09df283be6ca
 dotProduct(Δa, ΔaOrtho)                               # a a' = 0.0
@@ -693,56 +1215,76 @@ dotProduct(Δa, ΔaOrtho)                               # a a' = 0.0
 # ╔═╡ 826807fc-62c5-4596-8e40-13f3a40a982e
 areaParallelogram2 = dotProduct(ΔaOrtho, Δb)
 
-# ╔═╡ 39a0fe7c-5574-4fdb-8148-ab45ab7a960f
-sin(radiansOfθ(Δa, Δb))                                                 # sin θ
+# ╔═╡ 284cf365-c1ae-4f9d-a1d3-31e006919013
+dotProduct(ΔvX, ΔvY), dotProduct(ΔvX, ΔvZ), dotProduct(ΔvY, ΔvZ)
 
-# ╔═╡ 433f32ca-8f84-4197-9f71-0b1259e660a6
-dotProduct(Δa, Δb), projectionV1OnV2(Δa, Δb), cosθ(Δa, Δb), sin(radiansOfθ(Δa, Δb)), sinθ(Δa, Δb)
+# ╔═╡ 7b744208-4fa3-4727-950f-ee8590542a5f
+dotProduct(ΔvX, ΔvY)/(length(ΔvX) * length(ΔvY))
+
+# ╔═╡ 31efcd7a-c4fb-4253-9a6b-5109d51aac89
+function lengthOfProjectionVec1OnVec2(
+	Δv1::Vector{NTuple{N, Float64}}, 
+	Δv2::Vector{NTuple{N, Float64}}) where {N}
+	#-----------------------------------------------------------------
+	v1 = shiftVectorIntoOrigin(Δv1)
+	v2 = shiftVectorIntoOrigin(Δv2)
+	lengthOfVector(v1) * myCosθ(v1, v2)::Float64  #  <------ projection vi on vj
+end # function engthOfProjectionVec1OnVec2
+
+# ╔═╡ 795ca2a6-d930-45f5-8145-7ef81134b6c2
+lengthOfProjectionVec1OnVec2(Δa, Δb)
+
+# ╔═╡ 52972a4c-74cb-4478-b86f-9712c6fe4265
+myCosθ(Δa, Δb)^2 + mySinθ(Δa, Δb)^2         # ====> 1.0 ---> :)
 
 # ╔═╡ 3e580138-f551-408d-a48c-d3b520de9982
-cos(radiansOfθ(Δb, ΔaOrtho)) 
+myCosθ(Δb, ΔaOrtho)
 
 # ╔═╡ 83e184c0-ba73-4cd7-9e89-b77806271998
-length(ΔaOrtho)*length(Δb)*cos(radiansOfθ(Δb, ΔaOrtho))    # area of parallelogram
+# area of parallelogram
+lengthOfVector(ΔaOrtho) * lengthOfVector(Δb) * myCosθ(Δb, ΔaOrtho)    
 
-# ╔═╡ 5c402a7e-2721-47a5-a898-6f33ec39fe12
-function scale(v::Vector{NTuple{N, Float64}}, s::Number) where {N}
-	Δx = head(v)[1] - tail(v)[1]
-	Δy = head(v)[2] - tail(v)[2] 
-	#--------------------------------------------------
-	magnitude(v) = sqrt(Δx^2 + Δy^2)
-	direction(v) = atan(Δy, Δx)
-	makeHeadScaled(v, xScaled, yScaled) = 
-		(tail(v)[1] + xScaled, tail(v)[2] + yScaled)
-	#--------------------------------------------------
-	r  = magnitude(v)
-	θ  = direction(v)
-	xScaled = r*cos(θ)*s
-	yScaled = r*sin(θ)*s
-	[tail(v), makeHeadScaled(v, xScaled, yScaled)]::Vector{NTuple{N, Float64}}
-end # function scale
+# ╔═╡ 67e70486-490a-422b-9cfb-c4ffb761fec3
+myCosθ(ΔvX, ΔvY), myCosθ(dx, dy), myCosθ(zx, zy)      # ==> r(x, y) =  0.5774 
+
+# ╔═╡ 99612969-fe4d-400f-931d-c449b3bcb23a
+myCosθ(ΔvX, ΔvZ), myCosθ(dx, dz), myCosθ(zx, zz)      # ==> r(x, z) = -0.3414
+
+# ╔═╡ cdbf6ad2-9571-485a-bd2e-061632549922
+myCosθ(ΔvY, ΔvZ), myCosθ(dy, dz), myCosθ(zy, zz)      # ==> r(y, z) = -0.7146
+
+# ╔═╡ 66549402-3edf-4721-a87a-68a77f3293a2
+subtractVectors(x, y)                      # [(origin),(1st - 2nd col)] of matrix A
+
+# ╔═╡ c5b0e9fb-53fd-423b-b38d-98a3668f921d
+subtractVectors(x, z)                      # [(origin),(1st - 3rd col)] of matrix A
+
+# ╔═╡ f68a1067-e65f-41d1-9278-84690d208421
+subtractVectors(y, z)                      # [(origin),(2nd - 3rd col)] of matrix A
 
 # ╔═╡ 60b365fc-7968-4d50-b287-3c50121b1e15
-normalizeVector(v::Vector{NTuple{N, Float64}}) where {N} = 
-	scale(v, 1.0/length(v))::Vector{NTuple{N, Float64}}
+function normalizeVector(Δv::Vector{NTuple{N, Float64}}) where {N} 
+	lenΔv = lengthOfVector(Δv)
+	scaleVector(Δv, 1.0/lenΔv)
+end # function normalizeVector
 
 # ╔═╡ 35cc19e7-3691-4f91-bd24-4ee015427f7e
-normalizeVector(ΔbAligned)                      # <----- normalize vector Δb'
+normalizeVector(ΔbAligned)                    # <----- normalize vector Δb'
 
 # ╔═╡ 2e0628bc-4ce5-4049-b0dc-37ce417d2704
-length(normalizeVector(ΔbAligned))              # <----- length normalized vector Δb'
+lengthOfVector(normalizeVector(ΔbAligned))    # <----- length normalized vector Δb'
 
 # ╔═╡ 8a10bcb9-6be6-4db7-a07e-60de8799493c
-                                                # <----- length normalized vector Δb'
+                                              # <----- length normalized vector Δb'
 sqrt(dotProduct(normalizeVector(ΔbAligned), normalizeVector(ΔbAligned)))
 
 # ╔═╡ a1b0fc88-6869-4ad8-a754-2924ae99d030
 plot2DVectors(
 	Δa, 
 	Δb, 
-	alignTailToTail(Δa, Δb), 
-	normalizeVector(ΔbAligned),
-	title      = L"Normalized\ &\ Aligned\ Tail-To-Tail:\ Δv_3=Δb''", 
+	alignVectorsTailToTail(Δa, Δb),
+	alignVectorsTailToTail(Δa, normalizeVector(alignVectorsTailToTail(Δa, Δb))),
+	title      = L"Aligned\ \vec{b}\ Tail-To-Tail\ &\ Normalize\ :\ \vec{b}''=Δb''", 
 	xlims      = (-1.0, 9.0), ylims=(-1.0, 9.0), 
 	color1     = :cornflowerblue,
 	color2     = :red, 
@@ -753,28 +1295,45 @@ plot2DVectors(
 	lineWidth2 = 2.5,
 	lineWidth3 = 1.0, 
 	lineWidth4 = 2.0, 
-	v1Label    = L"Δv_1=Δa", 
-	v2Label    = L"Δv_2=Δb", 
-	v3Label    = L"Δv_3=Δb' (= aligned tail-to-tail)",
-	v4Label    = L"Δv_4=Δb''(= normalized\ Δb')"
+	v1Label    = L"\vec{a}=Δa", 
+	v2Label    = L"\vec{b}=Δb", 
+	v3Label    = L"\vec{b}'=Δb'\ (= aligned\ tail-to-tail)",
+	v4Label    = L"\vec{b}''=Δb''\ (= normalized\ Δb')"
 )
 
 # ╔═╡ fb78c87b-517a-4927-a9d2-58633cbefd9e
-projectedV1OnV2(v1::Vector{NTuple{N, Float64}}, v2::Vector{NTuple{N, Float64}}) where {N} = 
-	scale(
-		normalizeVector(ΔbAligned),
-		projectionV1OnV2(v1, v2))::Vector{NTuple{N, Float64}}
+function projectedVec1OnVec2(
+	Δv1::Vector{NTuple{N, Float64}}, 
+	Δv2::Vector{NTuple{N, Float64}}) where {N} 
+	#---------------------------------------------------------
+	v1 = shiftVectorIntoOrigin(Δv1)
+	v2 = shiftVectorIntoOrigin(Δv2)
+	normAligned_v1v2 = 
+		alignVectorsTailToTail(Δa, normalizeVector(alignVectorsTailToTail(Δa, Δb)))
+	scaleVector(
+			normAligned_v1v2,
+			lengthOfProjectionVec1OnVec2(v1, v2))::Vector{NTuple{N, Float64}}
+end # function projectedVec1OnVec2
 
 # ╔═╡ 24aaddd0-b4ce-4d67-aaa7-596f102b1886
-Δc = projectedV1OnV2(Δa, Δb)
+Δc = projectedVec1OnVec2(Δa, Δb)
+
+# ╔═╡ a380f67c-46bf-4686-bc42-2f331ddefbc7
+lengthOfVector(Δc)
 
 # ╔═╡ cab65ad8-ecb3-4cbc-bb78-0a727be5c12f
-length(makeVector(head(Δa), head(projectedV1OnV2(Δa, Δb))))/length(Δa)  # sin θ
+# sin θ
+#-------------------------------------------------------------------------
+lengthOfVector(makeVector(head(Δa), head(projectedVec1OnVec2(Δa, Δb))))/lengthOfVector(Δa)                                                        
 
 # ╔═╡ 012b5465-0bfa-4ed2-86ec-9f6a514c1fc7
 # Δa perpendicular on Δb
 perpedicularΔaOnΔb = 
-	makeVector(head(Δa), head(projectedV1OnV2(Δa, Δb)))
+	makeVector(head(Δa), head(projectedVec1OnVec2(Δa, Δb)))
+
+# ╔═╡ 6b576c18-d7f8-40a9-b75b-ea30303e0320
+# == sinθ(Δa, Δb) * lengthOfVector(Δa)
+lengthOfVector(perpedicularΔaOnΔb) 
 
 # ╔═╡ 08d81e7c-821d-499c-bbac-b5e4441f9413
 plot2DVectors(
@@ -809,11 +1368,11 @@ plot2DVectors(
 # ╔═╡ 5914dbb1-e0f6-49a2-9822-210c8b2e081e
 plot2DVectors(
 	Δa, 
-	alignTailToTail(Δa, Δb),                         # Δb aligned tail-to-tail
-	projectedV1OnV2(Δa, Δb),
+	alignVectorsTailToTail(Δa, Δb),                  # Δb aligned tail-to-tail
+	projectedVec1OnVec2(Δa, alignVectorsTailToTail(Δa, Δb)),
 	perpedicularΔaOnΔb,                              # perpendicular on Δb
 	title=
-		L"Projection: Δv_3=|a|\ cos\ θ,\ Perpendicular: v_4=|a|sin\  \theta",
+		L"Projection: \vec{v}_3=|a|\cos\angle(\vec{a},\vec{b}),\ Perpendicular: \vec{v}_4=|a|\sin\angle(\vec{a},\vec{b})",
 	xlims   = (-1.0, 9.0), ylims=(-1.0, 9.0), 
 	color1     = :cornflowerblue,
 	color2     = :red, 
@@ -825,14 +1384,29 @@ plot2DVectors(
 	lineWidth2 = 1.0,
 	lineWidth3 = 3.0, 
 	lineWidth4 = 2.0, 
-	v1Label    = L"Δv_1=Δa", 
-	v2Label    = L"Δv_2=Δb'\ (= Δb\ aligned\ tail-to-tail)",
-	v3Label    = L"Δv_3=Δc=Δb'''(= projection\ |a|cos\  \theta)",
-	v4Label    = L"Δv_4=|a|sin\  \theta"	
+	v1Label    = L"\vec{a}=Δa", 
+	v2Label    = L"\vec{b}'=Δb'\ (= \vec{b}\ aligned\ tail-to-tail)",
+	v3Label    = L"\vec{v}_3=Δb'''(= projection\ |a|cos\angle(\vec{a},\vec{b}))",
+	v4Label    = L"\vec{v}_4=|a|sin\angle(\vec{a},\vec{b}) (= perpendicular)"	
 	)
 
-# ╔═╡ 6b576c18-d7f8-40a9-b75b-ea30303e0320
-length(makeVector(head(Δa), head(projectedV1OnV2(Δa, Δb)))) # == sinθ(Δa, Δb)
+# ╔═╡ 433f32ca-8f84-4197-9f71-0b1259e660a6
+dotProduct(Δa, Δb), projectedVec1OnVec2(Δa, Δb), myCosθ(Δa, Δb), mySinθ(Δa, Δb)
+
+# ╔═╡ e3d05042-ebb3-4964-acae-049d85c0c3e8
+# [(origin .*-1.0)), (1st col of A .*-1.0)]
+scaleVector(ΔvX, -1.0)                    
+
+# ╔═╡ 422b7861-ae0f-4a58-9c9c-019ad85c6b76
+# [(origin .*-1.0)), (2nd col of A .* 2.0)]
+scaleVector(ΔvY, 2.0)                            
+
+# ╔═╡ a7638309-ab01-496e-95cd-ddaf694f4a83
+# [(origin .*-1.0)), (3rd col of A .* 3.0)]
+scaleVector(ΔvZ, -3.0)                         
+
+# ╔═╡ ec7d4edb-d2d2-4435-bef9-6f0fd721c1a3
+scaleVector(ΔvX, -1.0), scaleVector(ΔvY, 1.0), scaleVector(ΔvZ, -1.0)
 
 # ╔═╡ e2a26168-8aa1-408f-bd8a-a814c99ef7f4
 tail(Δb)
@@ -867,6 +1441,13 @@ let
 		  	lineWidth = 2.0, 
 		  	label     = L"Δv_2=height\ h_{v_2}=|a|sin\  \theta")
 end # let
+
+# ╔═╡ 9701501b-d27a-438f-bc88-f68ca726f77d
+addTuple(tail(ΔvX), tail(ΔvY)), addTuple(head(ΔvX), head(ΔvY)) # 1st + 2nd col of A
+
+# ╔═╡ 235ee07e-a6b6-491e-ab46-9b80257d2314
+# 1st - 2nd col of A
+subtractTuple(tail(ΔvX), tail(ΔvY)), subtractTuple(head(ΔvX), head(ΔvY)) 
 
 # ╔═╡ 5731e54e-425c-4ecb-b6ed-76fbf51e28d5
 function vect_From_PtoQ_to_QminP(
@@ -975,24 +1556,11 @@ let eits  = tail(eiGLM);         eihs = head(eiGLM)      # start point P; vector
 	fig
 end # let
 
-# ╔═╡ 81e43bbf-c573-42fb-949f-bf5b08ce3fb2
-md"
----
-###### 3.4 Geometric Definition of *Cross Product*
-(cf. Walck, 2022, p.134f)
-"
-
-# ╔═╡ e9e24807-f670-400e-98fb-e9f0219555fc
-md"
----
-###### 3.4 *Derivative* of a Vector-Valued Function
-(cf. Walck, 2022, p.135f)
-"
-
 # ╔═╡ 0ad1b732-3315-4b0e-8ea3-6569f9284e6b
 md"
 ---
 ###### 4. Summary
+We presented basic vector *concepts* and *operations* in a *coordinate-free geometric* style. Only for the *input* of plotting routines we had to use *algebraic* concepts. Even the concept of *Pearson's correlation* coefficient could be explained as a *geometric* concept. Pearson's $r$ is *equivalent* as the *cosine* between a *pair* of vectors representing *variables* in a $\mathbb R^n$-*observation* space.
 "
 
 # ╔═╡ 8c0bd8b5-622f-44ab-932c-6f41f3527ff7
@@ -1000,8 +1568,10 @@ md"
 ---
 ##### 5. References
 
+- **Brown, J.D.**; *Linear Models in Matrix Form*, Cham: Springer, 2014
 - **Thorne, K. & Blandford, R.**; *Modern Classical Physics: Optics, Fluids, Plasmas, Elasicity, Relativity, and Statistical Physics*, Princeton: Princeton University Press, 2017
 - **Walck, Sc. N.**; *Learn Physics with Functional Programming*, San Francisco: No Starch Press, 2023, ISBN 978-1-7185-0166-9
+- **Wikipedia**; [*Dot-product*](https://en.wikipedia.org/wiki/Dot_product); last visit 2026/02/20
 - **Wikipedia**; [*Pearson's correlation coefficient*](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient); last visit 2026/02/01
 "
 
@@ -1024,6 +1594,7 @@ Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 Pluto = "c3e4b0f8-55cb-11ea-2926-15256bba5781"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
 GLMakie = "~0.13.8"
@@ -1038,7 +1609,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.12.5"
 manifest_format = "2.0"
-project_hash = "65397bbb68f142b962b00759f16e8083350c084a"
+project_hash = "b93b8ffe5c0f91e920209d736f7a74926a586a4b"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -3033,50 +3604,59 @@ version = "1.13.0+0"
 # ╠═3005fdad-709b-44c1-8b08-64f8ef429106
 # ╟─c01ab1ff-d11c-4bc3-97a1-408c27831ad0
 # ╟─133cb2aa-58fe-403d-a73c-774402259c06
+# ╟─47fa25c7-1556-4397-ac7c-6469e7a24044
 # ╠═242a8f5a-d0da-4f78-bde2-18fb55e5f1ac
 # ╠═c7832e88-742c-433d-90ea-1264ae2dcd9d
 # ╟─5067fb97-4d91-48ca-adaf-4dd7db258ba1
 # ╠═fcb32d10-3651-4a96-8492-d84bc7365dc2
 # ╠═0489be14-9f69-4d3e-805f-a219c7e30171
 # ╠═91861825-0f49-41f4-a3c5-14d596599894
-# ╠═737ed548-aa29-4c72-bd1a-34fd4adda5c5
 # ╟─fad59e8a-937f-4517-90ce-444980eda7cb
 # ╠═88627bd5-c4ae-4b29-9196-cfcadb461ebf
 # ╠═a47e444b-6439-49c9-9905-5e14c51f98fd
 # ╠═3679758d-4a29-494c-9fdc-8bd6443c145f
-# ╠═a4c2873d-f5c8-4ba4-9c4e-0c74843fbb80
 # ╟─33092cdf-54ca-4dd8-872f-5c0fdfbc47bd
 # ╠═7acba5f4-557b-4ecd-bb1a-d816b52b6268
-# ╟─2c337afc-4587-40ed-afb0-4bd39de28aa7
 # ╟─9c1b04bc-5b64-4ee8-98eb-3979464d90b0
 # ╠═0708a692-2719-4583-9fec-06e8b1a0b50a
 # ╠═238f12b0-0bf5-4634-93d8-1784e5e426ee
-# ╠═e24b5a87-ddb2-47fd-8cf4-71660ad55ea0
 # ╠═dabdf621-9149-41bf-8df9-c3bf3937ccdf
 # ╠═3a127471-591b-4e39-8010-a63af771fbc7
-# ╠═8a3a9c00-5b33-4f4e-8b8c-dc5bad53b336
 # ╠═b39c65fa-6ea1-4dbc-8a59-d1d2ec49757f
+# ╠═f7543959-318f-44e3-8d0d-6b3ca0cb2fde
+# ╠═7dd3c170-2736-47d2-bfab-e664beccf990
 # ╠═32583cda-66ca-4c6f-a418-cd2b9ac2c786
 # ╠═16df17c0-1990-47a9-bb28-8d8d8fe4905d
 # ╠═11413d83-d2f2-4708-bf98-a76bac27649c
 # ╠═f297127a-9ac0-42d0-8a57-e98301256f99
 # ╟─aa55351a-4405-46b6-943c-28dd55614405
 # ╠═842efc55-3f50-4faf-890a-ef21b18bba6b
+# ╠═64a613bc-b1e5-48fd-b43d-8b2430942a7e
 # ╠═dd95c185-062c-41d3-8e7b-55805f344588
+# ╠═28e9907b-17ac-48b0-9cca-b69220ec15c9
+# ╠═f181bb7c-ad65-41cc-b78f-fc0d4b29d1db
 # ╟─cc3a3257-bf4e-4fe0-b2eb-9bd2668fd717
-# ╠═ec966cf4-5cfd-47e7-90e5-2906df504c4e
-# ╠═53ee6242-7cd4-410a-8e73-30b7f750f2e5
-# ╠═1f5868de-65f0-461b-bf25-57635054c15b
-# ╠═082f9400-e74b-40cc-8ed5-3722fb542bec
-# ╠═0b2ac9ad-0931-40d8-9cdb-d254f5ce5c8d
-# ╠═c5b82ed1-9809-417e-8ead-d07bc73aba10
-# ╠═c35b0a96-fa48-4c4b-b1b7-596c30d3b67f
+# ╠═31980231-b6e3-429e-81bb-06309c398747
+# ╠═5c402a7e-2721-47a5-a898-6f33ec39fe12
+# ╠═a64b8211-cc0f-467b-9dec-a91826b892fb
+# ╠═5d0301bb-58b3-4fee-9957-bebbba5205c9
+# ╠═c799d025-d554-4791-9f38-7e5e94cd9d78
+# ╠═9bd5977c-ee01-4fc1-93ba-7f373ee88dcb
+# ╠═f46007da-c360-4134-abd7-231678f0b57a
+# ╠═eedb31ab-3dba-48d1-b1a4-f1d1ecb90cc6
+# ╟─96204ac6-491d-4333-b343-8961580f931d
+# ╠═60b365fc-7968-4d50-b287-3c50121b1e15
+# ╠═d4c50f76-4184-4705-ba03-8dc08e08e155
+# ╠═35cc19e7-3691-4f91-bd24-4ee015427f7e
+# ╠═2e0628bc-4ce5-4049-b0dc-37ce417d2704
+# ╠═8a10bcb9-6be6-4db7-a07e-60de8799493c
+# ╠═a1b0fc88-6869-4ad8-a754-2924ae99d030
 # ╟─2779de79-478d-4556-b5aa-e01b310e5e0f
-# ╠═c6d9c0e3-2a4b-4cfc-88ae-d9ee19cacb30
-# ╠═3437bec7-946b-4e32-9821-822b8a0e1807
-# ╠═6a1aa570-a026-4b75-9f54-dd64251f2fbb
-# ╠═8f1fbc22-bf19-43cf-b471-7625a2227b0e
-# ╠═f9b24010-d609-44f4-b722-ad5c4fac20be
+# ╠═1eec322e-1fe2-405e-82cc-5fc1e6e6c8bf
+# ╠═14069f64-c849-4fe6-a1fa-5ffe6edfc8b7
+# ╠═832d5ff5-5bfc-4abf-87c9-73fe5dc11d0a
+# ╠═69766799-0035-4da2-bcf6-add2f42b29a3
+# ╠═04b8b7c7-b4c1-4fa6-bf59-b9c0b7d6d3f2
 # ╠═a5301af9-9227-4394-ae38-9868e3264098
 # ╠═a2e7457c-46ac-4166-b369-2e2f9c53310a
 # ╟─6c59e451-c426-4fbe-8d04-5701ad0743c4
@@ -3085,23 +3665,18 @@ version = "1.13.0+0"
 # ╟─249553d7-727e-47ec-9e38-6fbf6d8f2166
 # ╠═31efcd7a-c4fb-4253-9a6b-5109d51aac89
 # ╠═795ca2a6-d930-45f5-8145-7ef81134b6c2
-# ╟─96204ac6-491d-4333-b343-8961580f931d
-# ╠═5c402a7e-2721-47a5-a898-6f33ec39fe12
-# ╠═60b365fc-7968-4d50-b287-3c50121b1e15
-# ╠═35cc19e7-3691-4f91-bd24-4ee015427f7e
-# ╠═2e0628bc-4ce5-4049-b0dc-37ce417d2704
-# ╠═8a10bcb9-6be6-4db7-a07e-60de8799493c
-# ╟─ecfe3e67-aaff-4aa4-add4-806bed0387a8
-# ╠═a1b0fc88-6869-4ad8-a754-2924ae99d030
 # ╟─59e1160e-c740-4889-9cb9-d8ad9103496d
 # ╠═fb78c87b-517a-4927-a9d2-58633cbefd9e
 # ╠═24aaddd0-b4ce-4d67-aaa7-596f102b1886
-# ╠═39a0fe7c-5574-4fdb-8148-ab45ab7a960f
+# ╠═a380f67c-46bf-4686-bc42-2f331ddefbc7
 # ╠═cab65ad8-ecb3-4cbc-bb78-0a727be5c12f
+# ╠═d400f81f-ff6c-41e9-8e8a-87fa5b3d00d8
 # ╠═012b5465-0bfa-4ed2-86ec-9f6a514c1fc7
-# ╠═5914dbb1-e0f6-49a2-9822-210c8b2e081e
 # ╠═6b576c18-d7f8-40a9-b75b-ea30303e0320
+# ╠═e24bba27-31ad-4c56-815b-f9caca3dbaef
+# ╠═5914dbb1-e0f6-49a2-9822-210c8b2e081e
 # ╠═433f32ca-8f84-4197-9f71-0b1259e660a6
+# ╠═52972a4c-74cb-4478-b86f-9712c6fe4265
 # ╟─68895197-8e52-423e-ac27-bdc7fa7e4607
 # ╟─189b025c-2f31-4556-9cc4-b9048f9be7bb
 # ╟─57b697ef-0b4a-4fe0-96ad-17eb1496151a
@@ -3124,6 +3699,83 @@ version = "1.13.0+0"
 # ╠═ab5cb109-c004-4f52-95ab-411b3ecdcccb
 # ╠═3e580138-f551-408d-a48c-d3b520de9982
 # ╠═83e184c0-ba73-4cd7-9e89-b77806271998
+# ╟─2c337afc-4587-40ed-afb0-4bd39de28aa7
+# ╟─6e2dbf9a-3cd4-4359-b7ea-43e79ce88cf9
+# ╠═de196c09-18f1-4fde-822e-282de7b0fd53
+# ╠═275acb16-1cda-4250-949e-10d7d10638d4
+# ╠═6c0606d9-38e1-47e6-94e0-fa63bacceb19
+# ╠═57d32314-b960-46d6-a4de-29a07261aa76
+# ╠═087f91bf-988c-4ed8-b4b7-60c09c3136a6
+# ╟─7988a8af-544b-4d9e-99c6-0226859d4f8c
+# ╠═49ef0d05-b923-4834-8ed0-042f1ee4483d
+# ╠═6da213f1-0e7c-49db-8296-cec89c29fa10
+# ╠═fac04af1-8f78-4237-bf90-5d103215919e
+# ╟─0d49c7dd-6a2b-40cd-a5fb-cfd9df2dc61d
+# ╠═dd218da5-91c1-4c21-92f4-f1ded5fea2b2
+# ╟─d2779d84-733e-43f1-8767-e34593992b35
+# ╠═8fadd209-e11f-4b40-8d54-713cc2cc02a2
+# ╟─e7aebdd7-cdb3-4c43-ae67-9c9ae02f1e46
+# ╠═4ce91488-0d61-405c-85d9-19b9c1494006
+# ╟─c70e4112-e04c-49c9-854d-c68ec89a7a04
+# ╠═78fe317f-2096-4fa9-bd24-731236e6b67c
+# ╟─fe4fa512-cc65-4fab-b168-572c670057c1
+# ╠═8d681800-80c4-46a5-a06f-3eb3dd0530e5
+# ╠═db2d8318-3047-41cc-a82f-5b7de388da2a
+# ╠═cf852890-2182-48b5-8348-0de79d9869e4
+# ╟─093d099e-6d5b-4a9c-a158-b4a6a9abdf51
+# ╠═cca4c575-05dc-4abb-8da0-c70a56e2feb2
+# ╠═0dc0271b-8eb0-4cdf-bb41-06e5c77ff822
+# ╠═0e6ca120-5ec7-4aa5-bfb9-665dc9799bde
+# ╠═e15ba3b2-82ca-456d-bac3-55c300959850
+# ╟─001a04b1-03e6-49a3-8110-706386709e98
+# ╠═34dbc067-51fd-4ff6-a808-fc56d39ee837
+# ╠═f87e632b-f05f-4bd2-b7b8-25aaa734d0d2
+# ╠═8ae5d46a-fce3-4f68-9cab-bd93c0f1a37a
+# ╠═8bf168bd-9e94-4349-9e99-f58f70b561d9
+# ╠═5576cc56-6a07-4bc0-9c00-6a84b923f926
+# ╠═f09c0769-09fa-49d2-8ebb-67d648c1c4e3
+# ╠═cfaf437d-f2af-44f9-86ed-de233bafe184
+# ╠═e5f032c2-4c7a-4d08-b46b-7c627d23cf0c
+# ╠═246c008f-4fc2-4e98-911d-cff5e2a6bde5
+# ╠═a9379c14-b4a8-4744-8132-de7d59e4cfa5
+# ╠═0cc7d576-749c-4613-8db5-ba51ff5ce0cf
+# ╠═bfd18047-03e1-4722-b566-b5c104e77a9d
+# ╠═17c747b9-4290-49fb-b7cf-5a8accf80696
+# ╠═f0ff3024-e212-4dd7-8916-9d01ea540e10
+# ╠═cbdde630-8076-4fa0-85af-d3df55d29f38
+# ╠═9701501b-d27a-438f-bc88-f68ca726f77d
+# ╠═235ee07e-a6b6-491e-ab46-9b80257d2314
+# ╠═2f4b239f-fa18-45e6-b3a9-e6fcd0726bf5
+# ╠═8ee92488-190f-4b70-bee2-5d84fc876fea
+# ╠═4f935ed7-cb25-4254-8030-2376ce60034c
+# ╠═e8cbdab0-3b65-4504-bb6a-0a8f48ea7586
+# ╠═848bfa11-6b53-4c59-9ae4-5ec517420544
+# ╠═66549402-3edf-4721-a87a-68a77f3293a2
+# ╠═c5b0e9fb-53fd-423b-b38d-98a3668f921d
+# ╠═f68a1067-e65f-41d1-9278-84690d208421
+# ╠═e3d05042-ebb3-4964-acae-049d85c0c3e8
+# ╠═422b7861-ae0f-4a58-9c9c-019ad85c6b76
+# ╠═a7638309-ab01-496e-95cd-ddaf694f4a83
+# ╠═ec7d4edb-d2d2-4435-bef9-6f0fd721c1a3
+# ╠═0c5cce92-a3bc-4990-84e4-abbed98c0dbf
+# ╠═511a11dc-c5b1-4431-b1b4-1fbeec99150a
+# ╠═a34f7e56-9a7a-4caa-a6bd-1c507238fc13
+# ╠═16423938-4216-42ee-91e5-abb225ef99e6
+# ╠═239ccb4f-c7b4-418c-abc9-bbebda828d0a
+# ╠═b8a6b53b-dbe1-48b0-915a-e0bb140091f9
+# ╠═8d51ee20-2840-45d4-bc3e-5a5ca851dee8
+# ╠═c65e8111-d1d9-4452-866e-bfbd54afb89c
+# ╠═77d0b43c-a474-4433-875a-6b74e4544512
+# ╠═8dc807cc-0661-4926-94ba-c055a16a1f0c
+# ╠═500895f8-322a-43ab-9279-da50b6438693
+# ╠═1f52fef9-2f12-49d9-ba9f-96f7a8a55497
+# ╠═284cf365-c1ae-4f9d-a1d3-31e006919013
+# ╠═6e7f739d-5e9a-4478-ae4c-1ee85dee988f
+# ╠═7b744208-4fa3-4727-950f-ee8590542a5f
+# ╟─301ff7c4-8dd1-4094-81f4-1c4ca1df2fcd
+# ╠═67e70486-490a-422b-9cfb-c4ffb761fec3
+# ╠═99612969-fe4d-400f-931d-c449b3bcb23a
+# ╠═cdbf6ad2-9571-485a-bd2e-061632549922
 # ╟─84d3085b-64c5-4935-b963-dcc9be50549c
 # ╠═690e1b0f-72f7-4ab1-90b0-d62df948cef8
 # ╠═9c5e8dba-f4fe-4344-9c0b-94a9805371fa
@@ -3164,8 +3816,6 @@ version = "1.13.0+0"
 # ╠═477b58fd-da44-44fd-bf21-55c470086351
 # ╠═30fd7201-19be-4d3d-9ef2-67e264d54c83
 # ╠═677862aa-d808-42cc-83ca-ec32bafdd196
-# ╟─81e43bbf-c573-42fb-949f-bf5b08ce3fb2
-# ╟─e9e24807-f670-400e-98fb-e9f0219555fc
 # ╟─0ad1b732-3315-4b0e-8ea3-6569f9284e6b
 # ╟─8c0bd8b5-622f-44ab-932c-6f41f3527ff7
 # ╟─194c04ea-f0f2-4571-808d-9917cc2b9b4f
